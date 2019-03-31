@@ -1,0 +1,141 @@
+# Sweep
+
+A [Giraffe](https://github.com/giraffe-fsharp/Giraffe) server stub for the Sweep package, created via the [OpenAPI generator](https://github.com/OpenAPITools/openapi-generator/).
+
+## Models
+
+The following models have been auto-generated from the provided OpenAPI schema:
+
+model/EventModel.fs
+model/UserModel.fs
+model/TemplateModel.fs
+model/MessageModel.fs
+model/LoggedEventModel.fs
+model/ListenerModel.fs
+
+## Operations
+
+Handlers have been auto-generated from the operations specified in the OpenAPI schema as follows:
+
+
+## Operation Parameters
+
+Types have been generated for the URL, query, form, header and cookie parameters passed to each handler in the following files:
+
+api/EventApiHandlerParams.fs
+api/ListenerApiHandlerParams.fs
+api/MessageApiHandlerParams.fs
+api/TemplateApiHandlerParams.fs
+api/UserApiHandlerParams.fs
+
+## Service Interfaces
+
+Handlers will attempt to bind parameters to the applicable type and pass to a Service specific to that Handler. Service interfaces have been generated as follows:
+
+api/EventApiServiceInterface.fs
+api/ListenerApiServiceInterface.fs
+api/MessageApiServiceInterface.fs
+api/TemplateApiServiceInterface.fs
+api/UserApiServiceInterface.fs
+
+Each Service accepts a [OperationId]Params container wrapping all of the operation parameters, and must return a [OperationId]Result type. For example:
+
+`type AddPetBodyParams = { pet : Pet }
+type AddPetArgs = { bodyParams:AddPetBodyParams }
+type IPetApiService = abstract member AddPet:HttpContext -> AddPetArgs->AddPetResult`
+
+[OperationId]Result is a discriminated union of all possible OpenAPI response types for that operation. 
+
+This means that service implementations can only return status codes that have been declared in the OpenAPI specification. 
+However, if the OpenAPI spec declares a default Response for an operation, the service can manually set the status code.
+
+For example:
+
+`type FindPetsByStatusDefaultStatusCodeResponse = { content:Pet[];}
+type FindPetsByStatusStatusCode400Response = { content:string; }
+type FindPetsByStatusResult = FindPetsByStatusDefaultStatusCode of FindPetsByStatusDefaultStatusCodeResponse | FindPetsByStatusStatusCode400 of FindPetsByStatusStatusCode400Response`
+
+## Service Implementations
+
+Stubbed service implementations of those interfaces have been generated as follows:
+
+impl/EventApiService.fs
+impl/ListenerApiService.fs
+impl/MessageApiService.fs
+impl/TemplateApiService.fs
+impl/UserApiService.fs
+
+You should manually edit these files to implement your business logic.
+
+## Additional Handlers
+
+Additional handlers can be configured in the Customization.fs
+
+`let handlers : HttpHandler list = [
+    // insert your handlers here
+    GET >=> 
+      choose [
+        route "/login" >=> redirectToLogin
+        route "/logout" >=> logout
+      ]
+  ]`
+
+## Authentication
+
+### OAuth
+
+If your OpenAPI spec contains oAuth2 securitySchemes, these will have been auto-generated.
+
+To configure any of these, you must set the "xxxClientId" and "xxxClientSecret" environment variables (e.g. "GoogleClientId", "GoogleClientSecret") where xxx is the securityScheme ID.
+
+If you specify the securityScheme ID as "Google" or "GitHub" (note the capital "G" and "H" in the latter), the generator will default to:
+- for Google, the [ASP.NET Core providers](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-2.2)
+- for GitHub, the [aspnet-contrib provider](https://www.nuget.org/packages/AspNet.Security.OAuth.GitHub/)
+
+For any other ID (e.g. "Facebook"), a [generic ASP.NET Core oAuth provider](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.oauthextensions.addoauth?view=aspnetcore-2.2) will be configured.
+
+See impl/AuthSchemes.fs for further details.
+
+### API key
+
+Where applicable, handlers for api_key authentication are also auto-generated. Your validation logic
+
+## TODO/currently unsupported
+
+- implicit oAuth
+- XML content/response types
+- http authentication
+
+## .openapi-generator-ignore
+
+It is recommended to add src/impl/** and the project's .fsproj file to the .openapi-generator-ignore file. 
+
+This will allow you to regenerate model, operation and parameter files without overriding your implementations of business logic, authentication, data layers, and so on.
+
+## Build and test the application
+
+### Windows
+
+Run the `build.bat` script in order to restore, build and test (if you've selected to include tests) the application:
+
+```
+> ./build.bat
+```
+
+### Linux/macOS
+
+Run the `build.sh` script in order to restore, build and test (if you've selected to include tests) the application:
+
+```
+$ ./build.sh
+```
+
+## Run the application
+
+After a successful build you can start the web application by executing the following command in your terminal:
+
+```
+dotnet run --project src/{{packageName}
+```
+
+After the application has started visit [http://localhost:5000](http://localhost:5000) in your preferred browser.

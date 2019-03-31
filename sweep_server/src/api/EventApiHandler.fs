@@ -1,0 +1,76 @@
+namespace Sweep
+
+open System.Collections.Generic
+open Giraffe
+open Microsoft.AspNetCore.Http
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open EventApiHandlerParams
+open EventApiServiceInterface
+open EventApiServiceImplementation
+open EventModel
+open LoggedEventModel
+
+module EventApiHandler = 
+
+    /// <summary>
+    /// 
+    /// </summary>
+
+    //#region AddEvent
+    /// <summary>
+    /// Raise an event
+    /// </summary>
+
+    let AddEvent  : HttpHandler = 
+      fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+          let! bodyParams = 
+            ctx.BindJsonAsync<AddEventBodyParams>()
+          let serviceArgs = {    bodyParams=bodyParams } : AddEventArgs
+          let result = EventApiService.AddEvent ctx serviceArgs
+          return! (match result with 
+                      | AddEventStatusCode405 resolved ->
+                            setStatusCode 405 >=> text resolved.content 
+          ) next ctx
+        }
+    //#endregion
+
+    //#region GetEventById
+    /// <summary>
+    /// Find raised event by ID
+    /// </summary>
+
+    let GetEventById (pathParams:GetEventByIdPathParams) : HttpHandler = 
+      fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+          let serviceArgs = {   pathParams=pathParams;  } : GetEventByIdArgs
+          let result = EventApiService.GetEventById ctx serviceArgs
+          return! (match result with 
+                      | GetEventByIdDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> json resolved.content 
+                      | GetEventByIdStatusCode400 resolved ->
+                            setStatusCode 400 >=> text resolved.content 
+                      | GetEventByIdStatusCode404 resolved ->
+                            setStatusCode 404 >=> text resolved.content 
+          ) next ctx
+        }
+    //#endregion
+
+    //#region ListEvents
+    /// <summary>
+    /// List all received events
+    /// </summary>
+
+    let ListEvents  : HttpHandler = 
+      fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+          let result = EventApiService.ListEvents ctx 
+          return! (match result with 
+                      | ListEventsDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> json resolved.content 
+          ) next ctx
+        }
+    //#endregion
+
+
+    

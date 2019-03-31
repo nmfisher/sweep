@@ -1,0 +1,619 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: contact@avinium.com
+  description: API definitions for the Sweep server/dashboard.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://sweephq.com/terms
+  title: Sweep API
+  version: 1.0.0-oas3
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- description: Sweep API
+  url: https://api.sweephq.com/1.0.0
+tags:
+- description: A User
+  name: user
+- description: A Listener must be configured for a Message to be sent in response to any Event. If an Event is raised without an appropriate Listener, no error will be raised on the client-side.
+  name: listener
+- description: Clients choose when and where to raise Events, which are sent to a Sweep endpoint with the appropriate Event parameters (this may directly push to a Message Queue like Azure Service Bus). If a Listener is configured for the Event, the Listener will send a Message.
+  name: event
+- description: When an Event is raised, the Listener will populate the Template with the Event arguments and convert to a Message.
+  name: template
+- description: A Message is a populated Template that will be dispatched to a mailing server. A Message is not guaranteed to be sent.
+  name: message
+paths:
+  /events:
+    get:
+      description: Returns a list of all events
+      operationId: listEvents
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoggedEvent'
+          description: successful operation
+      security:
+      - Google: []
+      summary: List all received events
+      tags:
+      - event
+    post:
+      operationId: addEvent
+      requestBody:
+        $ref: '#/components/requestBodies/Event'
+      responses:
+        405:
+          description: Invalid input
+      security:
+      - api_key: []
+      summary: Raise an event
+      tags:
+      - event
+  /listeners:
+    get:
+      description: Returns a list of Listeners
+      operationId: listListeners
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listener'
+          description: successful operation
+      security:
+      - Google: []
+      summary: List all Listeners
+      tags:
+      - listener
+    post:
+      operationId: addListener
+      requestBody:
+        $ref: '#/components/requestBodies/Listener'
+      responses:
+        405:
+          description: Invalid input
+      security:
+      - Google: []
+      summary: Create a new Listener
+      tags:
+      - listener
+    put:
+      operationId: updateListener
+      requestBody:
+        $ref: '#/components/requestBodies/Listener'
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Event not found
+        405:
+          description: Validation exception
+      security:
+      - Google: []
+      summary: Update an existing Listener
+      tags:
+      - listener
+  /listeners/{listenerId}:
+    delete:
+      operationId: deleteListener
+      parameters:
+      - explode: false
+        in: header
+        name: api_key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Listener id to delete
+        explode: false
+        in: path
+        name: listenerId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Listener not found
+      security:
+      - Google: []
+      summary: Deletes a Listener
+      tags:
+      - listener
+    get:
+      description: Returns a single listener
+      operationId: getListenerById
+      parameters:
+      - description: ID of listener to return
+        explode: false
+        in: path
+        name: listenerId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listener'
+          description: successful operation
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Listener not found
+      summary: Find Listener by ID
+      tags:
+      - listener
+  /messages:
+    get:
+      description: Returns a list of messages
+      operationId: listMessages
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: successful operation
+      security:
+      - Google: []
+      summary: List all messages
+      tags:
+      - message
+  /messages/{messageId}:
+    get:
+      description: Returns a single message
+      operationId: getmessageById
+      parameters:
+      - description: ID of message to return
+        explode: false
+        in: path
+        name: messageId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: successful operation
+        400:
+          description: Invalid ID supplied
+        404:
+          description: message not found
+      security:
+      - Google: []
+      summary: Find message by ID
+      tags:
+      - message
+  /events/{eventId}:
+    get:
+      operationId: getEventById
+      parameters:
+      - description: ID of event that needs to be fetched
+        explode: false
+        in: path
+        name: eventId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoggedEvent'
+          description: successful operation
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Order not found
+      summary: Find raised event by ID
+      tags:
+      - event
+  /templates:
+    get:
+      description: Returns a list of templates
+      operationId: listTemplate
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+          description: successful operation
+      security:
+      - Google: []
+      summary: List all Templates
+      tags:
+      - template
+    post:
+      operationId: addTemplate
+      requestBody:
+        $ref: '#/components/requestBodies/Template'
+      responses:
+        405:
+          description: Invalid input
+      security:
+      - Google: []
+      summary: Create a new Template
+      tags:
+      - template
+    put:
+      operationId: updateTemplate
+      requestBody:
+        $ref: '#/components/requestBodies/Template'
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Template not found
+        405:
+          description: Validation exception
+      security:
+      - Google: []
+      summary: Update an existing Template
+      tags:
+      - template
+  /templates/{templateId}:
+    delete:
+      operationId: deleteTemplate
+      parameters:
+      - explode: false
+        in: header
+        name: api_key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Template id to delete
+        explode: false
+        in: path
+        name: templateId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Template not found
+      security:
+      - Google: []
+      summary: Deletes a Template
+      tags:
+      - template
+    get:
+      description: Returns a single template
+      operationId: getTemplateById
+      parameters:
+      - description: ID of template to return
+        explode: false
+        in: path
+        name: templateId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+          description: successful operation
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Listener not found
+      summary: Find Template by ID
+      tags:
+      - template
+  /user:
+    post:
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Created user object
+        required: true
+      responses:
+        default:
+          description: successful operation
+      summary: Create user
+      tags:
+      - user
+  /user/login:
+    get:
+      operationId: loginUser
+      parameters:
+      - description: The user name for login
+        explode: true
+        in: query
+        name: username
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: The password for login in clear text
+        explode: true
+        in: query
+        name: password
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+          description: successful operation
+        400:
+          description: Invalid username/password supplied
+      summary: Logs user into the system
+      tags:
+      - user
+  /user/logout:
+    get:
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+      summary: Logs out current logged in user session
+      tags:
+      - user
+  /user/{userId}:
+    delete:
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - description: The ID of the user to be deleted
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        400:
+          description: Invalid username supplied
+        404:
+          description: User not found
+      summary: Delete user
+      tags:
+      - user
+    get:
+      operationId: getUserByName
+      parameters:
+      - description: The user id.
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: successful operation
+        400:
+          description: Invalid username supplied
+        404:
+          description: User not found
+      summary: Get user by user name
+      tags:
+      - user
+    put:
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - description: ID of the user ame that need to be updated
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Updated user object
+        required: true
+      responses:
+        400:
+          description: Invalid user supplied
+        404:
+          description: User not found
+      summary: Updated user
+      tags:
+      - user
+components:
+  requestBodies:
+    Listener:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Listener'
+      description: A Listener object to be added
+      required: true
+    Event:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Event'
+      description: Raises an Event with associated parameters
+      required: true
+    Template:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Template'
+      description: A Template object with associated parameters
+      required: true
+  schemas:
+    Listener:
+      example:
+        eventName: eventName
+        id: 0
+        userId: userId
+      properties:
+        id:
+          format: int64
+          type: integer
+        eventName:
+          type: string
+        userId:
+          type: string
+      type: object
+    LoggedEvent:
+      example:
+        eventName: eventName
+        id: 0
+        params: '{}'
+        userId: userId
+      properties:
+        id:
+          format: int64
+          type: integer
+        eventName:
+          format: string
+          type: string
+        params:
+          type: object
+        userId:
+          type: string
+      type: object
+    Event:
+      example:
+        eventName: eventName
+        params:
+        - '{}'
+        - '{}'
+        userId: userId
+      properties:
+        eventName:
+          type: string
+        params:
+          items:
+            type: object
+          type: array
+        userId:
+          type: string
+      type: object
+    User:
+      example:
+        password: password
+        apiKey: apiKey
+        id: id
+        username: username
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        apiKey:
+          type: string
+      type: object
+    Message:
+      example:
+        id: 0
+        to:
+        - to
+        - to
+        userId: userId
+        content: <html><body>Hi!</body></html>
+      properties:
+        id:
+          format: int64
+          type: integer
+        content:
+          example: <html><body>Hi!</body></html>
+          type: string
+        to:
+          items:
+            type: string
+          type: array
+        userId:
+          type: string
+      type: object
+    Template:
+      example:
+        template: template
+        id: 0
+        to:
+        - to
+        - to
+        userId: userId
+      properties:
+        id:
+          format: int64
+          type: integer
+        template:
+          type: string
+        to:
+          items:
+            type: string
+          type: array
+        userId:
+          type: string
+      type: object
+  securitySchemes:
+    Google:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          scopes:
+            https://www.googleapis.com/auth/userinfo.email: access your e-mail address
+          tokenUrl: https://www.googleapis.com/oauth2/v4/token
+      type: oauth2
+    GitHub:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://github.com/login/oauth/authorize2
+          scopes:
+            user:email: access your e-mail address
+          tokenUrl: https://github.com/login/oauth/access_token
+      type: oauth2
+    api_key:
+      in: header
+      name: api_key
+      type: apiKey

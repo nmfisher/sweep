@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <Description>Sweep</Description>
+    <Copyright>Sweep</Copyright>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <DebugType>portable</DebugType>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <RunWorkingDirectory>$(MSBuildThisFileDirectory)</RunWorkingDirectory>
+    <AssemblyName>Sweep</AssemblyName>
+    <PackageId>Sweep</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Control.AsyncSeq" Version="2.0.21" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.All" />
+    <PackageReference Include="Giraffe" Version="3.4.*" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.0.0.1-preview" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.2.3" />
+    <PackageReference Include="TaskBuilder.fs" Version="2.1.*" />
+    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="openapi.yaml" />
+    <Compile Include="helpers/Helpers.fs" />
+    <Compile Include="model/Event.fs" />
+    <Compile Include="model/User.fs" />
+    <Compile Include="model/Template.fs" />
+    <Compile Include="model/Message.fs" />
+    <Compile Include="model/LoggedEvent.fs" />
+    <Compile Include="model/Listener.fs" />
+    <Compile Include="api/EventApiHandlerParams.fs" />
+    <Compile Include="api/EventApiServiceInterface.fs" />
+    <Compile Include="impl/EventApiService.fs" />
+    <Compile Include="api/EventApiHandler.fs" />
+    <Compile Include="api/ListenerApiHandlerParams.fs" />
+    <Compile Include="api/ListenerApiServiceInterface.fs" />
+    <Compile Include="impl/ListenerApiService.fs" />
+    <Compile Include="api/ListenerApiHandler.fs" />
+    <Compile Include="api/MessageApiHandlerParams.fs" />
+    <Compile Include="api/MessageApiServiceInterface.fs" />
+    <Compile Include="impl/MessageApiService.fs" />
+    <Compile Include="api/MessageApiHandler.fs" />
+    <Compile Include="api/TemplateApiHandlerParams.fs" />
+    <Compile Include="api/TemplateApiServiceInterface.fs" />
+    <Compile Include="impl/TemplateApiService.fs" />
+    <Compile Include="api/TemplateApiHandler.fs" />
+    <Compile Include="api/UserApiHandlerParams.fs" />
+    <Compile Include="api/UserApiServiceInterface.fs" />
+    <Compile Include="impl/UserApiService.fs" />
+    <Compile Include="api/UserApiHandler.fs" />
+    <Compile Include="impl/Data.fs" />
+    <Compile Include="impl/CompositionRoot.fs" />
+    <Compile Include="impl/ApiKeyValidation.fs" />
+    <Compile Include="impl/CustomHandlers.fs" />
+    <Compile Include="auth/AuthSchemes.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>

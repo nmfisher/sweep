@@ -1,0 +1,3 @@
+[submodule "src/sweep_dashboard"]
+	path = src/sweep_dashboard
+	url = git@bitbucket.org:nmfisher/sweep-dashboard.git
