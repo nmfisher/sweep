@@ -24,6 +24,7 @@ module Data =
   let getItemsAsync<'T> (client:Microsoft.Azure.Documents.Client.DocumentClient) databaseId collectionId (pred:Expression<Func<'T,int,bool>>) = 
       let uri = UriFactory.CreateDocumentCollectionUri(databaseId, collectionId)
       let feedOptions = new FeedOptions()
+      feedOptions.EnableCrossPartitionQuery <- true
       feedOptions.MaxItemCount <- Nullable(-1)
       let query = client.CreateDocumentQuery<'T>(uri, feedOptions).Where(pred).AsDocumentQuery();
       asyncSeq {

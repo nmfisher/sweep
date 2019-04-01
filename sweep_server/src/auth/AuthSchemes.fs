@@ -30,15 +30,23 @@ module AuthSchemes =
 
   let OAuthBuilders = Map.empty.Add("Google", buildGoogle).Add("GitHub", buildGitHub)
 
-  let build name =  
+  let checkEnvironment (settings:IConfiguration) name =
+    if (isNull settings.[name + "ClientId"]) then
+      raise (Exception(name + "ClientId is not set."))
+    else if (isNull settings.[name + "ClientSecret"]) then
+      raise (Exception(name + "ClientSecret is not set."))
+
+  let build settings name =  
+    // check that "xxxClientId" and "xxxClientSecret" configuration variables have been set for all OAuth providers
+    checkEnvironment settings name
     if OAuthBuilders.ContainsKey(name) then
       OAuthBuilders.[name]
     else
       buildOAuth
 
-  let configureOAuth settings services   =
-    (build "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings
-    (build "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings
+  let configureOAuth (settings:IConfiguration) services =
+    (build settings "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings
+    (build settings "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings
 
   let cookieAuth (o : CookieAuthenticationOptions) =
     do

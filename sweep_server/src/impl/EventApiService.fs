@@ -6,31 +6,43 @@ open EventApiServiceInterface
 open System.Collections.Generic
 open System
 open Giraffe
+open EventApiHandlerParams
 
 module EventApiServiceImplementation =
+
+    let claimsIdentifier = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
     
     //#region Service implementation
     type EventApiServiceImpl() = 
-      interface IEventApiService with
+      let getUserId (claims:IEnumerable<Security.Claims.Claim>) = 
+        claims
+        |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = claimsIdentifier)
+        |> Seq.head
+        |> (fun (c:Security.Claims.Claim) -> c.Value)
       
+      interface IEventApiService with
         member this.AddEvent ctx args =
-            CompositionRoot.
-            AddEventStatusCode405 { content = content }
+          try
+            let userId = getUserId ctx.User.Claims
+            let event = CompositionRoot.addEvent args.bodyParams._event userId
+            AddEventDefaultStatusCode { content = "OK" }
+          with 
+          | e ->   
+            AddEventStatusCode405 { content = e.ToString() }
 
         member this.GetEventById ctx args =
-          if true then 
-            let content = "successful operation" :> obj :?> LoggedEvent // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            GetEventByIdDefaultStatusCode { content = content }
-          else if true then 
-            let content = "Invalid ID supplied" 
-            GetEventByIdStatusCode400 { content = content }
-          else
+          let userId = getUserId ctx.User.Claims
+          match CompositionRoot.getEvent args.pathParams.eventId userId  with 
+          | Some e ->
+              GetEventByIdDefaultStatusCode { content = e }
+          | None ->              
             let content = "Order not found" 
             GetEventByIdStatusCode404 { content = content }
-
+           
         member this.ListEvents ctx  =
-            let content = "successful operation" :> obj :?> LoggedEvent // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            ListEventsDefaultStatusCode { content = content }
+          let userId = getUserId ctx.User.Claims
+          let events = CompositionRoot.listEvents userId 
+          ListEventsDefaultStatusCode { content = events }
 
       //#endregion
 

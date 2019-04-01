@@ -30,6 +30,8 @@
     <Compile Include="model/Message.fs" />
     <Compile Include="model/LoggedEvent.fs" />
     <Compile Include="model/Listener.fs" />
+    <Compile Include="impl/Data.fs" />
+    <Compile Include="impl/CompositionRoot.fs" />
     <Compile Include="api/EventApiHandlerParams.fs" />
     <Compile Include="api/EventApiServiceInterface.fs" />
     <Compile Include="impl/EventApiService.fs" />
@@ -50,8 +52,6 @@
     <Compile Include="api/UserApiServiceInterface.fs" />
     <Compile Include="impl/UserApiService.fs" />
     <Compile Include="api/UserApiHandler.fs" />
-    <Compile Include="impl/Data.fs" />
-    <Compile Include="impl/CompositionRoot.fs" />
     <Compile Include="impl/ApiKeyValidation.fs" />
     <Compile Include="impl/CustomHandlers.fs" />
     <Compile Include="auth/AuthSchemes.fs" />
