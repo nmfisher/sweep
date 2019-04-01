@@ -25,7 +25,7 @@ tags:
       Clients choose when and where to raise Events, which are sent to a Sweep
       endpoint with the appropriate Event parameters (this may directly push to
       a Message Queue like Azure Service Bus). If a Listener is configured for
-      the Event, the Listener will send a Message.
+      the Event, the Listener will send a Message and create a LoggedEvent that can be retrieved by the user.
   - name: template
     description: >-
       When an Event is raised, the Listener will populate the Template with the
@@ -48,7 +48,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoggedEvent'
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoggedEvent'
       security:
         - Google: []
     post:
@@ -57,6 +59,8 @@ paths:
       summary: Raise an event
       operationId: addEvent
       responses:
+        '200':
+          description: An event has been successfully created.
         '405':
           description: Invalid input
       requestBody:
@@ -100,7 +104,7 @@ paths:
         '400':
           description: Invalid ID supplied
         '404':
-          description: Event not found
+          description: Listener not found
         '405':
           description: Validation exception
       security:
@@ -115,13 +119,12 @@ paths:
       description: Returns a single listener
       operationId: getListenerById
       parameters:
-        - name: listenerId
+        - name: listenerId  
           in: path
           description: ID of listener to return
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: successful operation
@@ -149,8 +152,7 @@ paths:
           description: Listener id to delete
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '400':
           description: Invalid ID supplied
@@ -187,7 +189,7 @@ paths:
           description: ID of message to return
           required: true
           schema:
-            type: integer
+            type: string
             format: int64
       responses:
         '200':
@@ -214,7 +216,7 @@ paths:
           description: ID of event that needs to be fetched
           required: true
           schema:
-            type: integer
+            type: string
             format: int64
       responses:
         '200':
@@ -284,7 +286,7 @@ paths:
           description: ID of template to return
           required: true
           schema:
-            type: integer
+            type: string
             format: int64
       responses:
         '200':
@@ -313,7 +315,7 @@ paths:
           description: Template id to delete
           required: true
           schema:
-            type: integer
+            type: string
             format: int64
       responses:
         '400':
@@ -455,8 +457,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
         eventName:
           type: string
         userId:
@@ -465,8 +466,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
         eventName:
           type: string
           format: string
@@ -500,8 +500,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
         content:
           type: string
           example: <html><body>Hi!</body></html>
@@ -515,8 +514,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
         template:
           type: string
         to:
