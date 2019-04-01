@@ -40,8 +40,9 @@ module EventApiServiceImplementation =
            
         member this.ListEvents ctx  =
           let userId = getUserId ctx.User.Claims
-          let events = CompositionRoot.listEvents userId 
-          ListEventsDefaultStatusCode { content = events }
+          let events = CompositionRoot.listEvents userId
+          raise (Exception())
+          //ListEventsDefaultStatusCode { content = events }
 
       //#endregion
 

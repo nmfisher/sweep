@@ -513,7 +513,7 @@ components:
           items:
             type: string
         userId:
-          type: string
+          $ref: '#/components/schemas/User/id'
         organizationId:
           type: string
     Template:
