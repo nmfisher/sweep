@@ -8,9 +8,7 @@ module ListenerApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddListenerBodyParams = {
-      listener : Listener
-    }
+    type AddListenerBodyParams = Listener
     //#endregion
 
     
@@ -90,9 +88,7 @@ module ListenerApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateListenerBodyParams = {
-      listener : Listener
-    }
+    type UpdateListenerBodyParams = Listener
     //#endregion
 
     

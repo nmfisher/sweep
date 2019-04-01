@@ -11,6 +11,7 @@ module MessageModel =
     Content : string;
     To : string[];
     UserId : string;
+    OrganizationId : string;
   }
   //#endregion
   

@@ -10,6 +10,7 @@ module ListenerModel =
     Id : string;
     EventName : string;
     UserId : string;
+    OrganizationId : string;
   }
   //#endregion
   

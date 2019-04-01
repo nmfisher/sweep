@@ -8,9 +8,7 @@ module TemplateApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddTemplateBodyParams = {
-      template : Template
-    }
+    type AddTemplateBodyParams = Template
     //#endregion
 
     
@@ -90,9 +88,7 @@ module TemplateApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateTemplateBodyParams = {
-      template : Template
-    }
+    type UpdateTemplateBodyParams = Template
     //#endregion
 
     

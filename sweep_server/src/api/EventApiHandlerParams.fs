@@ -9,9 +9,7 @@ module EventApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddEventBodyParams = {
-      _event : Event
-    }
+    type AddEventBodyParams = Event
     //#endregion
 
     

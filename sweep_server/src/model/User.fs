@@ -11,6 +11,7 @@ module UserModel =
     Username : string;
     Password : string;
     ApiKey : string;
+    OrganizationId : string;
   }
   //#endregion
   

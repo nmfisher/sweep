@@ -11,6 +11,7 @@ module TemplateModel =
     _Template : string;
     To : string[];
     UserId : string;
+    OrganizationId : string;
   }
   //#endregion
   

@@ -8,9 +8,7 @@ module UserApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type CreateUserBodyParams = {
-      user : User
-    }
+    type CreateUserBodyParams = User
     //#endregion
 
     
@@ -114,9 +112,7 @@ module UserApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateUserBodyParams = {
-      user : User
-    }
+    type UpdateUserBodyParams = User
     //#endregion
 
     

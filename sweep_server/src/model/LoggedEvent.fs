@@ -10,7 +10,7 @@ module LoggedEventModel =
     Id : string;
     EventName : string;
     Params : obj;
-    UserId : string;
+    OrganizationId : string;
   }
   //#endregion
   

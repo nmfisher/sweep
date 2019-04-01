@@ -9,7 +9,7 @@ module EventModel =
   type Event = {
     EventName : string;
     Params : obj[];
-    UserId : string;
+    OrganizationId : string;
   }
   //#endregion
   
