@@ -6,7 +6,6 @@ module EventModel =
   //#region Event
 
 
-
   type Event = {
     EventName : string;
     Params : obj[];

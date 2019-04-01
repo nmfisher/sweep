@@ -6,9 +6,8 @@ module MessageModel =
   //#region Message
 
 
-
   type Message = {
-    Id : int64;
+    Id : string;
     Content : string;
     To : string[];
     UserId : string;

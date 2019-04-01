@@ -6,9 +6,8 @@ module ListenerModel =
   //#region Listener
 
 
-
   type Listener = {
-    Id : int64;
+    Id : string;
     EventName : string;
     UserId : string;
   }

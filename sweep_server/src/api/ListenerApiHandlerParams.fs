@@ -26,7 +26,7 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteListenerPathParams = {
-      listenerId : int64
+      listenerId : string
     }
     //#endregion
 
@@ -55,7 +55,7 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetListenerByIdPathParams = {
-      listenerId : int64
+      listenerId : string
     }
     //#endregion
 

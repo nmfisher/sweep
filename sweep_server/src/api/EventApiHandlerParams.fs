@@ -15,11 +15,16 @@ module EventApiHandlerParams =
     //#endregion
 
     
+    type AddEventDefaultStatusCodeResponse = {
+      content:string;
+      
+    }
+    
     type AddEventStatusCode405Response = {
       content:string;
       
     }
-    type AddEventResult = AddEventStatusCode405 of AddEventStatusCode405Response
+    type AddEventResult = AddEventDefaultStatusCode of AddEventDefaultStatusCodeResponse|AddEventStatusCode405 of AddEventStatusCode405Response
 
     type AddEventArgs = {
       bodyParams:AddEventBodyParams
@@ -27,7 +32,7 @@ module EventApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetEventByIdPathParams = {
-      eventId : int64
+      eventId : string
     }
     //#endregion
 
@@ -54,7 +59,7 @@ module EventApiHandlerParams =
 
     
     type ListEventsDefaultStatusCodeResponse = {
-      content:LoggedEvent;
+      content:LoggedEvent[];
       
     }
     type ListEventsResult = ListEventsDefaultStatusCode of ListEventsDefaultStatusCodeResponse

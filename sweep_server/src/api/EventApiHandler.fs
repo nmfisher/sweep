@@ -29,6 +29,8 @@ module EventApiHandler =
           let serviceArgs = {    bodyParams=bodyParams } : AddEventArgs
           let result = EventApiService.AddEvent ctx serviceArgs
           return! (match result with 
+                      | AddEventDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
                       | AddEventStatusCode405 resolved ->
                             setStatusCode 405 >=> text resolved.content 
           ) next ctx

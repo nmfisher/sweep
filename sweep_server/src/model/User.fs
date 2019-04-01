@@ -6,7 +6,6 @@ module UserModel =
   //#region User
 
 
-
   type User = {
     Id : string;
     Username : string;

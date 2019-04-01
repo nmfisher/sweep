@@ -6,9 +6,8 @@ module TemplateModel =
   //#region Template
 
 
-
   type Template = {
-    Id : int64;
+    Id : string;
     _Template : string;
     To : string[];
     UserId : string;

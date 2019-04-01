@@ -26,7 +26,7 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteTemplatePathParams = {
-      templateId : int64
+      templateId : string
     }
     //#endregion
 
@@ -55,7 +55,7 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetTemplateByIdPathParams = {
-      templateId : int64
+      templateId : string
     }
     //#endregion
 

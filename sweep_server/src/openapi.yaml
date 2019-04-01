@@ -20,7 +20,7 @@ tags:
   name: user
 - description: A Listener must be configured for a Message to be sent in response to any Event. If an Event is raised without an appropriate Listener, no error will be raised on the client-side.
   name: listener
-- description: Clients choose when and where to raise Events, which are sent to a Sweep endpoint with the appropriate Event parameters (this may directly push to a Message Queue like Azure Service Bus). If a Listener is configured for the Event, the Listener will send a Message.
+- description: Clients choose when and where to raise Events, which are sent to a Sweep endpoint with the appropriate Event parameters (this may directly push to a Message Queue like Azure Service Bus). If a Listener is configured for the Event, the Listener will send a Message and create a LoggedEvent that can be retrieved by the user.
   name: event
 - description: When an Event is raised, the Listener will populate the Template with the Event arguments and convert to a Message.
   name: template
@@ -36,7 +36,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoggedEvent'
+                items:
+                  $ref: '#/components/schemas/LoggedEvent'
+                type: array
           description: successful operation
       security:
       - Google: []
@@ -48,6 +50,8 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Event'
       responses:
+        200:
+          description: An event has been successfully created.
         405:
           description: Invalid input
       security:
@@ -91,7 +95,7 @@ paths:
         400:
           description: Invalid ID supplied
         404:
-          description: Event not found
+          description: Listener not found
         405:
           description: Validation exception
       security:
@@ -116,8 +120,7 @@ paths:
         name: listenerId
         required: true
         schema:
-          format: int64
-          type: integer
+          type: string
         style: simple
       responses:
         400:
@@ -139,8 +142,7 @@ paths:
         name: listenerId
         required: true
         schema:
-          format: int64
-          type: integer
+          type: string
         style: simple
       responses:
         200:
@@ -184,7 +186,7 @@ paths:
         required: true
         schema:
           format: int64
-          type: integer
+          type: string
         style: simple
       responses:
         200:
@@ -213,7 +215,7 @@ paths:
         required: true
         schema:
           format: int64
-          type: integer
+          type: string
         style: simple
       responses:
         200:
@@ -291,7 +293,7 @@ paths:
         required: true
         schema:
           format: int64
-          type: integer
+          type: string
         style: simple
       responses:
         400:
@@ -314,7 +316,7 @@ paths:
         required: true
         schema:
           format: int64
-          type: integer
+          type: string
         style: simple
       responses:
         200:
@@ -491,12 +493,11 @@ components:
     Listener:
       example:
         eventName: eventName
-        id: 0
+        id: id
         userId: userId
       properties:
         id:
-          format: int64
-          type: integer
+          type: string
         eventName:
           type: string
         userId:
@@ -505,13 +506,12 @@ components:
     LoggedEvent:
       example:
         eventName: eventName
-        id: 0
+        id: id
         params: '{}'
         userId: userId
       properties:
         id:
-          format: int64
-          type: integer
+          type: string
         eventName:
           format: string
           type: string
@@ -555,7 +555,7 @@ components:
       type: object
     Message:
       example:
-        id: 0
+        id: id
         to:
         - to
         - to
@@ -563,8 +563,7 @@ components:
         content: <html><body>Hi!</body></html>
       properties:
         id:
-          format: int64
-          type: integer
+          type: string
         content:
           example: <html><body>Hi!</body></html>
           type: string
@@ -578,15 +577,14 @@ components:
     Template:
       example:
         template: template
-        id: 0
+        id: id
         to:
         - to
         - to
         userId: userId
       properties:
         id:
-          format: int64
-          type: integer
+          type: string
         template:
           type: string
         to:

@@ -6,9 +6,8 @@ module LoggedEventModel =
   //#region LoggedEvent
 
 
-
   type LoggedEvent = {
-    Id : int64;
+    Id : string;
     EventName : string;
     Params : obj;
     UserId : string;
