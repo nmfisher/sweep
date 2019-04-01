@@ -492,6 +492,7 @@ components:
   schemas:
     Listener:
       example:
+        organizationId: organizationId
         eventName: eventName
         id: id
         userId: userId
@@ -502,13 +503,15 @@ components:
           type: string
         userId:
           type: string
+        organizationId:
+          type: string
       type: object
     LoggedEvent:
       example:
+        organizationId: organizationId
         eventName: eventName
         id: id
         params: '{}'
-        userId: userId
       properties:
         id:
           type: string
@@ -517,16 +520,16 @@ components:
           type: string
         params:
           type: object
-        userId:
+        organizationId:
           type: string
       type: object
     Event:
       example:
+        organizationId: organizationId
         eventName: eventName
         params:
         - '{}'
         - '{}'
-        userId: userId
       properties:
         eventName:
           type: string
@@ -534,11 +537,12 @@ components:
           items:
             type: object
           type: array
-        userId:
+        organizationId:
           type: string
       type: object
     User:
       example:
+        organizationId: organizationId
         password: password
         apiKey: apiKey
         id: id
@@ -552,9 +556,12 @@ components:
           type: string
         apiKey:
           type: string
+        organizationId:
+          type: string
       type: object
     Message:
       example:
+        organizationId: organizationId
         id: id
         to:
         - to
@@ -573,10 +580,13 @@ components:
           type: array
         userId:
           type: string
+        organizationId:
+          type: string
       type: object
     Template:
       example:
         template: template
+        organizationId: organizationId
         id: id
         to:
         - to
@@ -592,6 +602,8 @@ components:
             type: string
           type: array
         userId:
+          type: string
+        organizationId:
           type: string
       type: object
   securitySchemes:

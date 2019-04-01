@@ -462,6 +462,8 @@ components:
           type: string
         userId:
           type: string
+        organizationId:
+          type: string
     LoggedEvent:
       type: object
       properties:
@@ -472,7 +474,7 @@ components:
           format: string
         params:
           type: object
-        userId:
+        organizationId:
           type: string
     Event:
       type: object
@@ -483,7 +485,7 @@ components:
           type: array
           items:
             type: object
-        userId:
+        organizationId:
           type: string
     User:
       type: object
@@ -495,6 +497,8 @@ components:
         password:
           type: string
         apiKey:
+          type: string
+        organizationId:
           type: string
     Message:
       type: object
@@ -510,6 +514,8 @@ components:
             type: string
         userId:
           type: string
+        organizationId:
+          type: string
     Template:
       type: object
       properties:
@@ -522,6 +528,8 @@ components:
           items: 
             type: string
         userId:
+          type: string
+        organizationId:
           type: string
   requestBodies:
     Listener:

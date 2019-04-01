@@ -24,7 +24,7 @@ module EventApiServiceImplementation =
         member this.AddEvent ctx args =
           try
             let userId = getUserId ctx.User.Claims
-            let event = CompositionRoot.addEvent args.bodyParams._event userId
+            let event = CompositionRoot.addEvent args.bodyParams userId
             AddEventDefaultStatusCode { content = "OK" }
           with 
           | e ->   
@@ -36,8 +36,7 @@ module EventApiServiceImplementation =
           | Some e ->
               GetEventByIdDefaultStatusCode { content = e }
           | None ->              
-            let content = "Order not found" 
-            GetEventByIdStatusCode404 { content = content }
+              GetEventByIdStatusCode404 { content = "Event not found" }
            
         member this.ListEvents ctx  =
           let userId = getUserId ctx.User.Claims

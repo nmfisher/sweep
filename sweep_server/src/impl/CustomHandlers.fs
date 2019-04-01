@@ -31,7 +31,7 @@ module CustomHandlers =
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
         let apiKey = ApiKey.generate().ToString()
-        CompositionRoot.saveUser id email apiKey |> ignore
+        CompositionRoot.saveUser id email apiKey (Guid.NewGuid().ToString()) |> ignore
     } :> Tasks.Task
 
   let setOAuthOptions name (options:OAuthOptions) scopes (settings:IConfiguration) = 

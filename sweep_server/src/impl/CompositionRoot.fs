@@ -39,21 +39,20 @@ module CompositionRoot =
 
   // Events
   let addEvent (event:EventModel.Event) userId = 
+    let id = (Guid.NewGuid().ToString())
     let loggedEvent = { 
       EventName=event.EventName;
       Params=event.Params;
-      Id=(Guid.NewGuid().ToString());
+      Id=id;
       UserId=userId; 
+      id=id;
     }
     createItemAsync loggedEvent |> ignore
     loggedEvent
-  let getEvent id userId = 
-    <@ (fun (event:LoggedEvent) idx  -> event.UserId = userId && event.Id = id) @> 
-      |> LeafExpressionConverter.QuotationToExpression 
-      |> unbox<Expression<Func<LoggedEvent option,int,bool>>>
-      |> getItemsAsync<LoggedEvent option> 
-      |> AsyncSeq.firstOrDefault None
-      |> Async.RunSynchronously
+    
+  let getEvent eventId userId = 
+      getItemAsync<
+      
 
   let listEvents userId = 
     <@ (fun (event:LoggedEvent) (idx:int) -> event.UserId = userId) @>
@@ -77,5 +76,5 @@ module CompositionRoot =
       |> getItemsAsync<TemplateModel.Template>
 
   // Users    
-  let saveUser id username apiKey = createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password=""} |> ignore
+  let saveUser id username apiKey orgId = createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password="";OrganizationId=orgId} |> ignore
   let getUser id = getItemAsync<User> id
