@@ -55,6 +55,18 @@ For example:
 type FindPetsByStatusStatusCode400Response = { content:string; }
 type FindPetsByStatusResult = FindPetsByStatusDefaultStatusCode of FindPetsByStatusDefaultStatusCodeResponse | FindPetsByStatusStatusCode400 of FindPetsByStatusStatusCode400Response`
 
+## Note on response codes for URL parameter binding
+
+Giraffe binds URL parameters by requiring compile-time format strings for routes  (e.g. "/foo/%s/%d) or known types (e.g. FooUrlParameters).
+
+With either approach, Giraffe will emit a 400 error response if parameter binding fails (e.g. if a string is provided where an int was expected).
+
+Currently, I am not aware of any way to customize this response, meaning if your OpenAPI schema specifies a different response code for an incorrectly formatted URL parameter, this will basically be ignored.
+
+To ensure your OpenAPI schema and implementation are consistent, I suggest ensuring that your schema only specifies return code 400 for incorrectly formatted URL parameters.
+
+If you have any suggestions for customizing this, please file an issue.
+
 ## Service Implementations
 
 Stubbed service implementations of those interfaces have been generated as follows:
