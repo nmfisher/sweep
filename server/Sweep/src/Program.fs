@@ -15,13 +15,13 @@ open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.Diagnostics
 open Giraffe.GiraffeViewEngine
 open EventApiHandlerParams
 open ListenerApiHandlerParams
 open MessageApiHandlerParams
 open TemplateApiHandlerParams
 open UserApiHandlerParams
-
 open Giraffe
 
 module App =
@@ -112,6 +112,7 @@ module App =
 
   [<EntryPoint>]
   let main _ =
+    Trace.Listeners.Add(new TextWriterTraceListener(Console.Out))
     WebHost.CreateDefaultBuilder()
           .Configure(Action<IApplicationBuilder> configureApp)
           .ConfigureServices(configureServices)

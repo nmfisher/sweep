@@ -38,10 +38,22 @@ api/MessageApiServiceInterface.fs
 api/TemplateApiServiceInterface.fs
 api/UserApiServiceInterface.fs
 
-Each Service accepts a [OperationId]Params container wrapping all of the operation parameters, and must return a [OperationId]Result type. For example:
+Each Service contains functions for each [OperationId], each accepting a [OperationId]Params object that wraps the operation's parameters.
 
-`type AddPetBodyParams = { pet : Pet }
-type AddPetArgs = { bodyParams:AddPetBodyParams }
+If a requestBody is a ref type (i.e. a Model) or a single simple type, the operation parameter will be typed as the expected Model:
+
+`type AddPetBodyParams = Pet`
+
+If a requestBody is a simple type with named properties, the operation parameters will be typed to reflect those properties:
+
+`type AddFooBodyParams = {
+  Name:string;
+  Age:int
+}
+
+Each Service/operation function must accept the [OperationId]Params object and return a [OperationId]Result type. For example:
+
+`type AddPetArgs = { bodyParams:AddPetBodyParams }
 type IPetApiService = abstract member AddPet:HttpContext -> AddPetArgs->AddPetResult`
 
 [OperationId]Result is a discriminated union of all possible OpenAPI response types for that operation. 
@@ -114,9 +126,11 @@ Where applicable, handlers for api_key authentication are also auto-generated. Y
 
 ## TODO/currently unsupported
 
+- form request bodies (URL-encoded or multipart)
 - implicit oAuth
 - XML content/response types
 - http authentication
+- testing header params
 
 ## .openapi-generator-ignore
 

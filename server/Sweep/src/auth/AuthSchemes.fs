@@ -32,9 +32,10 @@ module AuthSchemes =
 
   let checkEnvironment (settings:IConfiguration) name =
     if (isNull settings.[name + "ClientId"]) then
-      raise (Exception(name + "ClientId is not set."))
+      System.Diagnostics.Trace.Fail(name + "ClientId is not set.")
     else if (isNull settings.[name + "ClientSecret"]) then
-      raise (Exception(name + "ClientSecret is not set."))
+      System.Diagnostics.Trace.Fail(name + "ClientSecret is not set.")
+
 
   let build settings name =  
     // check that "xxxClientId" and "xxxClientSecret" configuration variables have been set for all OAuth providers

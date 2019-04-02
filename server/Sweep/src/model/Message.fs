@@ -1,5 +1,6 @@
 namespace Sweep
 open System
+open IdModel
 
 module MessageModel = 
 
@@ -10,7 +11,7 @@ module MessageModel =
     Id : string;
     Content : string;
     To : string[];
-    UserId : string;
+    UserId : Id;
     OrganizationId : string;
   }
   //#endregion
