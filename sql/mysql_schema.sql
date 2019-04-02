@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS `Event` (
 --
 
 CREATE TABLE IF NOT EXISTS `Listener` (
-  `id` TEXT DEFAULT NULL,
-  `eventName` TEXT DEFAULT NULL,
-  `userId` TEXT DEFAULT NULL,
-  `organizationId` TEXT DEFAULT NULL
+  `id` TEXT NOT NULL,
+  `eventName` TEXT NOT NULL,
+  `userId` TEXT NOT NULL,
+  `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -50,6 +50,14 @@ CREATE TABLE IF NOT EXISTS `Message` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Table structure for table `Organization` generated from model 'Organization'
+--
+
+CREATE TABLE IF NOT EXISTS `Organization` (
+  `id` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Table structure for table `Template` generated from model 'Template'
 --
 
@@ -66,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `Template` (
 --
 
 CREATE TABLE IF NOT EXISTS `User` (
-  `id` TEXT DEFAULT NULL,
+  `id` TEXT NOT NULL,
   `username` TEXT DEFAULT NULL,
   `password` TEXT DEFAULT NULL,
   `apiKey` TEXT DEFAULT NULL,

@@ -7,16 +7,15 @@ open System.Collections.Generic
 open System
 open Giraffe
 open EventApiHandlerParams
+open System.Security.Claims
 
 module EventApiServiceImplementation =
-
-    let claimsIdentifier = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
     
     //#region Service implementation
     type EventApiServiceImpl() = 
       let getUserId (claims:IEnumerable<Security.Claims.Claim>) = 
         claims
-        |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = claimsIdentifier)
+        |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = ClaimTypes.Email)
         |> Seq.head
         |> (fun (c:Security.Claims.Claim) -> c.Value)
       
@@ -41,9 +40,8 @@ module EventApiServiceImplementation =
            
         member this.ListEvents ctx  =
           let userId = getUserId ctx.User.Claims
-          let events = CompositionRoot.listEvents userId
-          raise (Exception())
-          //ListEventsDefaultStatusCode { content = events }
+          let events = CompositionRoot.listEvents userId |> Seq.toArray
+          ListEventsDefaultStatusCode { content = events }
 
       //#endregion
 

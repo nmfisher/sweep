@@ -455,6 +455,11 @@ components:
   schemas:
     Listener:
       type: object
+      required:
+        - id
+        - eventName
+        - userId
+        - organizationId
       properties:
         id:
           type: string
@@ -491,8 +496,18 @@ components:
             type: object
         organizationId:
           type: string
+    Organization:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
     User:
       type: object
+      required:
+        - id
+        - us
       properties:
         id:
           type: string

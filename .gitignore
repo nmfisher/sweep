@@ -267,3 +267,4 @@ mercury_server/.fake/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+

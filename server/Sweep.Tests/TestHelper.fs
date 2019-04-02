@@ -11,17 +11,43 @@ open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
+open Microsoft.Extensions.Configuration
+open System.Security.Claims
+open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.Logging
+open Giraffe
+open Microsoft.AspNetCore.Identity
 
 module TestHelper = 
+
+  type AuthMiddleware (next: RequestDelegate) =
+
+    member __.Invoke (ctx : HttpContext) =
+        task {
+            let claims = [new Claim(ClaimTypes.Email, "user");new Claim(ClaimTypes.NameIdentifier, "id")]
+            let claimsIdentity = ClaimsIdentity(claims, "Cookies")
+            let principal = ClaimsPrincipal()
+            ctx.User <- principal
+            ctx.User.AddIdentity(claimsIdentity)
+            return! next.Invoke ctx
+        }
+
   // ---------------------------------
   // Test server/client setup
   // ---------------------------------
 
   let createHost() =
-      WebHostBuilder()
-          .UseContentRoot(Directory.GetCurrentDirectory())
-          .Configure(Action<IApplicationBuilder> Sweep.App.configureApp)
-          .ConfigureServices(Action<IServiceCollection> Sweep.App.configureServices)
+    let configBuilder = ConfigurationBuilder()
+    configBuilder.AddEnvironmentVariables() |> ignore
+      
+    WebHostBuilder()
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .Configure(fun appBuilder -> 
+          appBuilder.UseMiddleware<AuthMiddleware>() |> ignore
+          Sweep.App.configureApp appBuilder
+        ).ConfigureServices(Action<IServiceCollection> Sweep.App.configureServices)
+        .UseConfiguration(configBuilder.Build())
+
 
   // ---------------------------------
   // Helper functions

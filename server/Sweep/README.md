@@ -9,6 +9,7 @@ The following models have been auto-generated from the provided OpenAPI schema:
 model/EventModel.fs
 model/UserModel.fs
 model/TemplateModel.fs
+model/OrganizationModel.fs
 model/MessageModel.fs
 model/LoggedEventModel.fs
 model/ListenerModel.fs

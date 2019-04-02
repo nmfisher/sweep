@@ -42,29 +42,53 @@ module CompositionRoot =
       where (event.OrganizationId = organizationId && event.Id = eventId)
       select event
     } 
+    |> Seq.map (fun x -> x.MapTo<LoggedEvent>())
     |> Seq.tryHead
-    |> (fun x -> x.MapTo<LoggedEvent>())
       
-  let listEvents (userId:string) : LoggedEventModel.LoggedEvent[] = 
+  let listEvents (userId:string) : seq<LoggedEvent> =
     let ctx = Sql.GetDataContext()
-    // let events = ctx.SweepDevelopment.User |> Seq.head
-    // // .SweepDevelopment.Event |> Seq.head
-    // raise (Exception())
-    let foo =
-      query {      
-        for event in ctx.SweepDevelopment.Loggedevent do
-        select (event)
-      } |> Seq.toArray
-    raise (Exception())
-    
+    query {      
+      for event in ctx.SweepDevelopment.Loggedevent do
+      select (event)
+    } |> Seq.map (fun x -> x.MapTo<LoggedEvent>()) 
                
-  let getTemplate id userId = raise (Exception())
+  let getTemplate id organizationId = 
+    let ctx = Sql.GetDataContext()
+    query {      
+      for template in ctx.SweepDevelopment.Template do
+      where (template.Id = id && template.OrganizationId = organizationId)
+      select (template)
+    } |> Seq.map (fun x -> x.MapTo<Template>())
+    |> Seq.tryHead
 
-  let listTemplates userId = raise (Exception())
+  let listTemplates organizationId =
+    let ctx = Sql.GetDataContext()
+    query {      
+      for template in ctx.SweepDevelopment.Template do
+      where (template.OrganizationId = organizationId)
+      select (template)
+    } |> Seq.map (fun x -> x.MapTo<LoggedEvent>())
 
   // Users    
   let saveUser id username apiKey orgId = 
-    ()
-  //raise (Exception())//createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password="";OrganizationId=orgId} |> ignore
-  let getUser id = raise (Exception())
+    let ctx = Sql.GetDataContext()
+    let user = ctx.SweepDevelopment.User.Create()
+    user.Id <- id
+    ctx.SubmitUpdates()
 
+  //raise (Exception())//createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password="";OrganizationId=orgId} |> ignore
+  let getUser id = 
+    let ctx = Sql.GetDataContext()
+    query {
+      for user in ctx.SweepDevelopment.User do
+      where (user.Id = id)
+      select user
+    } 
+    |> Seq.map (fun x -> x.MapTo<User>())
+    |> Seq.tryHead
+
+  let saveOrganization id =
+    let ctx = Sql.GetDataContext()
+    let org = ctx.SweepDevelopment.Organization.Create()
+    org.Id <- id
+    ctx.SubmitUpdates()

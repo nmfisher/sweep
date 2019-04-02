@@ -23,13 +23,20 @@ open Microsoft.AspNetCore.Http
 
 module CustomHandlers = 
 
+  let signup id email apiKey = 
+    match CompositionRoot.getUser id with 
+    | Some u -> ()
+    | None ->
+        CompositionRoot.saveUser id email apiKey (Guid.NewGuid().ToString()) |> ignore
+        CompositionRoot.saveOrganization id
+
   let onCreatingTicket name (ctx:OAuthCreatingTicketContext) = 
     task {
         ctx.HttpContext.GetLogger("DEVELOPMENT").LogCritical(ctx.User.ToString())
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
         let apiKey = ApiKey.generate().ToString()
-        CompositionRoot.saveUser id email apiKey (Guid.NewGuid().ToString()) |> ignore
+        signup id email apiKey
     } :> Tasks.Task
 
   let setOAuthOptions name (options:OAuthOptions) scopes (settings:IConfiguration) = 

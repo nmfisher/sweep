@@ -12,12 +12,14 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
 open Newtonsoft
+open Newtonsoft.Json
 open TestHelper
 open EventApiHandlerTestsHelper
 open Sweep.EventApiHandler
 open Sweep.EventApiHandlerParams
 open Sweep.EventModel
 open Sweep.LoggedEventModel
+open Microsoft.AspNetCore.Hosting
 
 module EventApiHandlerTests =
 
@@ -44,92 +46,102 @@ module EventApiHandlerTests =
           OrganizationId="some_org_id"
         } |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
 
-      body
-        |> HttpPost client path
+      let resp = body |> HttpPost client path
+      let content = resp.Content.ReadAsStringAsync() |> Async.AwaitTask |> Async.RunSynchronously
+      resp 
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> shouldEqual "TESTME"
+        |> shouldEqual "OK"
+        // |> JsonConvert.DeserializeObject<LoggedEvent>
+        // |> (fun x -> 
+        //     x.EventName |> shouldEqual "some_event"
+        //     (x.Params :?> obj[]) |> Seq.head |> (fun x -> x.ToString()) |> shouldEqual "param1"
+        //     x.OrganizationId |> shouldEqual "some_event")
       }
 
-  [<Fact>]
-  let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
+  // [<Fact>]
+  // let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
 
-      // add your setup code here
+  //     // add your setup code here
 
-      let path = "/events"
+  //     let path = "/events"
 
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
-      // or pass a body of type Event
-      let body = obj() :?> Event |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
+  //     // use an example requestBody provided by the spec
+  //     let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
+  //     // or pass a body of type Event
+  //     let body = obj() :?> Event |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
 
-      body
-        |> HttpPost client path
-        |> isStatus (enum<HttpStatusCode>(405))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+  //     body
+  //       |> HttpPost client path
+  //       |> isStatus (enum<HttpStatusCode>(405))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //     }
 
-  [<Fact>]
-  let ``GetEventById - Find raised event by ID returns 200 where successful operation`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
+  // [<Fact>]
+  // let ``GetEventById - Find raised event by ID returns 200 where successful operation`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
 
-      // add your setup code here
+  //     // add your setup code here
 
-      let path = "/events/{eventId}".Replace("eventId", "ADDME")
+  //     let path = "/events/{eventId}".Replace("eventId", "ADDME")
 
-      HttpGet client path
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+  //     HttpGet client path
+  //       |> isStatus (enum<HttpStatusCode>(200))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //     }
 
-  [<Fact>]
-  let ``GetEventById - Find raised event by ID returns 400 where Invalid ID supplied`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
+  // [<Fact>]
+  // let ``GetEventById - Find raised event by ID returns 400 where Invalid ID supplied`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
 
-      // add your setup code here
+  //     // add your setup code here
 
-      let path = "/events/{eventId}".Replace("eventId", "ADDME")
+  //     let path = "/events/{eventId}".Replace("eventId", "ADDME")
 
-      HttpGet client path
-        |> isStatus (enum<HttpStatusCode>(400))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+  //     HttpGet client path
+  //       |> isStatus (enum<HttpStatusCode>(400))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //     }
 
-  [<Fact>]
-  let ``GetEventById - Find raised event by ID returns 404 where Order not found`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
+  // [<Fact>]
+  // let ``GetEventById - Find raised event by ID returns 404 where Order not found`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
 
-      // add your setup code here
+  //     // add your setup code here
 
-      let path = "/events/{eventId}".Replace("eventId", "ADDME")
+  //     let path = "/events/{eventId}".Replace("eventId", "ADDME")
 
-      HttpGet client path
-        |> isStatus (enum<HttpStatusCode>(404))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+  //     HttpGet client path
+  //       |> isStatus (enum<HttpStatusCode>(404))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //     }
 
   [<Fact>]
   let ``ListEvents - List all received events returns 200 where successful operation`` () =
     task {
       use server = new TestServer(createHost())
+
       use client = server.CreateClient()
 
       // add your setup code here
 
       let path = "/events"
+
+      let foo = HttpGet client path
+      let bar = foo.Content.ReadAsStringAsync() |> Async.AwaitTask |> Async.RunSynchronously
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
