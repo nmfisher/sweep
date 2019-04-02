@@ -14,6 +14,8 @@ open FSharp.Data.Sql
 
 
 module CompositionRoot =
+  
+  let serialize = Newtonsoft.Json.JsonConvert.SerializeObject
 
   let [<Literal>] connectionString = "server=localhost;database=sweep_development;user=root;password=MyNewPass"
   let [<Literal>] resPath = __SOURCE_DIRECTORY__ + @"/../../lib"
@@ -25,17 +27,23 @@ module CompositionRoot =
               IndividualsAmount = 1000,
               UseOptionTypes = true>
   
-  let addEvent (event:EventModel.Event) userId =
+  let addEvent (event:EventModel.Event) organizationId =
     let ctx = Sql.GetDataContext()
-    // let events = ctx.SweepDevelopment.User |> Seq.head
-    // // .SweepDevelopment.Event |> Seq.head
-    // raise (Exception())
     let loggedEvent = ctx.SweepDevelopment.Event.Create()
-    loggedEvent.EventName <- Some("foo")
-    loggedEvent.OrganizationId <- Some("some_Org+id")
+    loggedEvent.EventName <- Some(event.EventName)
+    loggedEvent.Params <- event.Params |> serialize |> Some
+    loggedEvent.OrganizationId <- Some(organizationId)
     ctx.SubmitUpdates()
 
-  let getEvent eventId userId = raise (Exception())
+  let getEvent eventId organizationId = 
+    let ctx = Sql.GetDataContext()
+    query {
+      for event in ctx.SweepDevelopment.Loggedevent do
+      where (event.OrganizationId = organizationId && event.Id = eventId)
+      select event
+    } 
+    |> Seq.tryHead
+    |> (fun x -> x.MapTo<LoggedEvent>())
       
   let listEvents (userId:string) : LoggedEventModel.LoggedEvent[] = 
     let ctx = Sql.GetDataContext()

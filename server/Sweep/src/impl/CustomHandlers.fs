@@ -23,8 +23,6 @@ open Microsoft.AspNetCore.Http
 
 module CustomHandlers = 
 
-  let log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
   let onCreatingTicket name (ctx:OAuthCreatingTicketContext) = 
     task {
         ctx.HttpContext.GetLogger("DEVELOPMENT").LogCritical(ctx.User.ToString())

@@ -32,7 +32,8 @@ module EventApiServiceImplementation =
 
         member this.GetEventById ctx args =
           let userId = getUserId ctx.User.Claims
-          match CompositionRoot.getEvent args.pathParams.eventId userId  with 
+          let orgId = "SOME_ORG_ID"
+          match CompositionRoot.getEvent args.pathParams.eventId orgId  with 
           | Some e ->
               GetEventByIdDefaultStatusCode { content = e }
           | None ->              

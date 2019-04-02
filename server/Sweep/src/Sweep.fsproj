@@ -11,21 +11,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Core.System.Configuration.Install" Version="1.0.0" />
+    <PackageReference Include="FSharp.Control.AsyncSeq" Version="2.0.21" />
+    <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Giraffe" Version="3.4.*" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.0.0.1-preview" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.2.3" />
+    <!-- <PackageReference Include="MySqlConnector" Version="0.51.1" /> -->
+    <PackageReference Include="SQLProvider" Version="1.1.50" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
+    <!-- <PackageReference Include="System.Runtime" Version="4.3.1" /> -->
+    <!-- <PackageReference Include="System.Memory" Version="4.5.2" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" /> -->
     <PackageReference Include="TaskBuilder.fs" Version="2.1.*" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.0.1" />
   </ItemGroup>
 
+   
+
   <ItemGroup>
-    <Content Include="openapi.yaml"/>
+    <Content Include="openapi.yaml" />
     <Compile Include="helpers/Helpers.fs" />
     <Compile Include="model/Event.fs" />
     <Compile Include="model/User.fs" />
     <Compile Include="model/Template.fs" />
-    <Compile Include="model/Listener.fs" />
-    <Compile Include="model/LoggedEvent.fs" />
     <Compile Include="model/Message.fs" />
+    <Compile Include="model/LoggedEvent.fs" />
+    <Compile Include="model/Listener.fs" />
+    <Compile Include="impl/CompositionRoot.fs" />
     <Compile Include="api/EventApiHandlerParams.fs" />
     <Compile Include="api/EventApiServiceInterface.fs" />
     <Compile Include="impl/EventApiService.fs" />
@@ -51,5 +67,5 @@
     <Compile Include="auth/AuthSchemes.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
+  <Import Project="fsc.props" />
 </Project>

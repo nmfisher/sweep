@@ -566,7 +566,7 @@ components:
         to:
         - to
         - to
-        userId: '{}'
+        userId: userId
         content: <html><body>Hi!</body></html>
       properties:
         id:
@@ -579,7 +579,7 @@ components:
             type: string
           type: array
         userId:
-          $ref: '#/components/schemas/User/id'
+          type: string
         organizationId:
           type: string
       type: object
