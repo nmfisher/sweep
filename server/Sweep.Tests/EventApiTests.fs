@@ -32,13 +32,17 @@ module EventApiHandlerTests =
       use client = server.CreateClient()
 
       // add your setup code here
-
       let path = "/events"
 
       // use an example requestBody provided by the spec
       let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
       // or pass a body of type Event
-      let body = obj() :?> Event |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
+      let body = 
+        {
+          EventName="some_event";
+          Params=[|"param1"|];
+          OrganizationId="some_org_id"
+        } |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
 
       body
         |> HttpPost client path

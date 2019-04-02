@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS `Listener` (
 --
 
 CREATE TABLE IF NOT EXISTS `LoggedEvent` (
-  `id` TEXT DEFAULT NULL,
-  `eventName` TEXT DEFAULT NULL,
+  `id` TEXT NOT NULL,
+  `eventName` TEXT NOT NULL,
   `params` JSON DEFAULT NULL,
-  `organizationId` TEXT DEFAULT NULL
+  `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `LoggedEvent` (
 --
 
 CREATE TABLE IF NOT EXISTS `Message` (
-  `id` TEXT DEFAULT NULL,
-  `content` TEXT DEFAULT NULL,
-  `to` JSON DEFAULT NULL,
-  `userId` TEXT DEFAULT NULL,
-  `organizationId` TEXT DEFAULT NULL
+  `id` TEXT NOT NULL,
+  `content` TEXT NOT NULL,
+  `to` JSON NOT NULL,
+  `userId` TEXT NOT NULL,
+  `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

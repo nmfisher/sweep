@@ -466,6 +466,10 @@ components:
           type: string
     LoggedEvent:
       type: object
+      required:
+        - id
+        - eventName
+        - organizationId
       properties:
         id:
           type: string
@@ -502,6 +506,12 @@ components:
           type: string
     Message:
       type: object
+      required:
+        - id
+        - content
+        - to
+        - userId
+        - organizationId
       properties:
         id:
           type: string
@@ -513,7 +523,7 @@ components:
           items:
             type: string
         userId:
-          $ref: '#/components/schemas/User/id'
+          type: string
         organizationId:
           type: string
     Template:

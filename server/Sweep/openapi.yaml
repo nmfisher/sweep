@@ -522,6 +522,10 @@ components:
           type: object
         organizationId:
           type: string
+      required:
+      - eventName
+      - id
+      - organizationId
       type: object
     Event:
       example:
@@ -582,6 +586,12 @@ components:
           type: string
         organizationId:
           type: string
+      required:
+      - content
+      - id
+      - organizationId
+      - to
+      - userId
       type: object
     Template:
       example:
