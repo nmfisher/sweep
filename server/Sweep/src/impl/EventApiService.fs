@@ -18,12 +18,19 @@ module EventApiServiceImplementation =
         |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = ClaimTypes.Email)
         |> Seq.head
         |> (fun (c:Security.Claims.Claim) -> c.Value)
+
+      let getOrgId (claims:IEnumerable<Security.Claims.Claim>) = 
+        claims
+        |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = ClaimTypes.GroupSid)
+        |> Seq.head
+        |> (fun (c:Security.Claims.Claim) -> c.Value)
       
       interface IEventApiService with
         member this.AddEvent ctx args =
           try
             let userId = getUserId ctx.User.Claims
-            let event = CompositionRoot.addEvent args.bodyParams userId
+            let orgId = getOrgId ctx.User.Claims
+            let event = CompositionRoot.addEvent args.bodyParams orgId
             AddEventDefaultStatusCode { content = "OK" }
           with 
           | e ->   
@@ -31,7 +38,7 @@ module EventApiServiceImplementation =
 
         member this.GetEventById ctx args =
           let userId = getUserId ctx.User.Claims
-          let orgId = "SOME_ORG_ID"
+          let orgId = getOrgId ctx.User.Claims
           match CompositionRoot.getEvent args.pathParams.eventId orgId  with 
           | Some e ->
               GetEventByIdDefaultStatusCode { content = e }
@@ -40,7 +47,8 @@ module EventApiServiceImplementation =
            
         member this.ListEvents ctx  =
           let userId = getUserId ctx.User.Claims
-          let events = CompositionRoot.listEvents userId |> Seq.toArray
+          let orgId = getOrgId ctx.User.Claims
+          let events = CompositionRoot.listEvents orgId |> Seq.toArray
           ListEventsDefaultStatusCode { content = events }
 
       //#endregion

@@ -482,7 +482,9 @@ components:
           type: string
           format: string
         params:
-          type: object
+          type: array
+          items:
+            type: object
         organizationId:
           type: string
     Event:

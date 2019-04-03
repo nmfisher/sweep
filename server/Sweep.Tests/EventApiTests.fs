@@ -20,8 +20,12 @@ open Sweep.EventApiHandlerParams
 open Sweep.EventModel
 open Sweep.LoggedEventModel
 open Microsoft.AspNetCore.Hosting
+open FSharp.Data.Sql
+open FSharp.Data.Sql.Providers
 
 module EventApiHandlerTests =
+
+  let dbLock = obj()
 
   // ---------------------------------
   // Tests
@@ -33,6 +37,10 @@ module EventApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
+      lock(dbLock) (fun () ->
+        initialize() |> ignore
+      )
+
       // add your setup code here
       let path = "/events"
 
@@ -43,7 +51,7 @@ module EventApiHandlerTests =
         {
           EventName="some_event";
           Params=[|"param1"|];
-          OrganizationId="some_org_id"
+          OrganizationId="UNUSED"
         } |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
 
       let resp = body |> HttpPost client path
@@ -52,12 +60,8 @@ module EventApiHandlerTests =
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> shouldEqual "OK"
-        // |> JsonConvert.DeserializeObject<LoggedEvent>
-        // |> (fun x -> 
-        //     x.EventName |> shouldEqual "some_event"
-        //     (x.Params :?> obj[]) |> Seq.head |> (fun x -> x.ToString()) |> shouldEqual "param1"
-        //     x.OrganizationId |> shouldEqual "some_event")
-      }
+        |> ignore
+    }
 
   // [<Fact>]
   // let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
@@ -132,20 +136,43 @@ module EventApiHandlerTests =
   [<Fact>]
   let ``ListEvents - List all received events returns 200 where successful operation`` () =
     task {
+      
       use server = new TestServer(createHost())
-
       use client = server.CreateClient()
 
       // add your setup code here
+      lock(dbLock) (fun () ->
+        initialize() |> ignore
+      )
 
       let path = "/events"
 
-      let foo = HttpGet client path
-      let bar = foo.Content.ReadAsStringAsync() |> Async.AwaitTask |> Async.RunSynchronously
+      HttpGet client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<LoggedEvent[]>
+      |> shouldBeLength 0
+      |> ignore
 
+      // add an event for our organization so we can ensure it's returned properly
+      { EventName="some_event";Params=[|"param1"|];OrganizationId="" } 
+        |> Newtonsoft.Json.JsonConvert.SerializeObject 
+        |> Encoding.UTF8.GetBytes 
+        |> MemoryStream 
+        |> StreamContent
+        |> HttpPost client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      // fetch again
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> shouldEqual "TESTME"
-      }
+        |> JsonConvert.DeserializeObject<LoggedEvent[]>
+        |> shouldBeLength 1
+        |> Seq.head
+        |> (fun x -> 
+              x.EventName |> shouldEqual "some_event" |> ignore
+              (x.Params :?> obj[]) |> Seq.head |> (fun x -> x.ToString()) |> shouldEqual "param1"  |> ignore)
+    }
 

@@ -29,13 +29,14 @@ module CompositionRoot =
   
   let addEvent (event:EventModel.Event) organizationId =
     let ctx = Sql.GetDataContext()
-    let loggedEvent = ctx.SweepDevelopment.Event.Create()
-    loggedEvent.EventName <- Some(event.EventName)
+    let loggedEvent = ctx.SweepDevelopment.Loggedevent.Create()
+    loggedEvent.EventName <- event.EventName
     loggedEvent.Params <- event.Params |> serialize |> Some
-    loggedEvent.OrganizationId <- Some(organizationId)
+    loggedEvent.OrganizationId <- organizationId
+    loggedEvent.Id <- Guid.NewGuid().ToString()
     ctx.SubmitUpdates()
 
-  let getEvent eventId organizationId = 
+  let getEvent eventId organizationId : LoggedEvent option = 
     let ctx = Sql.GetDataContext()
     query {
       for event in ctx.SweepDevelopment.Loggedevent do
@@ -45,10 +46,11 @@ module CompositionRoot =
     |> Seq.map (fun x -> x.MapTo<LoggedEvent>())
     |> Seq.tryHead
       
-  let listEvents (userId:string) : seq<LoggedEvent> =
+  let listEvents (organizationId:string) : seq<LoggedEvent> =
     let ctx = Sql.GetDataContext()
     query {      
       for event in ctx.SweepDevelopment.Loggedevent do
+      where (event.OrganizationId = organizationId)
       select (event)
     } |> Seq.map (fun x -> x.MapTo<LoggedEvent>()) 
                
@@ -77,7 +79,7 @@ module CompositionRoot =
     ctx.SubmitUpdates()
 
   //raise (Exception())//createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password="";OrganizationId=orgId} |> ignore
-  let getUser id = 
+  let getUser id : User option = 
     let ctx = Sql.GetDataContext()
     query {
       for user in ctx.SweepDevelopment.User do

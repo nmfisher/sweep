@@ -17,6 +17,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Logging
 open Giraffe
 open Microsoft.AspNetCore.Identity
+open FSharp.Data.Sql.Providers
 
 module TestHelper = 
 
@@ -24,7 +25,9 @@ module TestHelper =
 
     member __.Invoke (ctx : HttpContext) =
         task {
-            let claims = [new Claim(ClaimTypes.Email, "user");new Claim(ClaimTypes.NameIdentifier, "id")]
+            let claims = [new Claim(ClaimTypes.Email, "user");
+                          new Claim(ClaimTypes.NameIdentifier, "userId");
+                          new Claim(ClaimTypes.GroupSid, "orgId");]
             let claimsIdentity = ClaimsIdentity(claims, "Cookies")
             let principal = ClaimsPrincipal()
             ctx.User <- principal
@@ -101,9 +104,34 @@ module TestHelper =
 
   let shouldEqual expected actual =
       Assert.Equal(expected, actual)
+      actual
+
+  let shouldBeLength length (obj:'a[]) = 
+      Assert.Equal(length, obj.Length)
+      obj
+
 
   let getConverter mediaType = 
     (fun (x:string) -> 
       match mediaType with
       | "application/x-www-form-urlencoded" -> raise (NotSupportedException()) // TODO - implement FormUrlEncodedContent
       | _ -> x |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent)
+
+
+  let initialize () = 
+    use conn  = MySql.createConnection "server=localhost;database=sweep_development;user=root;password=MyNewPass;Allow User Variables=true"
+    conn.Open() |> ignore
+    let mutable cmd = MySql.createCommand "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sweep_development'" conn
+    let reader = cmd.ExecuteReader()
+    let tables = 
+          seq {
+              while reader.Read() do
+                yield (reader.GetValue(0).ToString())
+          } |> Seq.toList
+    reader.Dispose()
+    cmd.Dispose()
+    for table in tables do
+      cmd <- MySql.createCommand ("DELETE FROM " + table) conn
+      cmd.ExecuteNonQuery()
+      cmd.Dispose()
+    ()

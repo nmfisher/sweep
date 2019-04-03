@@ -23,20 +23,28 @@ open Microsoft.AspNetCore.Http
 
 module CustomHandlers = 
 
-  let signup id email apiKey = 
+  let fetchOrCreateUser id email  = 
     match CompositionRoot.getUser id with 
-    | Some u -> ()
+    | Some u -> 
+        u.OrganizationId
     | None ->
+        let apiKey = ApiKey.generate().ToString()
         CompositionRoot.saveUser id email apiKey (Guid.NewGuid().ToString()) |> ignore
         CompositionRoot.saveOrganization id
+        match CompositionRoot.getUser id with
+        | Some u ->
+          u.OrganizationId
+        | None ->
+          raise (Exception("Unknown error occurred saving user."))
 
   let onCreatingTicket name (ctx:OAuthCreatingTicketContext) = 
     task {
         ctx.HttpContext.GetLogger("DEVELOPMENT").LogCritical(ctx.User.ToString())
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
-        let apiKey = ApiKey.generate().ToString()
-        signup id email apiKey
+        let orgId = fetchOrCreateUser id email 
+
+        ctx.Identity.AddClaim(new Claim(ClaimTypes.GroupSid, orgId))
     } :> Tasks.Task
 
   let setOAuthOptions name (options:OAuthOptions) scopes (settings:IConfiguration) = 
