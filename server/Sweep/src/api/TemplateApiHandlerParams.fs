@@ -68,16 +68,11 @@ module TemplateApiHandlerParams =
       
     }
     
-    type GetTemplateByIdStatusCode400Response = {
-      content:string;
-      
-    }
-    
     type GetTemplateByIdStatusCode404Response = {
       content:string;
       
     }
-    type GetTemplateByIdResult = GetTemplateByIdDefaultStatusCode of GetTemplateByIdDefaultStatusCodeResponse|GetTemplateByIdStatusCode400 of GetTemplateByIdStatusCode400Response|GetTemplateByIdStatusCode404 of GetTemplateByIdStatusCode404Response
+    type GetTemplateByIdResult = GetTemplateByIdDefaultStatusCode of GetTemplateByIdDefaultStatusCodeResponse|GetTemplateByIdStatusCode404 of GetTemplateByIdStatusCode404Response
 
     type GetTemplateByIdArgs = {
       pathParams:GetTemplateByIdPathParams;

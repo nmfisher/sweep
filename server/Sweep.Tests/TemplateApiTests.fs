@@ -30,6 +30,7 @@ module TemplateApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+      initialize()
 
       let path = "/templates"
       {
@@ -70,6 +71,7 @@ module TemplateApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+      initialize()
 
       let path = "/templates"
       {
@@ -142,6 +144,7 @@ module TemplateApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+      initialize()
 
       let path = "/templates"
       {
@@ -179,6 +182,7 @@ module TemplateApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+      initialize()
 
       // add your setup code here
 
@@ -188,70 +192,113 @@ module TemplateApiHandlerTests =
         |> isStatus (enum<HttpStatusCode>(404))
         |> ignore
       }
+  
+  [<Fact>]
+  let ``GetTemplateById - Find Template by ID returns 200 where successful operation`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
 
-  // [<Fact>]
-  // let ``GetTemplateById - Find Template by ID returns 200 where successful operation`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+      let path = "/templates"
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+      
+      let template = 
+        HttpGet client "/templates"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
 
-  //     // add your setup code here
+      let path = "/templates/" + template.Id
 
-  //     let path = "/templates/{templateId}".Replace("templateId", "ADDME")
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template>
+        |> (fun x ->
+          x.Content |> shouldEqual "Hello" |> ignore
+          x.SendTo |> shouldBeLength 1 |> ignore
+          x.SendTo.[0] |> shouldEqual "foo@bar" |> ignore)        
+      }
 
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(200))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+  [<Fact>]
+  let ``GetTemplateById - Find Template by ID returns 404 where Listener not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
 
-  // [<Fact>]
-  // let ``GetTemplateById - Find Template by ID returns 400 where Invalid ID supplied`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+      let path = "/templates/{templateId}"
 
-  //     // add your setup code here
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> ignore
+      }
 
-  //     let path = "/templates/{templateId}".Replace("templateId", "ADDME")
+  [<Fact>]
+  let ``ListTemplate - List all Templates returns 200 where successful operation`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
 
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(400))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+      let path = "/templates"
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
 
-  // [<Fact>]
-  // let ``GetTemplateById - Find Template by ID returns 404 where Listener not found`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+      {
+          Content="Hello Again";
+          SendTo=[|"baz@qux"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+      
+      let path = "/templates"
 
-  //     // add your setup code here
-
-  //     let path = "/templates/{templateId}".Replace("templateId", "ADDME")
-
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(404))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
-
-  // [<Fact>]
-  // let ``ListTemplate - List all Templates returns 200 where successful operation`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
-
-  //     // add your setup code here
-
-  //     let path = "/templates"
-
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(200))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> shouldBeLength 2
+        |> ignore
+      }
 
   // [<Fact>]
   // let ``UpdateTemplate - Update an existing Template returns 400 where Invalid ID supplied`` () =
@@ -298,7 +345,7 @@ module TemplateApiHandlerTests =
   //     }
 
   // [<Fact>]
-  // let ``UpdateTemplate - Update an existing Template returns 405 where Validation exception`` () =
+  // let ``UpdateTemplate - Update an existing Template returns 422 where Validation exception`` () =
   //   task {
   //     use server = new TestServer(createHost())
   //     use client = server.CreateClient()
@@ -314,7 +361,7 @@ module TemplateApiHandlerTests =
 
   //     body
   //       |> HttpPut client path
-  //       |> isStatus (enum<HttpStatusCode>(405))
+  //       |> isStatus (enum<HttpStatusCode>(422))
   //       |> readText
   //       |> shouldEqual "TESTME"
   //     }

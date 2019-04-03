@@ -68,8 +68,6 @@ module TemplateApiHandler =
           return! (match result with 
                       | GetTemplateByIdDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetTemplateByIdStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
                       | GetTemplateByIdStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx

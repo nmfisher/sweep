@@ -110,12 +110,16 @@ module CompositionRoot =
                
   let getTemplate id organizationId = 
     let ctx = Sql.GetDataContext()
-    query {      
+    let row = query {      
       for template in ctx.SweepDevelopment.Template do
       where (template.Id = id && template.OrganizationId = organizationId)
       select (template)
-    } |> Seq.map (fun x -> x.MapTo<Template>(deserializeTemplate))
-    |> Seq.tryHead
+      exactlyOneOrDefault
+    } 
+    if isNull row then
+      raise (NotFoundException("Not found"))
+    else
+      row.MapTo<Template>(deserializeTemplate)
 
   let listTemplates organizationId =
     let ctx = Sql.GetDataContext()

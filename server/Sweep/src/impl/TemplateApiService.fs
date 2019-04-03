@@ -51,15 +51,14 @@ module TemplateApiServiceImplementation =
             DeleteTemplateStatusCode404 { content = "Not found" }
 
         member this.GetTemplateById ctx args =
-          if true then 
-            let content = "successful operation" :> obj :?> Template // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            GetTemplateByIdDefaultStatusCode { content = content }
-          else if true then 
-            let content = "Invalid ID supplied" 
-            GetTemplateByIdStatusCode400 { content = content }
-          else
-            let content = "Listener not found" 
-            GetTemplateByIdStatusCode404 { content = content }
+          try
+            let orgId = getOrgId ctx.User.Claims
+            let userId = getUserId ctx.User.Claims
+            let template = CompositionRoot.getTemplate args.pathParams.templateId orgId
+            GetTemplateByIdDefaultStatusCode { content = template }
+          with
+          | NotFoundException(msg) ->
+            GetTemplateByIdStatusCode404 { content = msg }
 
         member this.ListTemplate ctx  =
           let orgId = getOrgId ctx.User.Claims

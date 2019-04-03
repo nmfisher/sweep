@@ -20,9 +20,11 @@ module Program =
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 404 where message not found``() :> Task;
                 // MessageApiHandlerTests.``ListMessages - List all messages returns 200 where successful operation``() :> Task
                 //TemplateApiHandlerTests.``AddTemplate - Create a new Template returns 200 where Success``() :> Task
-                TemplateApiHandlerTests.``DeleteTemplate - Deletes a Template returns 200 where Successful deletion``() :> Task;
-                TemplateApiHandlerTests.``DeleteTemplate - Deletes a Template returns 404 where Template not found``() :> Task
-
+                //TemplateApiHandlerTests.``DeleteTemplate - Deletes a Template returns 200 where Successful deletion``() :> Task;
+                //TemplateApiHandlerTests.``DeleteTemplate - Deletes a Template returns 404 where Template not found``() :> Task;
+                TemplateApiHandlerTests.``GetTemplateById - Find Template by ID returns 200 where successful operation``() :> Task;
+                TemplateApiHandlerTests.``GetTemplateById - Find Template by ID returns 404 where Listener not found``() :> Task;
+                TemplateApiHandlerTests.``ListTemplate - List all Templates returns 200 where successful operation``() :> Task
                 ]
                 |> List.toArray
     Task.WaitAll(tasks)
