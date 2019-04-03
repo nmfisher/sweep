@@ -12,11 +12,16 @@ module TemplateApiHandlerParams =
     //#endregion
 
     
-    type AddTemplateStatusCode405Response = {
+    type AddTemplateDefaultStatusCodeResponse = {
       content:string;
       
     }
-    type AddTemplateResult = AddTemplateStatusCode405 of AddTemplateStatusCode405Response
+    
+    type AddTemplateStatusCode422Response = {
+      content:string;
+      
+    }
+    type AddTemplateResult = AddTemplateDefaultStatusCode of AddTemplateDefaultStatusCodeResponse|AddTemplateStatusCode422 of AddTemplateStatusCode422Response
 
     type AddTemplateArgs = {
       bodyParams:AddTemplateBodyParams
@@ -102,11 +107,11 @@ module TemplateApiHandlerParams =
       
     }
     
-    type UpdateTemplateStatusCode405Response = {
+    type UpdateTemplateStatusCode422Response = {
       content:string;
       
     }
-    type UpdateTemplateResult = UpdateTemplateStatusCode400 of UpdateTemplateStatusCode400Response|UpdateTemplateStatusCode404 of UpdateTemplateStatusCode404Response|UpdateTemplateStatusCode405 of UpdateTemplateStatusCode405Response
+    type UpdateTemplateResult = UpdateTemplateStatusCode400 of UpdateTemplateStatusCode400Response|UpdateTemplateStatusCode404 of UpdateTemplateStatusCode404Response|UpdateTemplateStatusCode422 of UpdateTemplateStatusCode422Response
 
     type UpdateTemplateArgs = {
       bodyParams:UpdateTemplateBodyParams

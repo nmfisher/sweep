@@ -11,6 +11,7 @@ module ListenerModel =
     EventName : string;
     UserId : string;
     OrganizationId : string;
+    Deleted : bool;
   }
   //#endregion
   

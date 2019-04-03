@@ -8,30 +8,23 @@ open System
 open Giraffe
 open EventApiHandlerParams
 open System.Security.Claims
+open UserContext
 
 module EventApiServiceImplementation =
     
     //#region Service implementation
     type EventApiServiceImpl() = 
-      let getUserId (claims:IEnumerable<Security.Claims.Claim>) = 
-        claims
-        |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = ClaimTypes.Email)
-        |> Seq.head
-        |> (fun (c:Security.Claims.Claim) -> c.Value)
-
-      let getOrgId (claims:IEnumerable<Security.Claims.Claim>) = 
-        claims
-        |> Seq.where (fun (c:Security.Claims.Claim) -> c.Type = ClaimTypes.GroupSid)
-        |> Seq.head
-        |> (fun (c:Security.Claims.Claim) -> c.Value)
       
       interface IEventApiService with
         member this.AddEvent ctx args =
           try
-            let userId = getUserId ctx.User.Claims
-            let orgId = getOrgId ctx.User.Claims
-            let event = CompositionRoot.addEvent args.bodyParams orgId
-            AddEventDefaultStatusCode { content = "OK" }
+            if String.IsNullOrWhiteSpace(args.bodyParams.EventName) then
+              AddEventStatusCode405 { content = "Event name must not be empty" }
+            else 
+              let userId = getUserId ctx.User.Claims
+              let orgId = getOrgId ctx.User.Claims
+              let event = CompositionRoot.addEvent args.bodyParams orgId
+              AddEventDefaultStatusCode { content = "OK" }
           with 
           | e ->   
             AddEventStatusCode405 { content = e.ToString() }

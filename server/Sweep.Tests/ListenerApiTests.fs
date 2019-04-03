@@ -17,12 +17,41 @@ open ListenerApiHandlerTestsHelper
 open Sweep.ListenerApiHandler
 open Sweep.ListenerApiHandlerParams
 open Sweep.ListenerModel
+open Newtonsoft.Json
 
 module ListenerApiHandlerTests =
+
+  let dbLock = obj()
 
   // ---------------------------------
   // Tests
   // ---------------------------------
+  [<Fact>]
+  let ``AddListener - Create a new Listener returns 200 where successful operation`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      lock(dbLock) (fun () ->
+        initialize() |> ignore
+      )
+
+      let path = "/listeners"
+      {
+          EventName="some_event";
+          UserId="";
+          OrganizationId="";
+          Id="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+    }
 
   [<Fact>]
   let ``AddListener - Create a new Listener returns 405 where Invalid input`` () =
@@ -30,36 +59,50 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      lock(dbLock) (fun () ->
+        initialize() |> ignore
+      )
 
       let path = "/listeners"
-
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getAddListenerExample "application/json")
-      // or pass a body of type Listener
-      let body = obj() :?> Listener |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
-
-      body
-        |> HttpPost client path
-        |> isStatus (enum<HttpStatusCode>(405))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+      {
+          EventName="";
+          UserId="";
+          OrganizationId="";
+          Id="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(405))
+      |> ignore
+    }
 
   [<Fact>]
-  let ``DeleteListener - Deletes a Listener returns 400 where Invalid ID supplied`` () =
+  let ``DeleteListener - Deletes a Listener returns 200 where Successfully deleted`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      initialize() |> ignore
 
-      let path = "/listeners/{listenerId}".Replace("listenerId", "ADDME")
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
 
-      HttpDelete client path
-        |> isStatus (enum<HttpStatusCode>(400))
+      let listener = 
+        "/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> shouldEqual "TESTME"
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      "/listeners/" + listener.Id
+        |> HttpDelete client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> ignore
       }
 
   [<Fact>]
@@ -68,15 +111,15 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      initialize() |> ignore
 
-      let path = "/listeners/{listenerId}".Replace("listenerId", "ADDME")
+      let path = "/listeners/{listenerId}"
 
       HttpDelete client path
         |> isStatus (enum<HttpStatusCode>(404))
         |> readText
-        |> shouldEqual "TESTME"
-      }
+        |> ignore
+    }
 
   [<Fact>]
   let ``GetListenerById - Find Listener by ID returns 200 where successful operation`` () =
@@ -84,30 +127,27 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      initialize() |> ignore
 
-      let path = "/listeners/{listenerId}".Replace("listenerId", "ADDME")
+      // add your setup code here
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
+      let listener = 
+        "/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      let path = "/listeners/" + listener.Id
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> shouldEqual "TESTME"
-      }
-
-  [<Fact>]
-  let ``GetListenerById - Find Listener by ID returns 400 where Invalid ID supplied`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
-
-      // add your setup code here
-
-      let path = "/listeners/{listenerId}".Replace("listenerId", "ADDME")
-
-      HttpGet client path
-        |> isStatus (enum<HttpStatusCode>(400))
-        |> readText
-        |> shouldEqual "TESTME"
+        |> JsonConvert.DeserializeObject<Listener>
+        |> (fun x -> 
+              x.EventName |> shouldEqual("some_event") |> ignore
+              x.Deleted |> shouldEqual false |> ignore)
       }
 
   [<Fact>]
@@ -116,15 +156,14 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
-
-      let path = "/listeners/{listenerId}".Replace("listenerId", "ADDME")
+      initialize() |> ignore
+      let path = "/listeners/{listenerId}"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(404))
         |> readText
-        |> shouldEqual "TESTME"
-      }
+        |> ignore
+    }
 
   [<Fact>]
   let ``ListListeners - List all Listeners returns 200 where successful operation`` () =
@@ -132,36 +171,18 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
 
       let path = "/listeners"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> shouldEqual "TESTME"
-      }
-
-  [<Fact>]
-  let ``UpdateListener - Update an existing Listener returns 400 where Invalid ID supplied`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
-
-      // add your setup code here
-
-      let path = "/listeners"
-
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getUpdateListenerExample "application/json")
-      // or pass a body of type Listener
-      let body = obj() :?> Listener |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
-
-      body
-        |> HttpPut client path
-        |> isStatus (enum<HttpStatusCode>(400))
-        |> readText
-        |> shouldEqual "TESTME"
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+        |> (fun x ->
+            x.EventName |> shouldEqual ("some_event"))
+        |> ignore
       }
 
   [<Fact>]
@@ -172,39 +193,90 @@ module ListenerApiHandlerTests =
 
       // add your setup code here
 
-      let path = "/listeners"
-
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getUpdateListenerExample "application/json")
-      // or pass a body of type Listener
-      let body = obj() :?> Listener |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
-
-      body
-        |> HttpPut client path
-        |> isStatus (enum<HttpStatusCode>(404))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+      let path = "/listeners/{listenerId}"
+      {
+          EventName="some event name";
+          UserId="";
+          OrganizationId="";
+          Id="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPut client path
+      |> isStatus (enum<HttpStatusCode>(404))
+      |> ignore
+    }
 
   [<Fact>]
-  let ``UpdateListener - Update an existing Listener returns 405 where Validation exception`` () =
+  let ``UpdateListener - Update an existing Listener returns 422 where Validation exception`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
 
-      let path = "/listeners"
+      let listener = HttpGet client "/listeners"
+                      |> isStatus (enum<HttpStatusCode>(200))
+                      |> readText
+                      |> JsonConvert.DeserializeObject<Listener[]>
+                      |> Seq.head
 
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getUpdateListenerExample "application/json")
-      // or pass a body of type Listener
-      let body = obj() :?> Listener |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
+      let path = "/listeners/" + listener.Id
+      {
+          EventName="";
+          UserId="";
+          OrganizationId="";
+          Id="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPut client path 
+      |> isStatus (enum<HttpStatusCode>(422))
+      |> ignore
+    }
 
-      body
-        |> HttpPut client path
-        |> isStatus (enum<HttpStatusCode>(405))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+  [<Fact>]
+  let ``UpdateListener - Update an existing Listener returns 200 where Successfully updated`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
 
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
+
+      let listener = HttpGet client "/listeners"
+                      |> isStatus (enum<HttpStatusCode>(200))
+                      |> readText
+                      |> JsonConvert.DeserializeObject<Listener[]>
+                      |> Seq.head
+
+      let path = "/listeners/" + listener.Id
+      {
+          EventName="some_new_name";
+          UserId="";
+          OrganizationId="";
+          Id="";
+          Deleted=false;
+      } 
+      |> Newtonsoft.Json.JsonConvert.SerializeObject 
+      |> Encoding.UTF8.GetBytes 
+      |> MemoryStream 
+      |> StreamContent
+      |> HttpPut client path 
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      "/listeners/" + listener.Id
+      |> HttpGet client 
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<Listener>
+      |> (fun x -> x.EventName |> shouldEqual "some_new_name")
+      |> ignore
+
+    }

@@ -69,8 +69,8 @@ module App =
       HttpDelete >=> routeBind<DeleteListenerPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.DeleteListener x);
       HttpGet >=> routeBind<GetListenerByIdPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.GetListenerById x);
       HttpGet >=> route "/listeners" >=> requiresAuthentication redirectToLogin >=> ListenerApiHandler.ListListeners;
-      HttpPut >=> route "/listeners" >=> requiresAuthentication redirectToLogin >=> ListenerApiHandler.UpdateListener;
-      HttpGet >=> routeBind<GetmessageByIdPathParams> "/messages/{messageId}"  (fun x -> requiresAuthentication redirectToLogin >=> MessageApiHandler.GetmessageById x);
+      HttpPut >=> routeBind<UpdateListenerPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.UpdateListener x);
+      HttpGet >=> routeBind<GetMessageByIdPathParams> "/messages/{messageId}"  (fun x -> requiresAuthentication redirectToLogin >=> MessageApiHandler.GetMessageById x);
       HttpGet >=> route "/messages" >=> requiresAuthentication redirectToLogin >=> MessageApiHandler.ListMessages;
       HttpPost >=> route "/templates" >=> requiresAuthentication redirectToLogin >=> TemplateApiHandler.AddTemplate;
       HttpDelete >=> routeBind<DeleteTemplatePathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.DeleteTemplate x);

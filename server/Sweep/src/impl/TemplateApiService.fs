@@ -14,7 +14,7 @@ module TemplateApiServiceImplementation =
       
         member this.AddTemplate ctx args =
             let content = "Invalid input" 
-            AddTemplateStatusCode405 { content = content }
+            AddTemplateStatusCode422 { content = content }
 
         member this.DeleteTemplate ctx args =
           if true then 
@@ -48,7 +48,7 @@ module TemplateApiServiceImplementation =
             UpdateTemplateStatusCode404 { content = content }
           else
             let content = "Validation exception" 
-            UpdateTemplateStatusCode405 { content = content }
+            UpdateTemplateStatusCode422 { content = content }
 
       //#endregion
 

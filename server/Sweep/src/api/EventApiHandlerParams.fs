@@ -40,16 +40,11 @@ module EventApiHandlerParams =
       
     }
     
-    type GetEventByIdStatusCode400Response = {
-      content:string;
-      
-    }
-    
     type GetEventByIdStatusCode404Response = {
       content:string;
       
     }
-    type GetEventByIdResult = GetEventByIdDefaultStatusCode of GetEventByIdDefaultStatusCodeResponse|GetEventByIdStatusCode400 of GetEventByIdStatusCode400Response|GetEventByIdStatusCode404 of GetEventByIdStatusCode404Response
+    type GetEventByIdResult = GetEventByIdDefaultStatusCode of GetEventByIdDefaultStatusCodeResponse|GetEventByIdStatusCode404 of GetEventByIdStatusCode404Response
 
     type GetEventByIdArgs = {
       pathParams:GetEventByIdPathParams;

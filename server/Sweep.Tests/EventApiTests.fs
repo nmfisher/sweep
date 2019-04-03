@@ -25,8 +25,6 @@ open FSharp.Data.Sql.Providers
 
 module EventApiHandlerTests =
 
-  let dbLock = obj()
-
   // ---------------------------------
   // Tests
   // ---------------------------------
@@ -63,75 +61,82 @@ module EventApiHandlerTests =
         |> ignore
     }
 
-  // [<Fact>]
-  // let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+  [<Fact>]
+  let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
 
-  //     // add your setup code here
+      // add your setup code here
 
-  //     let path = "/events"
+      let path = "/events"
 
-  //     // use an example requestBody provided by the spec
-  //     let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
-  //     // or pass a body of type Event
-  //     let body = obj() :?> Event |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
+      // use an example requestBody provided by the spec
+      let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
+      // or pass a body of type Event
+      let body = 
+        { EventName="";
+          Params=[|"param1"|];
+          OrganizationId="" } 
+        |> Newtonsoft.Json.JsonConvert.SerializeObject 
+        |> Encoding.UTF8.GetBytes 
+        |> MemoryStream 
+        |> StreamContent
 
-  //     body
-  //       |> HttpPost client path
-  //       |> isStatus (enum<HttpStatusCode>(405))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+      body
+        |> HttpPost client path
+        |> isStatus (enum<HttpStatusCode>(405))
+        |> readText
+      }
 
-  // [<Fact>]
-  // let ``GetEventById - Find raised event by ID returns 200 where successful operation`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+  [<Fact>]
+  let ``GetEventById - Find raised event by ID returns 200 where successful operation`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
 
-  //     // add your setup code here
+      // add your setup code here
+      { EventName="some_event";Params=[|"param1"|];OrganizationId="" } 
+        |> Newtonsoft.Json.JsonConvert.SerializeObject 
+        |> Encoding.UTF8.GetBytes 
+        |> MemoryStream 
+        |> StreamContent
+        |> HttpPost client "/events"
+        |> ignore
+      
+      let eventId = 
+        HttpGet client "/events"
+          |> isStatus (enum<HttpStatusCode>(200))
+          |> readText
+          |> JsonConvert.DeserializeObject<LoggedEvent[]>
+          |> Seq.head
+          |> (fun x-> x.Id)
 
-  //     let path = "/events/{eventId}".Replace("eventId", "ADDME")
+      let path = "/events/" + eventId
 
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(200))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<LoggedEvent>
+        |> (fun x -> 
+            x.EventName |> shouldEqual "some_event" |> ignore
+            x.Params |> shouldBeLength 1 |> ignore
+            x.Params.[0].ToString() |> shouldEqual "param1" |> ignore)
+      }
 
-  // [<Fact>]
-  // let ``GetEventById - Find raised event by ID returns 400 where Invalid ID supplied`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+  [<Fact>]
+  let ``GetEventById - Find raised event by ID returns 404 where Order not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
 
-  //     // add your setup code here
+      // add your setup code here
 
-  //     let path = "/events/{eventId}".Replace("eventId", "ADDME")
+      let path = "/events/111"
 
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(400))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
-
-  // [<Fact>]
-  // let ``GetEventById - Find raised event by ID returns 404 where Order not found`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
-
-  //     // add your setup code here
-
-  //     let path = "/events/{eventId}".Replace("eventId", "ADDME")
-
-  //     HttpGet client path
-  //       |> isStatus (enum<HttpStatusCode>(404))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(404))
+      }
 
   [<Fact>]
   let ``ListEvents - List all received events returns 200 where successful operation`` () =
@@ -173,6 +178,6 @@ module EventApiHandlerTests =
         |> Seq.head
         |> (fun x -> 
               x.EventName |> shouldEqual "some_event" |> ignore
-              (x.Params :?> obj[]) |> Seq.head |> (fun x -> x.ToString()) |> shouldEqual "param1"  |> ignore)
+              x.Params |> Seq.head |> (fun x -> x.ToString()) |> shouldEqual "param1"  |> ignore)
     }
 

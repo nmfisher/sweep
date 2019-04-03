@@ -11,9 +11,12 @@ open TemplateModel
 open System.Linq.Expressions
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Sql
-
+open Newtonsoft.Json
+open ListenerModel
 
 module CompositionRoot =
+
+  exception NotFoundException of string
   
   let serialize = Newtonsoft.Json.JsonConvert.SerializeObject
 
@@ -26,6 +29,8 @@ module CompositionRoot =
               ResolutionPath = resPath,
               IndividualsAmount = 1000,
               UseOptionTypes = true>
+
+  // LoggedEvent
   
   let addEvent (event:EventModel.Event) organizationId =
     let ctx = Sql.GetDataContext()
@@ -36,6 +41,17 @@ module CompositionRoot =
     loggedEvent.Id <- Guid.NewGuid().ToString()
     ctx.SubmitUpdates()
 
+  let deserializeEvent (prop,value) =
+     match prop with
+     | "Params" -> 
+          if value <> null
+          then JsonConvert.DeserializeObject<obj[]>(value.ToString()) |> box
+          else Unchecked.defaultof<obj[]> |> box
+     | "Id" ->
+        value.ToString() :> obj
+     | _ -> 
+        value
+
   let getEvent eventId organizationId : LoggedEvent option = 
     let ctx = Sql.GetDataContext()
     query {
@@ -43,7 +59,7 @@ module CompositionRoot =
       where (event.OrganizationId = organizationId && event.Id = eventId)
       select event
     } 
-    |> Seq.map (fun x -> x.MapTo<LoggedEvent>())
+    |> Seq.map (fun x -> x.MapTo<LoggedEvent>(deserializeEvent))
     |> Seq.tryHead
       
   let listEvents (organizationId:string) : seq<LoggedEvent> =
@@ -52,7 +68,9 @@ module CompositionRoot =
       for event in ctx.SweepDevelopment.Loggedevent do
       where (event.OrganizationId = organizationId)
       select (event)
-    } |> Seq.map (fun x -> x.MapTo<LoggedEvent>()) 
+    } |> Seq.map (fun x -> x.MapTo<LoggedEvent>(deserializeEvent))
+
+  // Template
                
   let getTemplate id organizationId = 
     let ctx = Sql.GetDataContext()
@@ -71,14 +89,14 @@ module CompositionRoot =
       select (template)
     } |> Seq.map (fun x -> x.MapTo<LoggedEvent>())
 
-  // Users    
+  // Users
+
   let saveUser id username apiKey orgId = 
     let ctx = Sql.GetDataContext()
     let user = ctx.SweepDevelopment.User.Create()
     user.Id <- id
     ctx.SubmitUpdates()
 
-  //raise (Exception())//createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password="";OrganizationId=orgId} |> ignore
   let getUser id : User option = 
     let ctx = Sql.GetDataContext()
     query {
@@ -89,8 +107,82 @@ module CompositionRoot =
     |> Seq.map (fun x -> x.MapTo<User>())
     |> Seq.tryHead
 
+  // Organizations
+
   let saveOrganization id =
     let ctx = Sql.GetDataContext()
     let org = ctx.SweepDevelopment.Organization.Create()
     org.Id <- id
     ctx.SubmitUpdates()
+
+  // Listeners
+  let deserializeListener (prop,value) =
+     match prop with
+     | "Id" ->
+        value.ToString() :> obj
+     | _ -> 
+        value
+
+  let addListener eventName userId orgId = 
+    let ctx = Sql.GetDataContext()
+    let listener = ctx.SweepDevelopment.Listener.Create()
+    listener.EventName <- eventName
+    listener.OrganizationId <- orgId
+    listener.Id <- Guid.NewGuid().ToString()
+    listener.UserId <- userId
+    ctx.SubmitUpdates()
+
+  let getListener id orgId =
+    let ctx = Sql.GetDataContext();
+    let row = query {
+      for listener in ctx.SweepDevelopment.Listener do
+      where (listener.Id = id && listener.OrganizationId = orgId && (listener.Deleted.IsNone || (listener.Deleted.IsSome && listener.Deleted.Value = sbyte(0))))
+      select listener
+      exactlyOneOrDefault
+    } 
+    match isNull row with
+    | true -> 
+      raise (NotFoundException("Not found"))
+    | false ->
+      row.MapTo<ListenerModel.Listener>(deserializeListener)
+      
+
+  let deleteListener id userId orgId = 
+    let ctx = Sql.GetDataContext();
+    let row = query {
+      for listener in ctx.SweepDevelopment.Listener do
+      where (listener.Id = id && listener.UserId = userId && listener.OrganizationId = orgId)
+      select listener
+      exactlyOneOrDefault
+    } 
+    match (isNull row) with 
+    | true ->
+      raise (NotFoundException("Listener not found"))      
+    | _ ->
+      row.Deleted <- Some((sbyte)1)
+      ctx.SubmitUpdates()
+
+  let listListeners orgId = 
+    let ctx = Sql.GetDataContext()
+    query {
+      for listener in ctx.SweepDevelopment.Listener do
+      where (listener.OrganizationId = orgId)
+      select listener
+    } |> Seq.map(fun x -> x.MapTo<Listener>(deserializeListener))
+    |> Seq.toArray
+
+  let updateListener id eventName orgId =
+    let ctx = Sql.GetDataContext();
+    let row = query {
+      for listener in ctx.SweepDevelopment.Listener do
+      where (listener.Id = id && listener.OrganizationId = orgId)
+      select listener
+      exactlyOneOrDefault
+    } 
+    match (isNull row) with 
+    | true ->
+      raise (NotFoundException("Listener not found"))      
+    | _ ->
+      row.EventName <- eventName
+      ctx.SubmitUpdates()
+      

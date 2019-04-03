@@ -25,7 +25,7 @@ module MessageApiHandlerTests =
   // ---------------------------------
 
   [<Fact>]
-  let ``GetmessageById - Find message by ID returns 200 where successful operation`` () =
+  let ``GetMessageById - Find message by ID returns 200 where successful operation`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
@@ -41,7 +41,7 @@ module MessageApiHandlerTests =
       }
 
   [<Fact>]
-  let ``GetmessageById - Find message by ID returns 400 where Invalid ID supplied`` () =
+  let ``GetMessageById - Find message by ID returns 400 where Invalid ID supplied`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
@@ -57,7 +57,7 @@ module MessageApiHandlerTests =
       }
 
   [<Fact>]
-  let ``GetmessageById - Find message by ID returns 404 where message not found`` () =
+  let ``GetMessageById - Find message by ID returns 404 where message not found`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()

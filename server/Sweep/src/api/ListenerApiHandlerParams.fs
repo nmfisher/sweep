@@ -12,11 +12,16 @@ module ListenerApiHandlerParams =
     //#endregion
 
     
+    type AddListenerDefaultStatusCodeResponse = {
+      content:string;
+      
+    }
+    
     type AddListenerStatusCode405Response = {
       content:string;
       
     }
-    type AddListenerResult = AddListenerStatusCode405 of AddListenerStatusCode405Response
+    type AddListenerResult = AddListenerDefaultStatusCode of AddListenerDefaultStatusCodeResponse|AddListenerStatusCode405 of AddListenerStatusCode405Response
 
     type AddListenerArgs = {
       bodyParams:AddListenerBodyParams
@@ -36,7 +41,7 @@ module ListenerApiHandlerParams =
     //#endregion
 
     
-    type DeleteListenerStatusCode400Response = {
+    type DeleteListenerDefaultStatusCodeResponse = {
       content:string;
       
     }
@@ -45,7 +50,12 @@ module ListenerApiHandlerParams =
       content:string;
       
     }
-    type DeleteListenerResult = DeleteListenerStatusCode400 of DeleteListenerStatusCode400Response|DeleteListenerStatusCode404 of DeleteListenerStatusCode404Response
+    
+    type DeleteListenerStatusCode500Response = {
+      content:string;
+      
+    }
+    type DeleteListenerResult = DeleteListenerDefaultStatusCode of DeleteListenerDefaultStatusCodeResponse|DeleteListenerStatusCode404 of DeleteListenerStatusCode404Response|DeleteListenerStatusCode500 of DeleteListenerStatusCode500Response
 
     type DeleteListenerArgs = {
       pathParams:DeleteListenerPathParams;
@@ -63,16 +73,11 @@ module ListenerApiHandlerParams =
       
     }
     
-    type GetListenerByIdStatusCode400Response = {
-      content:string;
-      
-    }
-    
     type GetListenerByIdStatusCode404Response = {
       content:string;
       
     }
-    type GetListenerByIdResult = GetListenerByIdDefaultStatusCode of GetListenerByIdDefaultStatusCodeResponse|GetListenerByIdStatusCode400 of GetListenerByIdStatusCode400Response|GetListenerByIdStatusCode404 of GetListenerByIdStatusCode404Response
+    type GetListenerByIdResult = GetListenerByIdDefaultStatusCode of GetListenerByIdDefaultStatusCodeResponse|GetListenerByIdStatusCode404 of GetListenerByIdStatusCode404Response
 
     type GetListenerByIdArgs = {
       pathParams:GetListenerByIdPathParams;
@@ -80,11 +85,17 @@ module ListenerApiHandlerParams =
 
     
     type ListListenersDefaultStatusCodeResponse = {
-      content:Listener;
+      content:Listener[];
       
     }
     type ListListenersResult = ListListenersDefaultStatusCode of ListListenersDefaultStatusCodeResponse
 
+    //#region Path parameters
+    [<CLIMutable>]
+    type UpdateListenerPathParams = {
+      listenerId : string
+    }
+    //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
@@ -92,7 +103,7 @@ module ListenerApiHandlerParams =
     //#endregion
 
     
-    type UpdateListenerStatusCode400Response = {
+    type UpdateListenerDefaultStatusCodeResponse = {
       content:string;
       
     }
@@ -102,13 +113,14 @@ module ListenerApiHandlerParams =
       
     }
     
-    type UpdateListenerStatusCode405Response = {
+    type UpdateListenerStatusCode422Response = {
       content:string;
       
     }
-    type UpdateListenerResult = UpdateListenerStatusCode400 of UpdateListenerStatusCode400Response|UpdateListenerStatusCode404 of UpdateListenerStatusCode404Response|UpdateListenerStatusCode405 of UpdateListenerStatusCode405Response
+    type UpdateListenerResult = UpdateListenerDefaultStatusCode of UpdateListenerDefaultStatusCodeResponse|UpdateListenerStatusCode404 of UpdateListenerStatusCode404Response|UpdateListenerStatusCode422 of UpdateListenerStatusCode422Response
 
     type UpdateListenerArgs = {
+      pathParams:UpdateListenerPathParams;
       bodyParams:UpdateListenerBodyParams
     }
     

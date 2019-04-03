@@ -7,30 +7,30 @@ module MessageApiHandlerParams =
 
     //#region Path parameters
     [<CLIMutable>]
-    type GetmessageByIdPathParams = {
+    type GetMessageByIdPathParams = {
       messageId : string
     }
     //#endregion
 
     
-    type GetmessageByIdDefaultStatusCodeResponse = {
+    type GetMessageByIdDefaultStatusCodeResponse = {
       content:Message;
       
     }
     
-    type GetmessageByIdStatusCode400Response = {
+    type GetMessageByIdStatusCode400Response = {
       content:string;
       
     }
     
-    type GetmessageByIdStatusCode404Response = {
+    type GetMessageByIdStatusCode404Response = {
       content:string;
       
     }
-    type GetmessageByIdResult = GetmessageByIdDefaultStatusCode of GetmessageByIdDefaultStatusCodeResponse|GetmessageByIdStatusCode400 of GetmessageByIdStatusCode400Response|GetmessageByIdStatusCode404 of GetmessageByIdStatusCode404Response
+    type GetMessageByIdResult = GetMessageByIdDefaultStatusCode of GetMessageByIdDefaultStatusCodeResponse|GetMessageByIdStatusCode400 of GetMessageByIdStatusCode400Response|GetMessageByIdStatusCode404 of GetMessageByIdStatusCode404Response
 
-    type GetmessageByIdArgs = {
-      pathParams:GetmessageByIdPathParams;
+    type GetMessageByIdArgs = {
+      pathParams:GetMessageByIdPathParams;
     }
 
     

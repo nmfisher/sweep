@@ -28,8 +28,10 @@ module TemplateApiHandler =
           let serviceArgs = {    bodyParams=bodyParams } : AddTemplateArgs
           let result = TemplateApiService.AddTemplate ctx serviceArgs
           return! (match result with 
-                      | AddTemplateStatusCode405 resolved ->
-                            setStatusCode 405 >=> text resolved.content 
+                      | AddTemplateDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
+                      | AddTemplateStatusCode422 resolved ->
+                            setStatusCode 422 >=> text resolved.content 
           ) next ctx
         }
     //#endregion
@@ -107,8 +109,8 @@ module TemplateApiHandler =
                             setStatusCode 400 >=> text resolved.content 
                       | UpdateTemplateStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
-                      | UpdateTemplateStatusCode405 resolved ->
-                            setStatusCode 405 >=> text resolved.content 
+                      | UpdateTemplateStatusCode422 resolved ->
+                            setStatusCode 422 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

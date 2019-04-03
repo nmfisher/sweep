@@ -15,22 +15,22 @@ module MessageApiHandler =
     /// 
     /// </summary>
 
-    //#region GetmessageById
+    //#region GetMessageById
     /// <summary>
     /// Find message by ID
     /// </summary>
 
-    let GetmessageById (pathParams:GetmessageByIdPathParams) : HttpHandler = 
+    let GetMessageById (pathParams:GetMessageByIdPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {   pathParams=pathParams;  } : GetmessageByIdArgs
-          let result = MessageApiService.GetmessageById ctx serviceArgs
+          let serviceArgs = {   pathParams=pathParams;  } : GetMessageByIdArgs
+          let result = MessageApiService.GetMessageById ctx serviceArgs
           return! (match result with 
-                      | GetmessageByIdDefaultStatusCode resolved ->
+                      | GetMessageByIdDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetmessageByIdStatusCode400 resolved ->
+                      | GetMessageByIdStatusCode400 resolved ->
                             setStatusCode 400 >=> text resolved.content 
-                      | GetmessageByIdStatusCode404 resolved ->
+                      | GetMessageByIdStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx
         }

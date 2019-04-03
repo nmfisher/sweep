@@ -68,7 +68,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Listener'
+                items:
+                  $ref: '#/components/schemas/Listener'
+                type: array
           description: successful operation
       security:
       - Google: []
@@ -80,27 +82,13 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Listener'
       responses:
+        200:
+          description: successful operation
         405:
           description: Invalid input
       security:
       - Google: []
       summary: Create a new Listener
-      tags:
-      - listener
-    put:
-      operationId: updateListener
-      requestBody:
-        $ref: '#/components/requestBodies/Listener'
-      responses:
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Listener not found
-        405:
-          description: Validation exception
-      security:
-      - Google: []
-      summary: Update an existing Listener
       tags:
       - listener
   /listeners/{listenerId}:
@@ -123,10 +111,12 @@ paths:
           type: string
         style: simple
       responses:
-        400:
-          description: Invalid ID supplied
+        200:
+          description: Successfully deleted
         404:
           description: Listener not found
+        500:
+          description: Unknown error
       security:
       - Google: []
       summary: Deletes a Listener
@@ -151,11 +141,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/Listener'
           description: successful operation
-        400:
-          description: Invalid ID supplied
         404:
           description: Listener not found
       summary: Find Listener by ID
+      tags:
+      - listener
+    put:
+      operationId: updateListener
+      parameters:
+      - description: ID of listener to return
+        explode: false
+        in: path
+        name: listenerId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Listener'
+      responses:
+        200:
+          description: Successfully updated
+        404:
+          description: Listener not found
+        422:
+          description: Validation exception
+      security:
+      - Google: []
+      summary: Update an existing Listener
       tags:
       - listener
   /messages:
@@ -177,7 +190,7 @@ paths:
   /messages/{messageId}:
     get:
       description: Returns a single message
-      operationId: getmessageById
+      operationId: getMessageById
       parameters:
       - description: ID of message to return
         explode: false
@@ -185,7 +198,6 @@ paths:
         name: messageId
         required: true
         schema:
-          format: int64
           type: string
         style: simple
       responses:
@@ -224,8 +236,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/LoggedEvent'
           description: successful operation
-        400:
-          description: Invalid ID supplied
         404:
           description: Order not found
       summary: Find raised event by ID
@@ -252,7 +262,9 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Template'
       responses:
-        405:
+        200:
+          description: Success
+        422:
           description: Invalid input
       security:
       - Google: []
@@ -268,7 +280,7 @@ paths:
           description: Invalid ID supplied
         404:
           description: Template not found
-        405:
+        422:
           description: Validation exception
       security:
       - Google: []
@@ -493,11 +505,14 @@ components:
     Listener:
       example:
         organizationId: organizationId
+        deleted: true
         eventName: eventName
         id: id
         userId: userId
       properties:
         id:
+          maxLength: 36
+          minLength: 36
           type: string
         eventName:
           type: string
@@ -505,6 +520,8 @@ components:
           type: string
         organizationId:
           type: string
+        deleted:
+          type: boolean
       required:
       - eventName
       - id
@@ -516,15 +533,21 @@ components:
         organizationId: organizationId
         eventName: eventName
         id: id
-        params: '{}'
+        params:
+        - '{}'
+        - '{}'
       properties:
         id:
+          maxLength: 36
+          minLength: 36
           type: string
         eventName:
           format: string
           type: string
         params:
-          type: object
+          items:
+            type: object
+          type: array
         organizationId:
           type: string
       required:
@@ -552,6 +575,8 @@ components:
     Organization:
       properties:
         id:
+          maxLength: 36
+          minLength: 36
           type: string
       required:
       - id
@@ -565,6 +590,8 @@ components:
         username: username
       properties:
         id:
+          maxLength: 36
+          minLength: 36
           type: string
         username:
           type: string
@@ -576,7 +603,6 @@ components:
           type: string
       required:
       - id
-      - us
       type: object
     Message:
       example:
@@ -589,6 +615,8 @@ components:
         content: <html><body>Hi!</body></html>
       properties:
         id:
+          maxLength: 36
+          minLength: 36
           type: string
         content:
           example: <html><body>Hi!</body></html>
@@ -619,6 +647,8 @@ components:
         userId: userId
       properties:
         id:
+          maxLength: 36
+          minLength: 36
           type: string
         template:
           type: string

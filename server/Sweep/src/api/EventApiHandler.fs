@@ -50,8 +50,6 @@ module EventApiHandler =
           return! (match result with 
                       | GetEventByIdDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetEventByIdStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
                       | GetEventByIdStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx

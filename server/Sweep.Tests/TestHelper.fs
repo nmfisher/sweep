@@ -21,6 +21,8 @@ open FSharp.Data.Sql.Providers
 
 module TestHelper = 
 
+  let dbLock = obj()
+
   type AuthMiddleware (next: RequestDelegate) =
 
     member __.Invoke (ctx : HttpContext) =
@@ -102,7 +104,7 @@ module TestHelper =
       |> Async.AwaitTask            
       |> Async.RunSynchronously
 
-  let shouldEqual expected actual =
+  let shouldEqual (expected:obj) (actual:obj) =
       Assert.Equal(expected, actual)
       actual
 

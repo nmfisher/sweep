@@ -9,7 +9,7 @@ module LoggedEventModel =
   type LoggedEvent = {
     Id : string;
     EventName : string;
-    Params : obj;
+    Params : obj[];
     OrganizationId : string;
   }
   //#endregion

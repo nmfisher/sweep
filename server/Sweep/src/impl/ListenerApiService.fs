@@ -5,6 +5,8 @@ open ListenerApiServiceInterface
 open System.Collections.Generic
 open System
 open Giraffe
+open UserContext
+open CompositionRoot
 
 module ListenerApiServiceImplementation =
     
@@ -13,43 +15,63 @@ module ListenerApiServiceImplementation =
       interface IListenerApiService with
       
         member this.AddListener ctx args =
-            let content = "Invalid input" 
-            AddListenerStatusCode405 { content = content }
+          try
+            if String.IsNullOrEmpty(args.bodyParams.EventName) then
+              AddListenerStatusCode405 { content = "Event name must not be empty"  }
+            else             
+              let userId = getUserId ctx.User.Claims
+              let orgId = getOrgId ctx.User.Claims
+              addListener args.bodyParams.EventName userId orgId
+              AddListenerDefaultStatusCode { content = "OK" }
+          with
+          | e ->           
+            AddListenerStatusCode405 { content = e.ToString()  }
 
         member this.DeleteListener ctx args =
-          if true then 
-            let content = "Invalid ID supplied" 
-            DeleteListenerStatusCode400 { content = content }
-          else
-            let content = "Listener not found" 
-            DeleteListenerStatusCode404 { content = content }
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            deleteListener args.pathParams.listenerId userId orgId
+            DeleteListenerDefaultStatusCode { content = "OK" }
+          with
+          | NotFoundException(msg) ->
+            DeleteListenerStatusCode404 { content = "Not Found" }
+          | e ->
+            DeleteListenerStatusCode500 { content = e.ToString() }
 
         member this.GetListenerById ctx args =
-          if true then 
-            let content = "successful operation" :> obj :?> Listener // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            GetListenerByIdDefaultStatusCode { content = content }
-          else if true then 
-            let content = "Invalid ID supplied" 
-            GetListenerByIdStatusCode400 { content = content }
-          else
-            let content = "Listener not found" 
-            GetListenerByIdStatusCode404 { content = content }
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            let listener = getListener args.pathParams.listenerId orgId
+            GetListenerByIdDefaultStatusCode { content = listener }
+          with
+          | NotFoundException(msg) ->
+            GetListenerByIdStatusCode404 { content = "Listener not found"  }
+          | e -> 
+            raise e
 
         member this.ListListeners ctx  =
-            let content = "successful operation" :> obj :?> Listener // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            ListListenersDefaultStatusCode { content = content }
+          let userId = getUserId ctx.User.Claims
+          let orgId = getOrgId ctx.User.Claims
+          let listeners = listListeners orgId
+          ListListenersDefaultStatusCode { content = listeners }
 
         member this.UpdateListener ctx args =
-          if true then 
-            let content = "Invalid ID supplied" 
-            UpdateListenerStatusCode400 { content = content }
-          else if true then 
-            let content = "Event not found" 
-            UpdateListenerStatusCode404 { content = content }
-          else
-            let content = "Validation exception" 
-            UpdateListenerStatusCode405 { content = content }
-
+          try 
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            match (String.IsNullOrWhiteSpace(args.bodyParams.EventName)) with
+            | true ->
+              UpdateListenerStatusCode422 {content = "Event name cannot be empty" }  
+            | false ->
+              updateListener args.pathParams.listenerId args.bodyParams.EventName orgId |> ignore
+              UpdateListenerDefaultStatusCode {content = "OK"}
+          with 
+          | NotFoundException(msg) ->
+              UpdateListenerStatusCode404 { content = msg }
+          | e ->
+            raise (e)
       //#endregion
 
     let ListenerApiService = ListenerApiServiceImpl() :> IListenerApiService

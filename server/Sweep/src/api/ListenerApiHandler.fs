@@ -28,6 +28,8 @@ module ListenerApiHandler =
           let serviceArgs = {    bodyParams=bodyParams } : AddListenerArgs
           let result = ListenerApiService.AddListener ctx serviceArgs
           return! (match result with 
+                      | AddListenerDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
                       | AddListenerStatusCode405 resolved ->
                             setStatusCode 405 >=> text resolved.content 
           ) next ctx
@@ -45,10 +47,12 @@ module ListenerApiHandler =
           let serviceArgs = {   pathParams=pathParams;  } : DeleteListenerArgs
           let result = ListenerApiService.DeleteListener ctx serviceArgs
           return! (match result with 
-                      | DeleteListenerStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
+                      | DeleteListenerDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
                       | DeleteListenerStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
+                      | DeleteListenerStatusCode500 resolved ->
+                            setStatusCode 500 >=> text resolved.content 
           ) next ctx
         }
     //#endregion
@@ -66,8 +70,6 @@ module ListenerApiHandler =
           return! (match result with 
                       | GetListenerByIdDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetListenerByIdStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
                       | GetListenerByIdStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx
@@ -95,20 +97,20 @@ module ListenerApiHandler =
     /// Update an existing Listener
     /// </summary>
 
-    let UpdateListener  : HttpHandler = 
+    let UpdateListener (pathParams:UpdateListenerPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<UpdateListenerBodyParams>()
-          let serviceArgs = {    bodyParams=bodyParams } : UpdateListenerArgs
+          let serviceArgs = {   pathParams=pathParams; bodyParams=bodyParams } : UpdateListenerArgs
           let result = ListenerApiService.UpdateListener ctx serviceArgs
           return! (match result with 
-                      | UpdateListenerStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
+                      | UpdateListenerDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
                       | UpdateListenerStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
-                      | UpdateListenerStatusCode405 resolved ->
-                            setStatusCode 405 >=> text resolved.content 
+                      | UpdateListenerStatusCode422 resolved ->
+                            setStatusCode 422 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

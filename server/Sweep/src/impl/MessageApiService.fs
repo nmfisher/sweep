@@ -12,16 +12,16 @@ module MessageApiServiceImplementation =
     type MessageApiServiceImpl() = 
       interface IMessageApiService with
       
-        member this.GetmessageById ctx args =
+        member this.GetMessageById ctx args =
           if true then 
             let content = "successful operation" :> obj :?> Message // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            GetmessageByIdDefaultStatusCode { content = content }
+            GetMessageByIdDefaultStatusCode { content = content }
           else if true then 
             let content = "Invalid ID supplied" 
-            GetmessageByIdStatusCode400 { content = content }
+            GetMessageByIdStatusCode400 { content = content }
           else
             let content = "message not found" 
-            GetmessageByIdStatusCode404 { content = content }
+            GetMessageByIdStatusCode404 { content = content }
 
         member this.ListMessages ctx  =
             let content = "successful operation" :> obj :?> Message // this cast is obviously wrong, and is only intended to allow generated project to compile   
