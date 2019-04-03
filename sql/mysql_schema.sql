@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `LoggedEvent` (
 CREATE TABLE IF NOT EXISTS `Message` (
   `id` CHAR(36) NOT NULL,
   `content` TEXT NOT NULL,
-  `to` JSON NOT NULL,
+  `sentTo` JSON DEFAULT NULL,
   `userId` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

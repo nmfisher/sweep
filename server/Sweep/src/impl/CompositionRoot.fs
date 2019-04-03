@@ -13,6 +13,7 @@ open Microsoft.FSharp.Quotations
 open FSharp.Data.Sql
 open Newtonsoft.Json
 open ListenerModel
+open MessageModel
 
 module CompositionRoot =
 
@@ -178,7 +179,7 @@ module CompositionRoot =
       where (listener.Id = id && listener.OrganizationId = orgId)
       select listener
       exactlyOneOrDefault
-    } 
+    }
     match (isNull row) with 
     | true ->
       raise (NotFoundException("Listener not found"))      
@@ -186,3 +187,36 @@ module CompositionRoot =
       row.EventName <- eventName
       ctx.SubmitUpdates()
       
+  // Messages
+  let deserializeMessage (prop,value) =
+    match prop with
+     | "Id" ->
+        value.ToString() :> obj
+     | "SentTo" ->   
+        JsonConvert.DeserializeObject<string[]> (value.ToString()) :> obj
+     | _ -> 
+        value
+
+  let getMessage id organizationId = 
+    let ctx = Sql.GetDataContext()
+    let row = query {
+      for message in ctx.SweepDevelopment.Message do
+      where (message.OrganizationId = organizationId && message.Id = id)
+      select message
+      exactlyOneOrDefault
+    } 
+    match isNull row with
+    | true ->
+      raise (NotFoundException("Not found"))
+    | false ->        
+      row.MapTo<Message>(deserializeMessage)
+      
+  let listMessages organizationId =
+    let ctx = Sql.GetDataContext()
+    query {      
+      for message in ctx.SweepDevelopment.Message do
+      where (message.OrganizationId = organizationId)
+      select (message)
+    } 
+    |> Seq.map (fun x -> x.MapTo<Message>(deserializeMessage))
+    |> Seq.toArray

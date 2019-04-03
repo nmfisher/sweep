@@ -5,6 +5,8 @@ open MessageApiServiceInterface
 open System.Collections.Generic
 open System
 open Giraffe
+open UserContext
+open CompositionRoot
 
 module MessageApiServiceImplementation =
     
@@ -13,19 +15,18 @@ module MessageApiServiceImplementation =
       interface IMessageApiService with
       
         member this.GetMessageById ctx args =
-          if true then 
-            let content = "successful operation" :> obj :?> Message // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            GetMessageByIdDefaultStatusCode { content = content }
-          else if true then 
-            let content = "Invalid ID supplied" 
-            GetMessageByIdStatusCode400 { content = content }
-          else
-            let content = "message not found" 
-            GetMessageByIdStatusCode404 { content = content }
+          try
+            let orgId = getOrgId ctx.User.Claims
+            let message = CompositionRoot.getMessage args.pathParams.messageId orgId 
+            GetMessageByIdDefaultStatusCode { content = message }
+          with
+          | NotFoundException(msg) ->
+            GetMessageByIdStatusCode404 { content = msg }
 
         member this.ListMessages ctx  =
-            let content = "successful operation" :> obj :?> Message // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            ListMessagesDefaultStatusCode { content = content }
+          let orgId = getOrgId ctx.User.Claims
+          let messages = CompositionRoot.listMessages orgId 
+          ListMessagesDefaultStatusCode { content = messages }
 
       //#endregion
 

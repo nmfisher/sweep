@@ -9,7 +9,7 @@ module MessageModel =
   type Message = {
     Id : string;
     Content : string;
-    To : string[];
+    SentTo : string[];
     UserId : string;
     OrganizationId : string;
   }

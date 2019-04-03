@@ -25,9 +25,9 @@
     <Compile Include="EventApiTests.fs" />
     <Compile Include="ListenerApiTestsHelper.fs" />
     <Compile Include="ListenerApiTests.fs" />
-    <!-- <Compile Include="MessageApiTestsHelper.fs" />
+    <Compile Include="MessageApiTestsHelper.fs" />
     <Compile Include="MessageApiTests.fs" />
-    <Compile Include="TemplateApiTestsHelper.fs" />
+    <!-- <Compile Include="TemplateApiTestsHelper.fs" />
     <Compile Include="TemplateApiTests.fs" />
     <Compile Include="UserApiTestsHelper.fs" />
     <Compile Include="UserApiTests.fs" /> -->

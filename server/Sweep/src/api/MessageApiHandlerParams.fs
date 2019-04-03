@@ -18,16 +18,11 @@ module MessageApiHandlerParams =
       
     }
     
-    type GetMessageByIdStatusCode400Response = {
-      content:string;
-      
-    }
-    
     type GetMessageByIdStatusCode404Response = {
       content:string;
       
     }
-    type GetMessageByIdResult = GetMessageByIdDefaultStatusCode of GetMessageByIdDefaultStatusCodeResponse|GetMessageByIdStatusCode400 of GetMessageByIdStatusCode400Response|GetMessageByIdStatusCode404 of GetMessageByIdStatusCode404Response
+    type GetMessageByIdResult = GetMessageByIdDefaultStatusCode of GetMessageByIdDefaultStatusCodeResponse|GetMessageByIdStatusCode404 of GetMessageByIdStatusCode404Response
 
     type GetMessageByIdArgs = {
       pathParams:GetMessageByIdPathParams;
@@ -35,7 +30,7 @@ module MessageApiHandlerParams =
 
     
     type ListMessagesDefaultStatusCodeResponse = {
-      content:Message;
+      content:Message[];
       
     }
     type ListMessagesResult = ListMessagesDefaultStatusCode of ListMessagesDefaultStatusCodeResponse

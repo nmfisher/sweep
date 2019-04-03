@@ -17,6 +17,7 @@ open MessageApiHandlerTestsHelper
 open Sweep.MessageApiHandler
 open Sweep.MessageApiHandlerParams
 open Sweep.MessageModel
+open Newtonsoft.Json
 
 module MessageApiHandlerTests =
 
@@ -29,32 +30,20 @@ module MessageApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
-
-      // add your setup code here
-
-      let path = "/messages/{messageId}".Replace("messageId", "ADDME")
-
-      HttpGet client path
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
-
-  [<Fact>]
-  let ``GetMessageById - Find message by ID returns 400 where Invalid ID supplied`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
-
-      // add your setup code here
-
-      let path = "/messages/{messageId}".Replace("messageId", "ADDME")
-
-      HttpGet client path
-        |> isStatus (enum<HttpStatusCode>(400))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+      let id = (Guid.NewGuid().ToString())
+      sprintf "INSERT INTO message (id,content,sentTo,userId,organizationId) VALUES('%s', '%s', '%s', '%s', '%s')" 
+        id
+        "some content"
+        "[\"user@foo.com\"]"
+        "userId"
+        "orgId"
+        |> TestHelper.execute 
+      
+      "/messages/" + id
+      |> HttpGet client
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+    }
 
   [<Fact>]
   let ``GetMessageById - Find message by ID returns 404 where message not found`` () =
@@ -62,15 +51,12 @@ module MessageApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
-
       let path = "/messages/{messageId}".Replace("messageId", "ADDME")
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(404))
-        |> readText
-        |> shouldEqual "TESTME"
-      }
+        |> ignore
+    }
 
   [<Fact>]
   let ``ListMessages - List all messages returns 200 where successful operation`` () =
@@ -78,13 +64,25 @@ module MessageApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      let id = (Guid.NewGuid().ToString())
+
+      sprintf "INSERT INTO message (id,content,sentTo,userId,organizationId) VALUES('%s', '%s', '%s', '%s', '%s')" 
+        id
+        "some content"
+        "[\"user@foo.com\"]"
+        "userId"
+        "orgId"
+        |> TestHelper.execute 
 
       let path = "/messages"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> shouldEqual "TESTME"
-      }
+        |> JsonConvert.DeserializeObject<Message[]>
+        |> Seq.head
+        |> (fun x -> 
+          x.Content |> shouldEqual "some content" |> ignore
+          x.SentTo |> shouldBeLength 1 |> Seq.head |> shouldEqual "user@foo.com" |> ignore)
+    }
 

@@ -28,8 +28,6 @@ module MessageApiHandler =
           return! (match result with 
                       | GetMessageByIdDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetMessageByIdStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
                       | GetMessageByIdStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx
