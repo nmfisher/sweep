@@ -250,7 +250,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Template'
+                items:
+                  $ref: '#/components/schemas/Template'
+                type: array
           description: successful operation
       security:
       - Google: []
@@ -308,8 +310,8 @@ paths:
           type: string
         style: simple
       responses:
-        400:
-          description: Invalid ID supplied
+        200:
+          description: Successful deletion
         404:
           description: Template not found
       security:
@@ -633,26 +635,27 @@ components:
       - content
       - id
       - organizationId
-      - to
+      - sentTo
       - userId
       type: object
     Template:
       example:
-        template: template
         organizationId: organizationId
+        sendTo:
+        - sendTo
+        - sendTo
+        deleted: true
         id: id
-        to:
-        - to
-        - to
         userId: userId
+        content: content
       properties:
         id:
           maxLength: 36
           minLength: 36
           type: string
-        template:
+        content:
           type: string
-        to:
+        sendTo:
           items:
             type: string
           type: array
@@ -660,6 +663,14 @@ components:
           type: string
         organizationId:
           type: string
+        deleted:
+          type: boolean
+      required:
+      - content
+      - id
+      - organizationId
+      - sendTo
+      - userId
       type: object
   securitySchemes:
     Google:

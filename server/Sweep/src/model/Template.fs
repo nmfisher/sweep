@@ -8,10 +8,11 @@ module TemplateModel =
 
   type Template = {
     Id : string;
-    _Template : string;
-    To : string[];
+    Content : string;
+    SendTo : string[];
     UserId : string;
     OrganizationId : string;
+    Deleted : bool;
   }
   //#endregion
   

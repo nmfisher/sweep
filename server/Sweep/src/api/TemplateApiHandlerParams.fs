@@ -41,7 +41,7 @@ module TemplateApiHandlerParams =
     //#endregion
 
     
-    type DeleteTemplateStatusCode400Response = {
+    type DeleteTemplateDefaultStatusCodeResponse = {
       content:string;
       
     }
@@ -50,7 +50,7 @@ module TemplateApiHandlerParams =
       content:string;
       
     }
-    type DeleteTemplateResult = DeleteTemplateStatusCode400 of DeleteTemplateStatusCode400Response|DeleteTemplateStatusCode404 of DeleteTemplateStatusCode404Response
+    type DeleteTemplateResult = DeleteTemplateDefaultStatusCode of DeleteTemplateDefaultStatusCodeResponse|DeleteTemplateStatusCode404 of DeleteTemplateStatusCode404Response
 
     type DeleteTemplateArgs = {
       pathParams:DeleteTemplatePathParams;
@@ -85,7 +85,7 @@ module TemplateApiHandlerParams =
 
     
     type ListTemplateDefaultStatusCodeResponse = {
-      content:Template;
+      content:Template[];
       
     }
     type ListTemplateResult = ListTemplateDefaultStatusCode of ListTemplateDefaultStatusCodeResponse

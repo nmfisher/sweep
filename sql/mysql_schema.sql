@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `LoggedEvent` (
 CREATE TABLE IF NOT EXISTS `Message` (
   `id` CHAR(36) NOT NULL,
   `content` TEXT NOT NULL,
-  `sentTo` JSON DEFAULT NULL,
+  `sentTo` JSON NOT NULL,
   `userId` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -63,11 +63,12 @@ CREATE TABLE IF NOT EXISTS `Organization` (
 --
 
 CREATE TABLE IF NOT EXISTS `Template` (
-  `id` CHAR(36) DEFAULT NULL,
-  `template` TEXT DEFAULT NULL,
-  `to` JSON DEFAULT NULL,
-  `userId` TEXT DEFAULT NULL,
-  `organizationId` TEXT DEFAULT NULL
+  `id` CHAR(36) NOT NULL,
+  `content` TEXT NOT NULL,
+  `sendTo` JSON NOT NULL,
+  `userId` TEXT NOT NULL,
+  `organizationId` TEXT NOT NULL,
+  `deleted` TINYINT(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

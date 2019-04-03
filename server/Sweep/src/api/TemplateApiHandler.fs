@@ -47,8 +47,8 @@ module TemplateApiHandler =
           let serviceArgs = {   pathParams=pathParams;  } : DeleteTemplateArgs
           let result = TemplateApiService.DeleteTemplate ctx serviceArgs
           return! (match result with 
-                      | DeleteTemplateStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
+                      | DeleteTemplateDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
                       | DeleteTemplateStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx

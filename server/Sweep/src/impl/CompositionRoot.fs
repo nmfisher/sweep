@@ -32,15 +32,6 @@ module CompositionRoot =
               UseOptionTypes = true>
 
   // LoggedEvent
-  
-  let addEvent (event:EventModel.Event) organizationId =
-    let ctx = Sql.GetDataContext()
-    let loggedEvent = ctx.SweepDevelopment.Loggedevent.Create()
-    loggedEvent.EventName <- event.EventName
-    loggedEvent.Params <- event.Params |> serialize |> Some
-    loggedEvent.OrganizationId <- organizationId
-    loggedEvent.Id <- Guid.NewGuid().ToString()
-    ctx.SubmitUpdates()
 
   let deserializeEvent (prop,value) =
      match prop with
@@ -52,6 +43,15 @@ module CompositionRoot =
         value.ToString() :> obj
      | _ -> 
         value
+  
+  let addEvent (event:EventModel.Event) organizationId =
+    let ctx = Sql.GetDataContext()
+    let loggedEvent = ctx.SweepDevelopment.Loggedevent.Create()
+    loggedEvent.EventName <- event.EventName
+    loggedEvent.Params <- event.Params |> serialize |> Some
+    loggedEvent.OrganizationId <- organizationId
+    loggedEvent.Id <- Guid.NewGuid().ToString()
+    ctx.SubmitUpdates()
 
   let getEvent eventId organizationId : LoggedEvent option = 
     let ctx = Sql.GetDataContext()
@@ -72,6 +72,41 @@ module CompositionRoot =
     } |> Seq.map (fun x -> x.MapTo<LoggedEvent>(deserializeEvent))
 
   // Template
+
+  let deserializeTemplate (prop,value:obj) =
+   match prop with
+    | "Id" ->
+      value.ToString() :> obj
+    | "SendTo" ->
+      JsonConvert.DeserializeObject<string[]> (value.ToString()) :> obj
+    | _ -> 
+      value
+
+
+  let addTemplate (content:string) (sendTo:string[]) (organizationId:string) (userId:string) =
+    let ctx = Sql.GetDataContext()
+    let template = ctx.SweepDevelopment.Template.Create()
+    template.Content <- content
+    template.SendTo <- JsonConvert.SerializeObject sendTo
+    template.OrganizationId <- organizationId
+    template.UserId <- userId
+    template.Id <- Guid.NewGuid().ToString()
+    ctx.SubmitUpdates()
+
+  let deleteTemplate id orgId userId =
+    let ctx = Sql.GetDataContext()
+    let row = query {
+      for template in ctx.SweepDevelopment.Template do
+      where (template.Id = id && template.OrganizationId = orgId)
+      select template
+      exactlyOneOrDefault
+    } 
+    match (isNull row) with 
+    | true ->
+      raise (NotFoundException("Template not found"))      
+    | _ ->
+      row.Deleted <- Some((sbyte)1)
+      ctx.SubmitUpdates()
                
   let getTemplate id organizationId = 
     let ctx = Sql.GetDataContext()
@@ -79,7 +114,7 @@ module CompositionRoot =
       for template in ctx.SweepDevelopment.Template do
       where (template.Id = id && template.OrganizationId = organizationId)
       select (template)
-    } |> Seq.map (fun x -> x.MapTo<Template>())
+    } |> Seq.map (fun x -> x.MapTo<Template>(deserializeTemplate))
     |> Seq.tryHead
 
   let listTemplates organizationId =
@@ -88,7 +123,8 @@ module CompositionRoot =
       for template in ctx.SweepDevelopment.Template do
       where (template.OrganizationId = organizationId)
       select (template)
-    } |> Seq.map (fun x -> x.MapTo<LoggedEvent>())
+    } |> Seq.map (fun x -> x.MapTo<Template>(deserializeTemplate))
+      |> Seq.toArray
 
   // Users
 
