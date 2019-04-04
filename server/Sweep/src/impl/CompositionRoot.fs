@@ -49,9 +49,7 @@ module CompositionRoot =
     event.EventName <- eventName
     event.Params <- eventParams |> serialize |> Some
     event.OrganizationId <- organizationId
-    
     event.ReceivedOn <- DateTime.Now
-    event.
     event.Id <- Guid.NewGuid().ToString()
     ctx.SubmitUpdates()
 
