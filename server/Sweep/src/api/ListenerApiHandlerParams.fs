@@ -1,6 +1,7 @@
 namespace Sweep
 
 open ListenerModel
+open ListenerTemplateModel
 open System.Collections.Generic
 
 module ListenerApiHandlerParams = 
@@ -28,15 +29,51 @@ module ListenerApiHandlerParams =
     }
     //#region Path parameters
     [<CLIMutable>]
+    type AddListenerTemplatePathParams = {
+      listenerId : string;
+    //#endregion
+      templateId : string;
+    }
+    //#endregion
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type AddListenerTemplateHeaderParams = {
+      apiKey : Option<string>;
+    }
+    //#endregion
+
+    
+    type AddListenerTemplateDefaultStatusCodeResponse = {
+      content:string;
+      
+    }
+    
+    type AddListenerTemplateStatusCode404Response = {
+      content:string;
+      
+    }
+    
+    type AddListenerTemplateStatusCode500Response = {
+      content:string;
+      
+    }
+    type AddListenerTemplateResult = AddListenerTemplateDefaultStatusCode of AddListenerTemplateDefaultStatusCodeResponse|AddListenerTemplateStatusCode404 of AddListenerTemplateStatusCode404Response|AddListenerTemplateStatusCode500 of AddListenerTemplateStatusCode500Response
+
+    type AddListenerTemplateArgs = {
+      pathParams:AddListenerTemplatePathParams;
+    }
+    //#region Path parameters
+    [<CLIMutable>]
     type DeleteListenerPathParams = {
-      listenerId : string
+      listenerId : string;
     }
     //#endregion
 
     //#region Header parameters
     [<CLIMutable>]
     type DeleteListenerHeaderParams = {
-      apiKey : Option<string>
+      apiKey : Option<string>;
     }
     //#endregion
 
@@ -62,8 +99,44 @@ module ListenerApiHandlerParams =
     }
     //#region Path parameters
     [<CLIMutable>]
+    type DeleteListenerTemplatePathParams = {
+      listenerId : string;
+    //#endregion
+      templateId : string;
+    }
+    //#endregion
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type DeleteListenerTemplateHeaderParams = {
+      apiKey : Option<string>;
+    }
+    //#endregion
+
+    
+    type DeleteListenerTemplateDefaultStatusCodeResponse = {
+      content:string;
+      
+    }
+    
+    type DeleteListenerTemplateStatusCode404Response = {
+      content:string;
+      
+    }
+    
+    type DeleteListenerTemplateStatusCode500Response = {
+      content:string;
+      
+    }
+    type DeleteListenerTemplateResult = DeleteListenerTemplateDefaultStatusCode of DeleteListenerTemplateDefaultStatusCodeResponse|DeleteListenerTemplateStatusCode404 of DeleteListenerTemplateStatusCode404Response|DeleteListenerTemplateStatusCode500 of DeleteListenerTemplateStatusCode500Response
+
+    type DeleteListenerTemplateArgs = {
+      pathParams:DeleteListenerTemplatePathParams;
+    }
+    //#region Path parameters
+    [<CLIMutable>]
     type GetListenerByIdPathParams = {
-      listenerId : string
+      listenerId : string;
     }
     //#endregion
 
@@ -82,6 +155,28 @@ module ListenerApiHandlerParams =
     type GetListenerByIdArgs = {
       pathParams:GetListenerByIdPathParams;
     }
+    //#region Path parameters
+    [<CLIMutable>]
+    type ListListenerTemplatesPathParams = {
+      listenerId : string;
+    }
+    //#endregion
+
+    
+    type ListListenerTemplatesDefaultStatusCodeResponse = {
+      content:ListenerTemplate[];
+      
+    }
+    
+    type ListListenerTemplatesStatusCode404Response = {
+      content:string;
+      
+    }
+    type ListListenerTemplatesResult = ListListenerTemplatesDefaultStatusCode of ListListenerTemplatesDefaultStatusCodeResponse|ListListenerTemplatesStatusCode404 of ListListenerTemplatesStatusCode404Response
+
+    type ListListenerTemplatesArgs = {
+      pathParams:ListListenerTemplatesPathParams;
+    }
 
     
     type ListListenersDefaultStatusCodeResponse = {
@@ -93,7 +188,7 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type UpdateListenerPathParams = {
-      listenerId : string
+      listenerId : string;
     }
     //#endregion
 

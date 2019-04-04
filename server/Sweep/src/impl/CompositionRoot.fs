@@ -12,6 +12,7 @@ open Microsoft.FSharp.Quotations
 open FSharp.Data.Sql
 open Newtonsoft.Json
 open ListenerModel
+open ListenerTemplateModel
 open MessageModel
 open System.Collections.Generic
 
@@ -73,27 +74,27 @@ module CompositionRoot =
     } |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
 
   
-  let processEvent event = 
-    try
-      StubbleBuilder().Build().Render(event.C event.Params
-    with
-    | e ->
-      ()
+  // let processEvent event = 
+  //   try
+  //     StubbleBuilder().Build().Render(event.C event.Params
+  //   with
+  //   | e ->
+  //     ()
 
-  let dequeue = 
-    let ctx = Sql.GetDataContext()
-    let unprocessed = 
-      query {      
-        for event in ctx.SweepDevelopment.Event do
-        join listener in ctx.SweepDevelopment.Listener on (listener.EventName = event.eventName && listener.OrganizationId = event.organizationId)
-        where isNull event.ProcessedOn
-        select (event)
-      } 
-      |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
-      |> Seq.toList
+  // let dequeue = 
+  //   let ctx = Sql.GetDataContext()
+  //   let unprocessed = 
+  //     query {      
+  //       for event in ctx.SweepDevelopment.Event do
+  //       join listener in ctx.SweepDevelopment.Listener on (listener.EventName = event.eventName && listener.OrganizationId = event.organizationId)
+  //       where isNull event.ProcessedOn
+  //       select (event)
+  //     } 
+  //     |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
+  //     |> Seq.toList
 
-    unprocessed
-    |> Seq.map processEvent 
+  //   unprocessed
+  //   |> Seq.map processEvent 
     
   
   // Template
@@ -300,3 +301,57 @@ module CompositionRoot =
     } 
     |> Seq.map (fun x -> x.MapTo<Message>(deserializeMessage))
     |> Seq.toArray
+
+
+  // ListenerTemplates  
+  let deserializeListenerTemplate (prop,value) =
+    match prop with
+     | "Id" ->
+        value.ToString() :> obj
+     | _ -> 
+        value
+
+  let listListenerTemplates listenerId organizationId = 
+    let ctx = Sql.GetDataContext()
+    getListener listenerId organizationId |> ignore // throws NotFoundException
+    query {      
+      for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
+      where (listenerTemplate.ListenerId = listenerId && listenerTemplate.OrganizationId = organizationId)
+      select (listenerTemplate)
+    } 
+    |> Seq.map (fun x -> x.MapTo<ListenerTemplate>(deserializeListenerTemplate))
+    |> Seq.toArray
+
+  let createListenerTemplate listenerId templateId organizationId = 
+    let ctx = Sql.GetDataContext()
+    let existing = query {      
+      for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
+      where (listenerTemplate.ListenerId = listenerId && listenerTemplate.TemplateId = templateId && listenerTemplate.OrganizationId = organizationId)
+      select (listenerTemplate)
+      exactlyOneOrDefault
+    } 
+    match isNull existing with
+    | false ->
+      () // noop
+    | true ->
+      getListener listenerId organizationId |> ignore // throws NotFoundException
+      let listenerTemplate = ctx.SweepDevelopment.Listenertemplate.Create()
+      listenerTemplate.OrganizationId <- organizationId
+      listenerTemplate.ListenerId <- listenerId
+      listenerTemplate.TemplateId <- templateId
+      ctx.SubmitUpdates()
+  
+  let deleteListenerTemplate listenerId templateId organizationId =
+    let ctx = Sql.GetDataContext()
+    let listenerTemplate = query {      
+      for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
+      where (listenerTemplate.ListenerId = listenerId && listenerTemplate.OrganizationId = organizationId)
+      select (listenerTemplate)
+      exactlyOneOrDefault
+    } 
+    match isNull listenerTemplate with
+    | true -> 
+      raise (NotFoundException("Not found"))
+    | false ->    
+      listenerTemplate.Delete()
+      ctx.SubmitUpdates()

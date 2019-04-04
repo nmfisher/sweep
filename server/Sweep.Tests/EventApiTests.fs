@@ -1,6 +1,7 @@
 namespace Sweep.Tests
 
 open System
+open System.Collections.Generic
 open System.Net
 open System.Net.Http
 open System.IO
@@ -41,7 +42,7 @@ module EventApiHandlerTests =
 
       {
           EventRequestBody.EventName="some_event";
-          Params=[|"param1"|];
+          Params=dict ["param1","value1" :> obj] :> IDictionary<string,obj>
       } 
       |> encode
       |> HttpPost client path
@@ -61,7 +62,7 @@ module EventApiHandlerTests =
 
       { 
         EventRequestBody.EventName="";
-        Params=[|"param1"|];
+        Params=dict [ "param1","value1" :> obj]
       }
       |> encode
       |> HttpPost client path
@@ -78,7 +79,7 @@ module EventApiHandlerTests =
       // add your setup code here
       { 
         EventRequestBody.EventName="some_event";
-        Params=[|"param1"|];
+        Params=dict [ "param1","value1":>obj];
       } 
       |> encode
       |> HttpPost client "/events"
@@ -100,8 +101,8 @@ module EventApiHandlerTests =
         |> JsonConvert.DeserializeObject<Event>
         |> (fun x -> 
             x.EventName |> shouldEqual "some_event" |> ignore
-            x.Params |> shouldBeLength 1 |> ignore
-            x.Params.[0].ToString() |> shouldEqual "param1" |> ignore)
+            x.Params.Keys.Count |> shouldEqual 1 |> ignore
+            x.Params.["param1"] |> shouldEqual "value1" |> ignore)
       }
 
   [<Fact>]
@@ -143,7 +144,7 @@ module EventApiHandlerTests =
       // add an event for our organization so we can ensure it's returned properly
       { 
         EventRequestBody.EventName="some_event";
-        Params=[|"param1"|];
+        Params= dict ["param1","value1" :> obj];
       } 
       |> encode
       |> HttpPost client path
@@ -159,6 +160,8 @@ module EventApiHandlerTests =
         |> Seq.head
         |> (fun x -> 
               x.EventName |> shouldEqual "some_event" |> ignore
-              x.Params |> Seq.head |> (fun x -> x.ToString()) |> shouldEqual "param1"  |> ignore)
+              x.Params.["param1"] |> shouldEqual "value1")
+        |> ignore
+
     }
 

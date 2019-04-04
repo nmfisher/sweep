@@ -28,3 +28,5 @@ end //
 delimiter ;
 
 call add_primary_keys();
+
+ALTER TABLE `sweep_development`.listenertemplate ADD PRIMARY KEY(listenerId,templateId);

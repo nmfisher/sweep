@@ -1,5 +1,6 @@
 namespace Sweep
 open System
+open System.Collections.Generic
 
 module MessageModel = 
 

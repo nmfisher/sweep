@@ -11,6 +11,7 @@ model/UserModel.fs
 model/TemplateModel.fs
 model/OrganizationModel.fs
 model/MessageModel.fs
+model/ListenerTemplateModel.fs
 model/ListenerModel.fs
 model/EventRequestBodyModel.fs
 

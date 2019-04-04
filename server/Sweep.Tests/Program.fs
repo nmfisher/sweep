@@ -7,7 +7,7 @@ module Program =
   [<EntryPoint>]
   let main(args: string[]) = 
     let tasks = [
-      EventApiHandlerTests.``AddEvent - Raise an event returns 200 where An event has been successfully created.``() :> Task;
+      // EventApiHandlerTests.``AddEvent - Raise an event returns 200 where An event has been successfully created.``() :> Task;
                 // EventApiHandlerTests.``ListEvents - List all received events returns 200 where successful operation``() :> Task;
                 // EventApiHandlerTests.``GetEventById - Find raised event by ID returns 200 where successful operation``() :> Task;
                 // EventApiHandlerTests.``AddEvent - Raise an event returns 405 where Invalid input``() :> Task;
@@ -17,6 +17,10 @@ module Program =
                 // ListenerApiHandlerTests.``DeleteListener - Deletes a Listener returns 200 where Successfully deleted``() :> Task;
                 // ListenerApiHandlerTests.``GetListenerById - Find Listener by ID returns 200 where successful operation``() :> Task;
                 // ListenerApiHandlerTests.``GetListenerById - Find Listener by ID returns 404 where Listener not found``() :> Task
+                //ListenerApiHandlerTests.``ListListenerTemplates - List Templates for Listener returns 200 where successful operation``() :> Task;
+                // ListenerApiHandlerTests.``ListListenerTemplates - List Templates for Listener returns 404 where Listener not found``() :> Task;
+                //ListenerApiHandlerTests.``DeleteListenerTemplate - Disassociates a Template from a Listener returns 200 where Successfully deleted``() :> Task;
+                ListenerApiHandlerTests.``DeleteListenerTemplate - Disassociates a Template from a Listener returns 404 where Listener not found``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 200 where successful operation``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 404 where message not found``() :> Task;
                 // MessageApiHandlerTests.``ListMessages - List all messages returns 200 where successful operation``() :> Task

@@ -18,6 +18,9 @@ open Sweep.ListenerApiHandler
 open Sweep.ListenerApiHandlerParams
 open Sweep.ListenerModel
 open Newtonsoft.Json
+open Sweep
+open Sweep.TemplateModel
+open Sweep.ListenerTemplateModel
 
 module ListenerApiHandlerTests =
 
@@ -74,6 +77,57 @@ module ListenerApiHandlerTests =
       |> ignore
     }
 
+  // [<Fact>]
+  // let ``AddListenerTemplate - Associates a Template to a Listener returns 200 where Successfully deleted`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
+
+  //     // add your setup code here
+
+  //     let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
+
+  //     HttpPost client path
+  //       |> isStatus (enum<HttpStatusCode>(200))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //       |> ignore
+  //     }
+
+  // [<Fact>]
+  // let ``AddListenerTemplate - Associates a Template to a Listener returns 404 where Listener not found`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
+
+  //     // add your setup code here
+
+  //     let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
+
+  //     HttpPost client path
+  //       |> isStatus (enum<HttpStatusCode>(404))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //       |> ignore
+  //     }
+
+  // [<Fact>]
+  // let ``AddListenerTemplate - Associates a Template to a Listener returns 500 where Unknown error`` () =
+  //   task {
+  //     use server = new TestServer(createHost())
+  //     use client = server.CreateClient()
+
+  //     // add your setup code here
+
+  //     let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
+
+  //     HttpPost client path
+  //       |> isStatus (enum<HttpStatusCode>(500))
+  //       |> readText
+  //       |> shouldEqual "TESTME"
+  //       |> ignore
+  //     }
+
   [<Fact>]
   let ``DeleteListener - Deletes a Listener returns 200 where Successfully deleted`` () =
     task {
@@ -129,6 +183,78 @@ module ListenerApiHandlerTests =
     }
 
   [<Fact>]
+  let ``DeleteListenerTemplate - Disassociates a Template from a Listener returns 200 where Successfully deleted`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      // create a listener
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
+      let listener = 
+        "/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+      
+      // create a template
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> encode
+      |> HttpPost client "/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        "/templates" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+       
+      let path = "/listeners/" + listener.Id + "/templates/" + template.Id
+
+      HttpPost client path null
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      HttpDelete client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      HttpGet client ("/listeners/" + listener.Id + "/templates")
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<ListenerTemplate[]>
+        |> shouldBeLength 0
+        |> ignore
+      }
+
+  [<Fact>]
+  let ``DeleteListenerTemplate - Disassociates a Template from a Listener returns 404 where Listener not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      // add your setup code here
+
+      let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
+
+      HttpDelete client path
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> readText
+        |> ignore
+      }
+
+  [<Fact>]
   let ``GetListenerById - Find Listener by ID returns 200 where successful operation`` () =
     task {
       use server = new TestServer(createHost())
@@ -171,6 +297,80 @@ module ListenerApiHandlerTests =
         |> readText
         |> ignore
     }
+
+  [<Fact>]
+  let ``ListListenerTemplates - List Templates for Listener returns 200 where successful operation`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      // create a listener
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
+      let listener = 
+        "/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+      
+      // create a template
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> encode
+      |> HttpPost client "/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        "/templates" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+
+      let path = "/listeners/" + listener.Id + "/templates"
+
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<ListenerTemplate[]>
+        |> shouldBeLength 0
+        |> ignore
+
+      HttpPost client (path + "/" + template.Id) null
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<ListenerTemplate[]>
+        |> Seq.head
+        |> (fun x -> x.TemplateId |> shouldEqual template.Id)
+        |> ignore
+      }
+
+  [<Fact>]
+  let ``ListListenerTemplates - List Templates for Listener returns 404 where Listener not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      let path = "/listeners/{listenerId}/templates"
+
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> readText
+        |> ignore
+      }
 
   [<Fact>]
   let ``ListListeners - List all Listeners returns 200 where successful operation`` () =

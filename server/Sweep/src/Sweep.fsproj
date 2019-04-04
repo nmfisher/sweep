@@ -42,6 +42,7 @@
     <Compile Include="model/Template.fs" />
     <Compile Include="model/Message.fs" />
     <Compile Include="model/Listener.fs" />
+    <Compile Include="model/ListenerTemplate.fs" />
     <Compile Include="impl/UserContext.fs" />
     <Compile Include="impl/CompositionRoot.fs" />
     <Compile Include="api/EventApiHandlerParams.fs" />

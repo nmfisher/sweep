@@ -30,7 +30,7 @@ module EventApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetEventByIdPathParams = {
-      eventId : string
+      eventId : string;
     }
     //#endregion
 

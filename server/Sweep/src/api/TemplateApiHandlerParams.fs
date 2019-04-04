@@ -29,14 +29,14 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteTemplatePathParams = {
-      templateId : string
+      templateId : string;
     }
     //#endregion
 
     //#region Header parameters
     [<CLIMutable>]
     type DeleteTemplateHeaderParams = {
-      apiKey : Option<string>
+      apiKey : Option<string>;
     }
     //#endregion
 
@@ -58,7 +58,7 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetTemplateByIdPathParams = {
-      templateId : string
+      templateId : string;
     }
     //#endregion
 
@@ -88,7 +88,7 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type UpdateTemplatePathParams = {
-      templateId : string
+      templateId : string;
     }
     //#endregion
 

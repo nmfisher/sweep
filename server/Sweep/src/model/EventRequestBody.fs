@@ -9,7 +9,7 @@ module EventRequestBodyModel =
 
   type EventRequestBody = {
     EventName : string;
-    Params : Dictionary<string, obj>;
+    Params : IDictionary<string, obj>;
   }
   //#endregion
   

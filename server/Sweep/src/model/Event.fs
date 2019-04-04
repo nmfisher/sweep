@@ -1,5 +1,6 @@
 namespace Sweep
 open System
+open System.Collections.Generic
 
 module EventModel = 
 
@@ -9,7 +10,7 @@ module EventModel =
   type Event = {
     Id : string;
     EventName : string;
-    Params : obj;
+    Params : IDictionary<string, obj>;
     ReceivedOn : DateTime;
     ProcessedOn : DateTime;
     Error : string;

@@ -72,6 +72,41 @@ module ListenerApiServiceImplementation =
               UpdateListenerStatusCode404 { content = msg }
           | e ->
             raise (e)
+
+        member this.AddListenerTemplate ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.createListenerTemplate args.pathParams.listenerId args.pathParams.templateId orgId
+            AddListenerTemplateDefaultStatusCode { content = "OK" }
+          with
+          | NotFoundException(msg) ->
+            AddListenerTemplateStatusCode404 { content = msg }
+          | e ->          
+            AddListenerTemplateStatusCode500 { content = e.ToString() }
+            
+        member this.DeleteListenerTemplate ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.deleteListenerTemplate args.pathParams.listenerId args.pathParams.templateId orgId |> ignore
+            DeleteListenerTemplateDefaultStatusCode { content = "OK" }
+          with
+          | NotFoundException(msg) ->
+            DeleteListenerTemplateStatusCode404 { content = msg }
+          | e ->          
+            DeleteListenerTemplateStatusCode500 { content = e.ToString() }
+
+        member this.ListListenerTemplates ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            let listeners = CompositionRoot.listListenerTemplates args.pathParams.listenerId orgId
+            ListListenerTemplatesDefaultStatusCode { content = listeners }
+          with
+          | NotFoundException(msg) ->
+            ListListenerTemplatesStatusCode404 { content = msg }
+
       //#endregion
 
     let ListenerApiService = ListenerApiServiceImpl() :> IListenerApiService

@@ -66,8 +66,11 @@ module App =
       HttpGet >=> routeBind<GetEventByIdPathParams> "/events/{eventId}"  (fun x -> requiresAuthentication redirectToLogin >=> EventApiHandler.GetEventById x);
       HttpGet >=> route "/events" >=> requiresAuthentication redirectToLogin >=> EventApiHandler.ListEvents;
       HttpPost >=> route "/listeners" >=> requiresAuthentication redirectToLogin >=> ListenerApiHandler.AddListener;
+      HttpPost >=> routeBind<AddListenerTemplatePathParams> "/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.AddListenerTemplate x) x);
       HttpDelete >=> routeBind<DeleteListenerPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.DeleteListener x);
+      HttpDelete >=> routeBind<DeleteListenerTemplatePathParams> "/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.DeleteListenerTemplate x) x);
       HttpGet >=> routeBind<GetListenerByIdPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.GetListenerById x);
+      HttpGet >=> routeBind<ListListenerTemplatesPathParams> "/listeners/{listenerId}/templates"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.ListListenerTemplates x);
       HttpGet >=> route "/listeners" >=> requiresAuthentication redirectToLogin >=> ListenerApiHandler.ListListeners;
       HttpPut >=> routeBind<UpdateListenerPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.UpdateListener x);
       HttpGet >=> routeBind<GetMessageByIdPathParams> "/messages/{messageId}"  (fun x -> requiresAuthentication redirectToLogin >=> MessageApiHandler.GetMessageById x);

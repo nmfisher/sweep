@@ -8,7 +8,7 @@ module MessageApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetMessageByIdPathParams = {
-      messageId : string
+      messageId : string;
     }
     //#endregion
 

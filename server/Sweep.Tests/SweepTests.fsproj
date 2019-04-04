@@ -23,12 +23,12 @@
     <Compile Include="TestHelper.fs"/>
     <Compile Include="EventApiTestsHelper.fs" />
     <Compile Include="EventApiTests.fs" />
+    <Compile Include="TemplateApiTestsHelper.fs" />
+    <Compile Include="TemplateApiTests.fs" />
     <Compile Include="ListenerApiTestsHelper.fs" />
     <Compile Include="ListenerApiTests.fs" />
     <Compile Include="MessageApiTestsHelper.fs" />
     <Compile Include="MessageApiTests.fs" />
-    <Compile Include="TemplateApiTestsHelper.fs" />
-    <Compile Include="TemplateApiTests.fs" />
     <Compile Include="Program.fs"/>
   </ItemGroup>
 
