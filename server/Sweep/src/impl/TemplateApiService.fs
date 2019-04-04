@@ -8,6 +8,8 @@ open Giraffe
 open UserContext
 open System.Net.Mail
 open CompositionRoot
+open Exceptions
+
 
 module TemplateApiServiceImplementation =
     
@@ -78,11 +80,7 @@ module TemplateApiServiceImplementation =
 
         member this.UpdateTemplate ctx args =
           try
-            let orgId = getOrgId ctx.User.Claims
-            
-            // if isNull args.bodyParams then
-            //   AddTemplateStatusCode422 { content = "Body cannot be empty" }
-            // else            
+            let orgId = getOrgId ctx.User.Claims            
             match validateTemplate args.bodyParams.Content args.bodyParams.SendTo with
             | Some err ->
               UpdateTemplateStatusCode422 { content = err }

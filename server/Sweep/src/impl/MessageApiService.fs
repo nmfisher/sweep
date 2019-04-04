@@ -7,6 +7,8 @@ open System
 open Giraffe
 open UserContext
 open CompositionRoot
+open Exceptions
+
 
 module MessageApiServiceImplementation =
     

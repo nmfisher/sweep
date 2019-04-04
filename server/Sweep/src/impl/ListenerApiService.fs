@@ -1,4 +1,5 @@
 namespace Sweep
+
 open ListenerModel
 open ListenerApiHandlerParams
 open ListenerApiServiceInterface
@@ -7,6 +8,7 @@ open System
 open Giraffe
 open UserContext
 open CompositionRoot
+open Exceptions
 
 module ListenerApiServiceImplementation =
     
