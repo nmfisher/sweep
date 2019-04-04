@@ -7,8 +7,12 @@ module EventModel =
 
 
   type Event = {
+    Id : string;
     EventName : string;
     Params : obj[];
+    ReceivedOn : DateTime;
+    ProcessedOn : DateTime;
+    Error : string;
     OrganizationId : string;
   }
   //#endregion

@@ -44,10 +44,7 @@ module ListenerApiHandlerTests =
           Id="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -71,10 +68,7 @@ module ListenerApiHandlerTests =
           Id="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(405))
       |> ignore
@@ -214,10 +208,7 @@ module ListenerApiHandlerTests =
           Id="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPut client path
       |> isStatus (enum<HttpStatusCode>(404))
       |> ignore
@@ -245,10 +236,7 @@ module ListenerApiHandlerTests =
           Id="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPut client path 
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
@@ -276,10 +264,7 @@ module ListenerApiHandlerTests =
           Id="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode 
       |> HttpPut client path 
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore

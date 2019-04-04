@@ -24,13 +24,6 @@ module TemplateApiHandlerTests =
   // ---------------------------------
   // Tests
   // ---------------------------------
-  let encode x= 
-    x 
-    |> Newtonsoft.Json.JsonConvert.SerializeObject 
-    |> Encoding.UTF8.GetBytes 
-    |> MemoryStream 
-    |> StreamContent
-
   [<Fact>]
   let ``AddTemplate - Create a new Template returns 200 where Success`` () =
     task {

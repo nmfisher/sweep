@@ -11,8 +11,8 @@ model/UserModel.fs
 model/TemplateModel.fs
 model/OrganizationModel.fs
 model/MessageModel.fs
-model/LoggedEventModel.fs
 model/ListenerModel.fs
+model/EventRequestBodyModel.fs
 
 ## Operations
 

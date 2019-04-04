@@ -112,7 +112,7 @@ module App =
 
   [<EntryPoint>]
   let main _ =
-    Trace.Listeners.Add(new TextWriterTraceListener(Console.Out))
+    Trace.Listeners.Add(new TextWriterTraceListener(Console.Out)) |> ignore
     WebHost.CreateDefaultBuilder()
           .Configure(Action<IApplicationBuilder> configureApp)
           .ConfigureServices(configureServices)

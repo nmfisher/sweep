@@ -1,7 +1,7 @@
 namespace Sweep
 
 open EventModel
-open LoggedEventModel
+open EventRequestBodyModel
 open System.Collections.Generic
 
 module EventApiHandlerParams = 
@@ -9,7 +9,7 @@ module EventApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddEventBodyParams = Event
+    type AddEventBodyParams = EventRequestBody
     //#endregion
 
     
@@ -36,7 +36,7 @@ module EventApiHandlerParams =
 
     
     type GetEventByIdDefaultStatusCodeResponse = {
-      content:LoggedEvent;
+      content:Event;
       
     }
     
@@ -52,7 +52,7 @@ module EventApiHandlerParams =
 
     
     type ListEventsDefaultStatusCodeResponse = {
-      content:LoggedEvent[];
+      content:Event[];
       
     }
     type ListEventsResult = ListEventsDefaultStatusCode of ListEventsDefaultStatusCodeResponse

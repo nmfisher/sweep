@@ -10,9 +10,22 @@
 --
 
 CREATE TABLE IF NOT EXISTS `Event` (
-  `eventName` TEXT DEFAULT NULL,
+  `id` CHAR(36) NOT NULL,
+  `eventName` TEXT NOT NULL,
   `params` JSON DEFAULT NULL,
-  `organizationId` TEXT DEFAULT NULL
+  `receivedOn` dateTime NOT NULL,
+  `processedOn` dateTime DEFAULT NULL,
+  `error` TEXT DEFAULT NULL,
+  `organizationId` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `EventRequestBody` generated from model 'EventRequestBody'
+--
+
+CREATE TABLE IF NOT EXISTS `EventRequestBody` (
+  `eventName` TEXT NOT NULL,
+  `params` JSON DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -25,17 +38,6 @@ CREATE TABLE IF NOT EXISTS `Listener` (
   `userId` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL,
   `deleted` TINYINT(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `LoggedEvent` generated from model 'LoggedEvent'
---
-
-CREATE TABLE IF NOT EXISTS `LoggedEvent` (
-  `id` CHAR(36) NOT NULL,
-  `eventName` TEXT NOT NULL,
-  `params` JSON DEFAULT NULL,
-  `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

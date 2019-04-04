@@ -1,6 +1,5 @@
 namespace Sweep
 open EventModel
-open LoggedEventModel
 open EventApiHandlerParams
 open EventApiServiceInterface
 open System.Collections.Generic
@@ -23,7 +22,7 @@ module EventApiServiceImplementation =
             else 
               let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims
-              let event = CompositionRoot.addEvent args.bodyParams orgId
+              let event = CompositionRoot.addEvent args.bodyParams.EventName args.bodyParams.Params orgId
               AddEventDefaultStatusCode { content = "OK" }
           with 
           | e ->   

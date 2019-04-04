@@ -37,10 +37,10 @@
     <Content Include="openapi.yaml" />
     <Compile Include="helpers/Helpers.fs" />
     <Compile Include="model/Event.fs" />
+    <Compile Include="model/EventRequestBody.fs" />
     <Compile Include="model/User.fs" />
     <Compile Include="model/Template.fs" />
     <Compile Include="model/Message.fs" />
-    <Compile Include="model/LoggedEvent.fs" />
     <Compile Include="model/Listener.fs" />
     <Compile Include="impl/UserContext.fs" />
     <Compile Include="impl/CompositionRoot.fs" />

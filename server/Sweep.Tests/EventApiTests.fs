@@ -18,7 +18,7 @@ open EventApiHandlerTestsHelper
 open Sweep.EventApiHandler
 open Sweep.EventApiHandlerParams
 open Sweep.EventModel
-open Sweep.LoggedEventModel
+open Sweep.EventRequestBodyModel
 open Microsoft.AspNetCore.Hosting
 open FSharp.Data.Sql
 open FSharp.Data.Sql.Providers
@@ -35,31 +35,21 @@ module EventApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      lock(dbLock) (fun () ->
-        initialize() |> ignore
-      )
+      initialize() |> ignore
 
-      // add your setup code here
       let path = "/events"
 
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
-      // or pass a body of type Event
-      let body = 
-        {
-          EventName="some_event";
+      {
+          EventRequestBody.EventName="some_event";
           Params=[|"param1"|];
-          OrganizationId="UNUSED"
-        } |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
-
-      let resp = body |> HttpPost client path
-      let content = resp.Content.ReadAsStringAsync() |> Async.AwaitTask |> Async.RunSynchronously
-      resp 
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> shouldEqual "OK"
-        |> ignore
-    }
+      } 
+      |> encode
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> shouldEqual "OK"
+      |> ignore
+  }
 
   [<Fact>]
   let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
@@ -67,27 +57,17 @@ module EventApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
-
       let path = "/events"
 
-      // use an example requestBody provided by the spec
-      let examples = Map.empty.Add("application/json", getAddEventExample "application/json")
-      // or pass a body of type Event
-      let body = 
-        { EventName="";
-          Params=[|"param1"|];
-          OrganizationId="" } 
-        |> Newtonsoft.Json.JsonConvert.SerializeObject 
-        |> Encoding.UTF8.GetBytes 
-        |> MemoryStream 
-        |> StreamContent
-
-      body
-        |> HttpPost client path
-        |> isStatus (enum<HttpStatusCode>(405))
-        |> readText
+      { 
+        EventRequestBody.EventName="";
+        Params=[|"param1"|];
       }
+      |> encode
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(405))
+      |> ignore
+    }
 
   [<Fact>]
   let ``GetEventById - Find raised event by ID returns 200 where successful operation`` () =
@@ -96,19 +76,19 @@ module EventApiHandlerTests =
       use client = server.CreateClient()
 
       // add your setup code here
-      { EventName="some_event";Params=[|"param1"|];OrganizationId="" } 
-        |> Newtonsoft.Json.JsonConvert.SerializeObject 
-        |> Encoding.UTF8.GetBytes 
-        |> MemoryStream 
-        |> StreamContent
-        |> HttpPost client "/events"
-        |> ignore
+      { 
+        EventRequestBody.EventName="some_event";
+        Params=[|"param1"|];
+      } 
+      |> encode
+      |> HttpPost client "/events"
+      |> ignore
       
       let eventId = 
         HttpGet client "/events"
           |> isStatus (enum<HttpStatusCode>(200))
           |> readText
-          |> JsonConvert.DeserializeObject<LoggedEvent[]>
+          |> JsonConvert.DeserializeObject<Event[]>
           |> Seq.head
           |> (fun x-> x.Id)
 
@@ -117,7 +97,7 @@ module EventApiHandlerTests =
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> JsonConvert.DeserializeObject<LoggedEvent>
+        |> JsonConvert.DeserializeObject<Event>
         |> (fun x -> 
             x.EventName |> shouldEqual "some_event" |> ignore
             x.Params |> shouldBeLength 1 |> ignore
@@ -136,6 +116,7 @@ module EventApiHandlerTests =
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(404))
+        |> ignore
       }
 
   [<Fact>]
@@ -155,25 +136,25 @@ module EventApiHandlerTests =
       HttpGet client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> readText
-      |> JsonConvert.DeserializeObject<LoggedEvent[]>
+      |> JsonConvert.DeserializeObject<Event[]>
       |> shouldBeLength 0
       |> ignore
 
       // add an event for our organization so we can ensure it's returned properly
-      { EventName="some_event";Params=[|"param1"|];OrganizationId="" } 
-        |> Newtonsoft.Json.JsonConvert.SerializeObject 
-        |> Encoding.UTF8.GetBytes 
-        |> MemoryStream 
-        |> StreamContent
-        |> HttpPost client path
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> ignore
+      { 
+        EventRequestBody.EventName="some_event";
+        Params=[|"param1"|];
+      } 
+      |> encode
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
 
       // fetch again
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
-        |> JsonConvert.DeserializeObject<LoggedEvent[]>
+        |> JsonConvert.DeserializeObject<Event[]>
         |> shouldBeLength 1
         |> Seq.head
         |> (fun x -> 

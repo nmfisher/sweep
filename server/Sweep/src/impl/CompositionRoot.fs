@@ -5,7 +5,6 @@ open UserModel
 open Microsoft.FSharp.Linq.RuntimeHelpers
 open System.Linq.Expressions
 open FSharp.Control.AsyncSeqExtensions
-open LoggedEventModel
 open FSharp.Control
 open TemplateModel
 open System.Linq.Expressions
@@ -31,7 +30,7 @@ module CompositionRoot =
               IndividualsAmount = 1000,
               UseOptionTypes = true>
 
-  // LoggedEvent
+  // Event        
 
   let deserializeEvent (prop,value) =
      match prop with
@@ -44,33 +43,37 @@ module CompositionRoot =
      | _ -> 
         value
   
-  let addEvent (event:EventModel.Event) organizationId =
+  let addEvent eventName eventParams organizationId =
     let ctx = Sql.GetDataContext()
-    let loggedEvent = ctx.SweepDevelopment.Loggedevent.Create()
-    loggedEvent.EventName <- event.EventName
-    loggedEvent.Params <- event.Params |> serialize |> Some
-    loggedEvent.OrganizationId <- organizationId
-    loggedEvent.Id <- Guid.NewGuid().ToString()
+    let event = ctx.SweepDevelopment.Event.Create()
+    event.EventName <- eventName
+    event.Params <- eventParams |> serialize |> Some
+    event.OrganizationId <- organizationId
+    
+    event.ReceivedOn <- DateTime.Now
+    event.
+    event.Id <- Guid.NewGuid().ToString()
     ctx.SubmitUpdates()
 
-  let getEvent eventId organizationId : LoggedEvent option = 
+  let getEvent eventId organizationId  = 
     let ctx = Sql.GetDataContext()
     query {
-      for event in ctx.SweepDevelopment.Loggedevent do
+      for event in ctx.SweepDevelopment.Event do
       where (event.OrganizationId = organizationId && event.Id = eventId)
       select event
     } 
-    |> Seq.map (fun x -> x.MapTo<LoggedEvent>(deserializeEvent))
+    |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
     |> Seq.tryHead
       
-  let listEvents (organizationId:string) : seq<LoggedEvent> =
+  let listEvents organizationId =
     let ctx = Sql.GetDataContext()
     query {      
-      for event in ctx.SweepDevelopment.Loggedevent do
+      for event in ctx.SweepDevelopment.Event do
       where (event.OrganizationId = organizationId)
       select (event)
-    } |> Seq.map (fun x -> x.MapTo<LoggedEvent>(deserializeEvent))
+    } |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
 
+  
   // Template
 
   let deserializeTemplate (prop,value:obj) =

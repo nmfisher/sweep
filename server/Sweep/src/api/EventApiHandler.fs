@@ -8,7 +8,7 @@ open EventApiHandlerParams
 open EventApiServiceInterface
 open EventApiServiceImplementation
 open EventModel
-open LoggedEventModel
+open EventRequestBodyModel
 
 module EventApiHandler = 
 

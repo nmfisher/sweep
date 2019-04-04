@@ -23,6 +23,13 @@ module TestHelper =
 
   let dbLock = obj()
 
+  let encode x = 
+    x 
+    |> Newtonsoft.Json.JsonConvert.SerializeObject 
+    |> Encoding.UTF8.GetBytes 
+    |> (fun x -> new MemoryStream(x))
+    |> (fun x -> new StreamContent(x))
+
   type AuthMiddleware (next: RequestDelegate) =
 
     member __.Invoke (ctx : HttpContext) =
@@ -117,9 +124,9 @@ module TestHelper =
     (fun (x:string) -> 
       match mediaType with
       | "application/x-www-form-urlencoded" -> raise (NotSupportedException()) // TODO - implement FormUrlEncodedContent
-      | _ -> x |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent)
+      | _ -> x |> Encoding.UTF8.GetBytes |> (fun x -> new MemoryStream(x)) |> (fun x -> new StreamContent(x)))
 
-  use conn  = MySql.createConnection "server=localhost;database=sweep_development;user=root;password=MyNewPass;Allow User Variables=true"
+  let conn  = MySql.createConnection "server=localhost;database=sweep_development;user=root;password=MyNewPass;Allow User Variables=true"
   conn.Open() |> ignore
 
   let initialize () = 
@@ -134,11 +141,11 @@ module TestHelper =
     cmd.Dispose()
     for table in tables do
       cmd <- MySql.createCommand ("DELETE FROM " + table) conn
-      cmd.ExecuteNonQuery()
+      cmd.ExecuteNonQuery() |> ignore
       cmd.Dispose()
     ()
-
+  
   let execute query =
-    let cmd = MySql.createCommand query conn
-    cmd.ExecuteNonQuery() |> ignore
-    cmd.Dispose()
+      let cmd = MySql.createCommand query conn
+      cmd.ExecuteNonQuery() |> ignore
+      cmd.Dispose()
