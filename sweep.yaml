@@ -246,17 +246,15 @@ paths:
             type: string
         - name: templateId
           in: path
-          description: Template id to delete
+          description: Template id to associate with the Listener
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Successfully deleted
+          description: Successfully added
         '404':
-          description: Listener not found
-        '500':
-          description: Unknown error
+          description: Listener or template not found
       security:
         - Google: []
   /messages:

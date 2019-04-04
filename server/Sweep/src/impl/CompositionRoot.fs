@@ -305,11 +305,7 @@ module CompositionRoot =
 
   // ListenerTemplates  
   let deserializeListenerTemplate (prop,value) =
-    match prop with
-     | "Id" ->
-        value.ToString() :> obj
-     | _ -> 
-        value
+    value.ToString() :> obj
 
   let listListenerTemplates listenerId organizationId = 
     let ctx = Sql.GetDataContext()

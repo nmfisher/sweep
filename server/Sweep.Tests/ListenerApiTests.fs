@@ -77,56 +77,67 @@ module ListenerApiHandlerTests =
       |> ignore
     }
 
-  // [<Fact>]
-  // let ``AddListenerTemplate - Associates a Template to a Listener returns 200 where Successfully deleted`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+  [<Fact>]
+  let ``AddListenerTemplate - Associates a Template to a Listener returns 200 where Successfully associated`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
 
-  //     // add your setup code here
+      initialize() |> ignore
 
-  //     let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
+      // create a listener
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
+      
+      let listener = 
+        "/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+      
+      // create a template
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> encode
+      |> HttpPost client "/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
 
-  //     HttpPost client path
-  //       |> isStatus (enum<HttpStatusCode>(200))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //       |> ignore
-  //     }
+      let template = 
+        "/templates" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+       
+      let path = "/listeners/" + listener.Id + "/templates/" + template.Id
 
-  // [<Fact>]
-  // let ``AddListenerTemplate - Associates a Template to a Listener returns 404 where Listener not found`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+      HttpPost client path null
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
 
-  //     // add your setup code here
+      }
 
-  //     let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
+  [<Fact>]
+  let ``AddListenerTemplate - Associates a Template to a Listener returns 404 where Listener or Template not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
 
-  //     HttpPost client path
-  //       |> isStatus (enum<HttpStatusCode>(404))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //       |> ignore
-  //     }
+      let path = "/listeners/{listenerId}/templates/{templateId}"
 
-  // [<Fact>]
-  // let ``AddListenerTemplate - Associates a Template to a Listener returns 500 where Unknown error`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
-
-  //     // add your setup code here
-
-  //     let path = "/listeners/{listenerId}/templates/{templateId}".Replace("listenerId", "ADDME").Replace("templateId", "ADDME")
-
-  //     HttpPost client path
-  //       |> isStatus (enum<HttpStatusCode>(500))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //       |> ignore
-  //     }
+      HttpPost client path null
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> ignore
+      }
 
   [<Fact>]
   let ``DeleteListener - Deletes a Listener returns 200 where Successfully deleted`` () =
@@ -187,6 +198,8 @@ module ListenerApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+
+      initialize()
 
       // create a listener
       ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
