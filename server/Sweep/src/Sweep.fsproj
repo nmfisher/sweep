@@ -49,6 +49,7 @@
     <Compile Include="impl/data/Sql.fs" />
     <Compile Include="impl/data/ListenerTemplate.fs" />
     <Compile Include="impl/data/Message.fs" />
+    <Compile Include="impl/data/Template.fs" />
     <Compile Include="impl/CompositionRoot.fs" />
     <Compile Include="api/EventApiHandlerParams.fs" />
     <Compile Include="api/EventApiServiceInterface.fs" />
