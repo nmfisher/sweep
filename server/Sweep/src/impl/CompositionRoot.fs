@@ -98,75 +98,11 @@ module CompositionRoot =
     ctx.SubmitUpdates()
 
   // Listeners
-  let deserializeListener (prop,value) =
-     match prop with
-     | "Id" ->
-        value.ToString() :> obj
-     | _ -> 
-        value
-
-  let addListener eventName userId orgId = 
-    let ctx = Sql.GetDataContext()
-    let listener = ctx.SweepDevelopment.Listener.Create()
-    listener.EventName <- eventName
-    listener.OrganizationId <- orgId
-    listener.Id <- Guid.NewGuid().ToString()
-    listener.UserId <- userId
-    ctx.SubmitUpdates()
-
-  let getListener id orgId =
-    let ctx = Sql.GetDataContext();
-    let row = query {
-      for listener in ctx.SweepDevelopment.Listener do
-      where (listener.Id = id && listener.OrganizationId = orgId && (listener.Deleted.IsNone || (listener.Deleted.IsSome && listener.Deleted.Value = sbyte(0))))
-      select listener
-      exactlyOneOrDefault
-    } 
-    match isNull row with
-    | true -> 
-      raise (NotFoundException("Not found"))
-    | false ->
-      row.MapTo<ListenerModel.Listener>(deserializeListener)
-      
-
-  let deleteListener id userId orgId = 
-    let ctx = Sql.GetDataContext();
-    let row = query {
-      for listener in ctx.SweepDevelopment.Listener do
-      where (listener.Id = id && listener.UserId = userId && listener.OrganizationId = orgId)
-      select listener
-      exactlyOneOrDefault
-    } 
-    match (isNull row) with 
-    | true ->
-      raise (NotFoundException("Listener not found"))      
-    | _ ->
-      row.Deleted <- Some((sbyte)1)
-      ctx.SubmitUpdates()
-
-  let listListeners orgId = 
-    let ctx = Sql.GetDataContext()
-    query {
-      for listener in ctx.SweepDevelopment.Listener do
-      where (listener.OrganizationId = orgId && (listener.Deleted.IsNone || (listener.Deleted.IsSome && listener.Deleted.Value = sbyte(0))))
-      select listener
-    } |> Seq.map(fun x -> x.MapTo<Listener>(deserializeListener))
-    |> Seq.toArray
-
-  let updateListener id eventName orgId =
-    let ctx = Sql.GetDataContext();
-    let row = query {
-      for listener in ctx.SweepDevelopment.Listener do
-      where (listener.Id = id && listener.OrganizationId = orgId)
-      select listener
-      exactlyOneOrDefault
-    }
-    match (isNull row) with 
-    | true ->
-      raise (NotFoundException("Listener not found"))      
-    | _ ->
-      row.EventName <- eventName
-      ctx.SubmitUpdates()
+  let addListener  = Sweep.Data.Listener.add
+  let getListener = Sweep.Data.Listener.get
+  let deleteListener = Sweep.Data.Listener.delete
+  let listListeners = Sweep.Data.Listener.list
+  let updateListener = Sweep.Data.Listener.update
       
   // Messages
   let getMessage = Sweep.Data.Message.get
