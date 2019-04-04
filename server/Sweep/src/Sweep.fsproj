@@ -51,6 +51,7 @@
     <Compile Include="impl/data/Message.fs" />
     <Compile Include="impl/data/Template.fs" />
     <Compile Include="impl/data/Listener.fs" />
+    <Compile Include="impl/data/Event.fs" />
     <Compile Include="impl/CompositionRoot.fs" />
     <Compile Include="api/EventApiHandlerParams.fs" />
     <Compile Include="api/EventApiServiceInterface.fs" />

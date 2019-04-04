@@ -20,48 +20,10 @@ open System.Collections.Generic
 
 module CompositionRoot =
   
-  let serialize = Newtonsoft.Json.JsonConvert.SerializeObject
-
   // Event        
-
-  let deserializeEvent (prop,value) =
-     match prop with
-     | "Params" -> 
-          if value <> null
-          then JsonConvert.DeserializeObject<Dictionary<string,obj>>(value.ToString()) |> box
-          else Unchecked.defaultof<obj[]> |> box
-     | "Id" ->
-        value.ToString() :> obj
-     | _ -> 
-        value
-  
-  let addEvent eventName eventParams organizationId =
-    let ctx = Sql.GetDataContext()
-    let event = ctx.SweepDevelopment.Event.Create()
-    event.EventName <- eventName
-    event.Params <- eventParams |> serialize |> Some
-    event.OrganizationId <- organizationId
-    event.ReceivedOn <- DateTime.Now
-    event.Id <- Guid.NewGuid().ToString()
-    ctx.SubmitUpdates()
-
-  let getEvent eventId organizationId  = 
-    let ctx = Sql.GetDataContext()
-    query {
-      for event in ctx.SweepDevelopment.Event do
-      where (event.OrganizationId = organizationId && event.Id = eventId)
-      select event
-    } 
-    |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
-    |> Seq.tryHead
-      
-  let listEvents organizationId =
-    let ctx = Sql.GetDataContext()
-    query {      
-      for event in ctx.SweepDevelopment.Event do
-      where (event.OrganizationId = organizationId)
-      select (event)
-    } |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
+  let addEvent = Sweep.Data.Event.add
+  let getEvent  = Sweep.Data.Event.get
+  let listEvents = Sweep.Data.Event.list
      
   // Template
 
