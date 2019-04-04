@@ -171,6 +171,7 @@ paths:
         - Google: []
       requestBody:
         $ref: '#/components/requestBodies/Listener'
+  '/listeners/{listenerId}/templates/{templateId}':
   /messages:
     get:
         tags:
@@ -497,8 +498,8 @@ components:
         eventName: 
           type: string
         params:
-          type: array
-          items:
+          type: object
+          additionalProperties:
             type: object
     Event:
       type: object
@@ -515,9 +516,7 @@ components:
         eventName: 
           type: string
         params:
-          type: array
-          items:
-            type: object
+          type: object
         receivedOn:
           type: dateTime
         processedOn:
@@ -598,6 +597,8 @@ components:
         userId  :
           type: string
         organizationId:
+          type: string
+        listenerId:
           type: string
         deleted:
           type: boolean

@@ -13,6 +13,7 @@ open FSharp.Data.Sql
 open Newtonsoft.Json
 open ListenerModel
 open MessageModel
+open System.Collections.Generic
 
 module CompositionRoot =
 
@@ -36,7 +37,7 @@ module CompositionRoot =
      match prop with
      | "Params" -> 
           if value <> null
-          then JsonConvert.DeserializeObject<obj[]>(value.ToString()) |> box
+          then JsonConvert.DeserializeObject<Dictionary<string,obj>>(value.ToString()) |> box
           else Unchecked.defaultof<obj[]> |> box
      | "Id" ->
         value.ToString() :> obj
@@ -71,6 +72,29 @@ module CompositionRoot =
       select (event)
     } |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
 
+  
+  let processEvent event = 
+    try
+      StubbleBuilder().Build().Render(event.C event.Params
+    with
+    | e ->
+      ()
+
+  let dequeue = 
+    let ctx = Sql.GetDataContext()
+    let unprocessed = 
+      query {      
+        for event in ctx.SweepDevelopment.Event do
+        join listener in ctx.SweepDevelopment.Listener on (listener.EventName = event.eventName && listener.OrganizationId = event.organizationId)
+        where isNull event.ProcessedOn
+        select (event)
+      } 
+      |> Seq.map (fun x -> x.MapTo<EventModel.Event>(deserializeEvent))
+      |> Seq.toList
+
+    unprocessed
+    |> Seq.map processEvent 
+    
   
   // Template
 

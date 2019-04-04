@@ -46,8 +46,8 @@ module AuthSchemes =
       buildOAuth
 
   let configureOAuth (settings:IConfiguration) services =
-    (build settings "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings |> ignore
-    (build settings "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings
+    (build settings "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings |>ignore
+    (build settings "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings |>ignore
 
   let cookieAuth (o : CookieAuthenticationOptions) =
     do

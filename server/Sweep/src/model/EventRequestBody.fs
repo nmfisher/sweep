@@ -1,5 +1,6 @@
 namespace Sweep
 open System
+open System.Collections.Generic
 
 module EventRequestBodyModel = 
 
@@ -8,7 +9,7 @@ module EventRequestBodyModel =
 
   type EventRequestBody = {
     EventName : string;
-    Params : obj[];
+    Params : Dictionary<string, obj>;
   }
   //#endregion
   
