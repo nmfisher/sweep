@@ -273,22 +273,6 @@ paths:
       summary: Create a new Template
       tags:
       - template
-    put:
-      operationId: updateTemplate
-      requestBody:
-        $ref: '#/components/requestBodies/Template'
-      responses:
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Template not found
-        422:
-          description: Validation exception
-      security:
-      - Google: []
-      summary: Update an existing Template
-      tags:
-      - template
   /templates/{templateId}:
     delete:
       operationId: deleteTemplate
@@ -329,7 +313,6 @@ paths:
         name: templateId
         required: true
         schema:
-          format: int64
           type: string
         style: simple
       responses:
@@ -342,6 +325,31 @@ paths:
         404:
           description: Listener not found
       summary: Find Template by ID
+      tags:
+      - template
+    put:
+      operationId: updateTemplate
+      parameters:
+      - description: ID of template to return
+        explode: false
+        in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Template'
+      responses:
+        200:
+          description: Successfully updated
+        404:
+          description: Template not found
+        422:
+          description: Validation exception
+      security:
+      - Google: []
+      summary: Update an existing Template
       tags:
       - template
   /user:

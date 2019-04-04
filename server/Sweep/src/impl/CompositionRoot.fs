@@ -112,7 +112,7 @@ module CompositionRoot =
     let ctx = Sql.GetDataContext()
     let row = query {      
       for template in ctx.SweepDevelopment.Template do
-      where (template.Id = id && template.OrganizationId = organizationId)
+      where (template.Id = id && template.OrganizationId = organizationId && (template.Deleted.IsNone || (template.Deleted.IsSome && template.Deleted.Value = sbyte(0))))
       select (template)
       exactlyOneOrDefault
     } 
@@ -121,11 +121,26 @@ module CompositionRoot =
     else
       row.MapTo<Template>(deserializeTemplate)
 
+  let updateTemplate id content sendTo organizationId = 
+    let ctx = Sql.GetDataContext()
+    let row = query {      
+      for template in ctx.SweepDevelopment.Template do
+      where (template.Id = id && template.OrganizationId = organizationId)
+      select (template)
+      exactlyOneOrDefault
+    } 
+    if isNull row then
+      raise (NotFoundException("Not found"))
+    else
+      row.SendTo <- JsonConvert.SerializeObject sendTo
+      row.Content <- content
+      ctx.SubmitUpdates()
+
   let listTemplates organizationId =
     let ctx = Sql.GetDataContext()
     query {      
       for template in ctx.SweepDevelopment.Template do
-      where (template.OrganizationId = organizationId)
+      where (template.OrganizationId = organizationId && (template.Deleted.IsNone || (template.Deleted.IsSome && template.Deleted.Value = sbyte(0))))
       select (template)
     } |> Seq.map (fun x -> x.MapTo<Template>(deserializeTemplate))
       |> Seq.toArray
@@ -207,7 +222,7 @@ module CompositionRoot =
     let ctx = Sql.GetDataContext()
     query {
       for listener in ctx.SweepDevelopment.Listener do
-      where (listener.OrganizationId = orgId)
+      where (listener.OrganizationId = orgId && (listener.Deleted.IsNone || (listener.Deleted.IsSome && listener.Deleted.Value = sbyte(0))))
       select listener
     } |> Seq.map(fun x -> x.MapTo<Listener>(deserializeListener))
     |> Seq.toArray

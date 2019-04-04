@@ -24,6 +24,12 @@ module TemplateApiHandlerTests =
   // ---------------------------------
   // Tests
   // ---------------------------------
+  let encode x= 
+    x 
+    |> Newtonsoft.Json.JsonConvert.SerializeObject 
+    |> Encoding.UTF8.GetBytes 
+    |> MemoryStream 
+    |> StreamContent
 
   [<Fact>]
   let ``AddTemplate - Create a new Template returns 200 where Success`` () =
@@ -41,10 +47,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -57,10 +60,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -82,10 +82,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
@@ -98,10 +95,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
@@ -114,10 +108,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
@@ -130,10 +121,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
@@ -155,10 +143,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -175,6 +160,17 @@ module TemplateApiHandlerTests =
       HttpDelete client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> ignore
+
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> ignore
+
+      HttpGet client "/templates"          
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> shouldBeLength 0
+        |> ignore    
     }
 
   [<Fact>]
@@ -209,10 +205,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -266,10 +259,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -282,10 +272,7 @@ module TemplateApiHandlerTests =
           UserId="";
           Deleted=false;
       } 
-      |> Newtonsoft.Json.JsonConvert.SerializeObject 
-      |> Encoding.UTF8.GetBytes 
-      |> MemoryStream 
-      |> StreamContent
+      |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -300,69 +287,132 @@ module TemplateApiHandlerTests =
         |> ignore
       }
 
-  // [<Fact>]
-  // let ``UpdateTemplate - Update an existing Template returns 400 where Invalid ID supplied`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+  [<Fact>]
+  let ``UpdateTemplate - Update an existing Template returns 200 where Successfully updated`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
+      // create a template then fetch its id
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> encode
+      |> HttpPost client "/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
 
-  //     // add your setup code here
+      let template = 
+        HttpGet client "/templates"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+      // update the template with some valid data
+      {
+          Content="Hello Again";
+          SendTo=[|"foo@bar";"baz@qux"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+        |> encode
+        |> HttpPut client ("/templates/" + template.Id)
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
 
-  //     let path = "/templates"
+      // refetch the template
+      HttpGet client ("/templates/" + template.Id)
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText 
+        |> JsonConvert.DeserializeObject<Template>
+        |> (fun x -> 
+              x.Content |> shouldEqual "Hello Again" |> ignore
+              x.SendTo |> shouldBeLength 2 |> ignore
+              x.SendTo |> Seq.head |> shouldEqual "foo@bar" |> ignore
+              x.SendTo |> Seq.last |> shouldEqual "baz@qux" |> ignore
+              )
+        |> ignore
+    }
 
-  //     // use an example requestBody provided by the spec
-  //     let examples = Map.empty.Add("application/json", getUpdateTemplateExample "application/json")
-  //     // or pass a body of type Template
-  //     let body = obj() :?> Template |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
+  [<Fact>]
+  let ``UpdateTemplate - Update an existing Template returns 404 where Template not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
+      let path = "/templates/{templateId}"
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> encode
+      |> HttpPut client path
+      |> isStatus (enum<HttpStatusCode>(404))
+      |> ignore
+    }
 
-  //     body
-  //       |> HttpPut client path
-  //       |> isStatus (enum<HttpStatusCode>(400))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+  [<Fact>]
+  let ``UpdateTemplate - Update an existing Template returns 422 where Validation exception`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
 
-  // [<Fact>]
-  // let ``UpdateTemplate - Update an existing Template returns 404 where Template not found`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
+      {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      |> encode
+      |> HttpPost client "/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
 
-  //     // add your setup code here
+      let template = 
+        HttpGet client "/templates"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
 
-  //     let path = "/templates"
+      {
+          Content="";
+          SendTo=[|"baz@qux"|];
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+        |> encode
+        |> HttpPut client ("/templates/" + template.Id)
+        |> isStatus (enum<HttpStatusCode>(422))
+        |> ignore
 
-  //     // use an example requestBody provided by the spec
-  //     let examples = Map.empty.Add("application/json", getUpdateTemplateExample "application/json")
-  //     // or pass a body of type Template
-  //     let body = obj() :?> Template |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
-
-  //     body
-  //       |> HttpPut client path
-  //       |> isStatus (enum<HttpStatusCode>(404))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
-
-  // [<Fact>]
-  // let ``UpdateTemplate - Update an existing Template returns 422 where Validation exception`` () =
-  //   task {
-  //     use server = new TestServer(createHost())
-  //     use client = server.CreateClient()
-
-  //     // add your setup code here
-
-  //     let path = "/templates"
-
-  //     // use an example requestBody provided by the spec
-  //     let examples = Map.empty.Add("application/json", getUpdateTemplateExample "application/json")
-  //     // or pass a body of type Template
-  //     let body = obj() :?> Template |> Newtonsoft.Json.JsonConvert.SerializeObject |> Encoding.UTF8.GetBytes |> MemoryStream |> StreamContent
-
-  //     body
-  //       |> HttpPut client path
-  //       |> isStatus (enum<HttpStatusCode>(422))
-  //       |> readText
-  //       |> shouldEqual "TESTME"
-  //     }
+      {
+        Content="Hello Again";
+        SendTo=[||];
+        Id="";
+        OrganizationId="";
+        UserId="";
+        Deleted=false;
+      }  
+      |> encode
+      |> HttpPut client ("/templates/" + template.Id)
+      |> isStatus (enum<HttpStatusCode>(422))
+      |> ignore
+    }
 

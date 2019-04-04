@@ -85,6 +85,12 @@ module TemplateApiHandlerParams =
     }
     type ListTemplateResult = ListTemplateDefaultStatusCode of ListTemplateDefaultStatusCodeResponse
 
+    //#region Path parameters
+    [<CLIMutable>]
+    type UpdateTemplatePathParams = {
+      templateId : string
+    }
+    //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
@@ -92,7 +98,7 @@ module TemplateApiHandlerParams =
     //#endregion
 
     
-    type UpdateTemplateStatusCode400Response = {
+    type UpdateTemplateDefaultStatusCodeResponse = {
       content:string;
       
     }
@@ -106,9 +112,10 @@ module TemplateApiHandlerParams =
       content:string;
       
     }
-    type UpdateTemplateResult = UpdateTemplateStatusCode400 of UpdateTemplateStatusCode400Response|UpdateTemplateStatusCode404 of UpdateTemplateStatusCode404Response|UpdateTemplateStatusCode422 of UpdateTemplateStatusCode422Response
+    type UpdateTemplateResult = UpdateTemplateDefaultStatusCode of UpdateTemplateDefaultStatusCodeResponse|UpdateTemplateStatusCode404 of UpdateTemplateStatusCode404Response|UpdateTemplateStatusCode422 of UpdateTemplateStatusCode422Response
 
     type UpdateTemplateArgs = {
+      pathParams:UpdateTemplatePathParams;
       bodyParams:UpdateTemplateBodyParams
     }
     

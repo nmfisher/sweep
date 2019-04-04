@@ -103,6 +103,20 @@ module ListenerApiHandlerTests =
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> ignore
+
+      "/listeners" + listener.Id
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> ignore
+
+      "/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> shouldBeLength 0
+        |> ignore
+
       }
 
   [<Fact>]
@@ -117,7 +131,6 @@ module ListenerApiHandlerTests =
 
       HttpDelete client path
         |> isStatus (enum<HttpStatusCode>(404))
-        |> readText
         |> ignore
     }
 

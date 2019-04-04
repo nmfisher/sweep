@@ -27,16 +27,27 @@ module TemplateApiServiceImplementation =
                 with                 
                 | e ->
                   x.StartsWith "{{" && x.EndsWith "}}" && content.Contains(x))
+
+      let validateTemplate content sendTo = 
+        if String.IsNullOrWhiteSpace(content) then 
+          Some("Content cannot be empty")
+        else if not (validateEmails sendTo content) then                    
+          Some("At least one email or placeholder must be specified")
+        else                
+          None
       
       interface ITemplateApiService with
         member this.AddTemplate ctx args =
             let orgId = getOrgId ctx.User.Claims
             let userId = getUserId ctx.User.Claims
-            if String.IsNullOrWhiteSpace(args.bodyParams.Content) then 
-              AddTemplateStatusCode422 { content = "Content cannot be empty" }  
-            else if not (validateEmails args.bodyParams.SendTo args.bodyParams.Content) then                    
-              AddTemplateStatusCode422 { content = "At least one email or placeholder must be specified" }  
-            else  
+            
+            // if isNull args.bodyParams then
+            //   AddTemplateStatusCode422 { content = "Body cannot be empty" }
+            // else 
+            match validateTemplate args.bodyParams.Content args.bodyParams.SendTo  with
+            | Some err ->
+              AddTemplateStatusCode422 { content = err  }  
+            | None ->            
               CompositionRoot.addTemplate args.bodyParams.Content args.bodyParams.SendTo orgId userId |> ignore
               AddTemplateDefaultStatusCode { content = "OK" }
 
@@ -66,16 +77,23 @@ module TemplateApiServiceImplementation =
           ListTemplateDefaultStatusCode { content = templates }
 
         member this.UpdateTemplate ctx args =
-          if true then 
-            let content = "Invalid ID supplied" 
-            UpdateTemplateStatusCode400 { content = content }
-          else if true then 
-            let content = "Template not found" 
-            UpdateTemplateStatusCode404 { content = content }
-          else
-            let content = "Validation exception" 
-            UpdateTemplateStatusCode422 { content = content }
-
+          try
+            let orgId = getOrgId ctx.User.Claims
+            
+            // if isNull args.bodyParams then
+            //   AddTemplateStatusCode422 { content = "Body cannot be empty" }
+            // else            
+            match validateTemplate args.bodyParams.Content args.bodyParams.SendTo with
+            | Some err ->
+              UpdateTemplateStatusCode422 { content = err }
+            | None ->
+              CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams.Content args.bodyParams.SendTo orgId
+              UpdateTemplateDefaultStatusCode { content = "OK" }
+          with
+          | NotFoundException(msg) ->
+            UpdateTemplateStatusCode404 { content = msg }
+          | e ->
+            UpdateTemplateStatusCode422 { content = e.ToString()   }
       //#endregion
 
     let TemplateApiService = TemplateApiServiceImpl() :> ITemplateApiService

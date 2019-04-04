@@ -76,7 +76,7 @@ module App =
       HttpDelete >=> routeBind<DeleteTemplatePathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.DeleteTemplate x);
       HttpGet >=> routeBind<GetTemplateByIdPathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.GetTemplateById x);
       HttpGet >=> route "/templates" >=> requiresAuthentication redirectToLogin >=> TemplateApiHandler.ListTemplate;
-      HttpPut >=> route "/templates" >=> requiresAuthentication redirectToLogin >=> TemplateApiHandler.UpdateTemplate;
+      HttpPut >=> routeBind<UpdateTemplatePathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.UpdateTemplate x);
       HttpPost >=> route "/user" >=> requiresAuthentication redirectToLogin >=> UserApiHandler.CreateUser;
       HttpDelete >=> routeBind<DeleteUserPathParams> "/user/{userId}"  (fun x -> requiresAuthentication redirectToLogin >=> UserApiHandler.DeleteUser x);
       HttpGet >=> routeBind<GetUserByNamePathParams> "/user/{userId}"  (fun x -> requiresAuthentication redirectToLogin >=> UserApiHandler.GetUserByName x);

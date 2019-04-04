@@ -95,16 +95,16 @@ module TemplateApiHandler =
     /// Update an existing Template
     /// </summary>
 
-    let UpdateTemplate  : HttpHandler = 
+    let UpdateTemplate (pathParams:UpdateTemplatePathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<UpdateTemplateBodyParams>()
-          let serviceArgs = {    bodyParams=bodyParams } : UpdateTemplateArgs
+          let serviceArgs = {   pathParams=pathParams; bodyParams=bodyParams } : UpdateTemplateArgs
           let result = TemplateApiService.UpdateTemplate ctx serviceArgs
           return! (match result with 
-                      | UpdateTemplateStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
+                      | UpdateTemplateDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> text resolved.content 
                       | UpdateTemplateStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
                       | UpdateTemplateStatusCode422 resolved ->
