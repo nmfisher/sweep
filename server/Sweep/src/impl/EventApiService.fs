@@ -1,5 +1,6 @@
 namespace Sweep
-open EventModel
+
+open Sweep.Model.Event
 open EventApiHandlerParams
 open EventApiServiceInterface
 open System.Collections.Generic

@@ -1,8 +1,10 @@
-namespace Sweep
+namespace Sweep.Model
+
 open System
 open System.Collections.Generic
+open System.Collections.Generic
 
-module EventModel = 
+module Event = 
 
   //#region Event
 

@@ -1,6 +1,6 @@
 namespace Sweep.Data
 
-open Sweep.ListenerTemplateModel
+open Sweep.Model.ListenerTemplate
 open Sql
 open Sweep.Exceptions
 

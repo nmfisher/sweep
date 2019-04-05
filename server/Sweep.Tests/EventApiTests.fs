@@ -8,7 +8,6 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.TestHost
-open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
@@ -18,8 +17,8 @@ open TestHelper
 open EventApiHandlerTestsHelper
 open Sweep.EventApiHandler
 open Sweep.EventApiHandlerParams
-open Sweep.EventModel
-open Sweep.EventRequestBodyModel
+open Sweep.Model.Event
+open Sweep.Model.EventRequestBody
 open Microsoft.AspNetCore.Hosting
 open FSharp.Data.Sql
 open FSharp.Data.Sql.Providers
@@ -42,7 +41,7 @@ module EventApiHandlerTests =
 
       {
           EventRequestBody.EventName="some_event";
-          Params=dict ["param1","value1" :> obj] :> IDictionary<string,obj>
+          Params=dict ["param1","value1" :> obj]
       } 
       |> encode
       |> HttpPost client path

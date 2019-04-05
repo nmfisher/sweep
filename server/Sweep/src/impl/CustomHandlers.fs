@@ -39,7 +39,6 @@ module CustomHandlers =
 
   let onCreatingTicket name (ctx:OAuthCreatingTicketContext) = 
     task {
-        ctx.HttpContext.GetLogger("DEVELOPMENT").LogCritical(ctx.User.ToString())
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
         let orgId = fetchOrCreateUser id email 
@@ -61,8 +60,6 @@ module CustomHandlers =
       ()
     | _ -> 
       ()
-
-  
   
   let logout = signOut CookieAuthenticationDefaults.AuthenticationScheme >=> text "Logged out"
 
@@ -76,17 +73,15 @@ module CustomHandlers =
             }
   
   let handlers : HttpHandler list = [
-    // insert your handlers here
     GET >=> 
       choose [
         route "/login-with-GitHub" >=> challenge "GitHub" "/events"
         route "/login-with-Google" >=> challenge "Google" "/events"
         route "/logout" >=> logout
-        route "/foo" >=> (fun nxt ctx -> 
-            let loggerA = ctx.GetLogger("FOo").LogCritical("FOO!!!!")
-            text "FOO" nxt ctx)
       ]
   ]
 
-  let configureServices (services:AuthenticationBuilder) = 
+  let configureServices (services:IServiceCollection) (authBuilder:AuthenticationBuilder) = 
+    let serviceProvider = services.BuildServiceProvider()
+    let settings = serviceProvider.GetService<IConfiguration>()
     services

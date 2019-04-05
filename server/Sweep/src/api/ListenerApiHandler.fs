@@ -7,8 +7,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open ListenerApiHandlerParams
 open ListenerApiServiceInterface
 open ListenerApiServiceImplementation
-open ListenerModel
-open ListenerTemplateModel
+open Sweep.Model.Listener
+open Sweep.Model.ListenerTemplate
 
 module ListenerApiHandler = 
 
@@ -52,8 +52,6 @@ module ListenerApiHandler =
                             setStatusCode 200 >=> text resolved.content 
                       | AddListenerTemplateStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
-                      | AddListenerTemplateStatusCode500 resolved ->
-                            setStatusCode 500 >=> text resolved.content 
           ) next ctx
         }
     //#endregion
@@ -94,8 +92,6 @@ module ListenerApiHandler =
                             setStatusCode 200 >=> text resolved.content 
                       | DeleteListenerTemplateStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
-                      | DeleteListenerTemplateStatusCode500 resolved ->
-                            setStatusCode 500 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

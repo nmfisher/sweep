@@ -1,5 +1,5 @@
 namespace Sweep
-open TemplateModel
+open Sweep.Model.Template
 open TemplateApiHandlerParams
 open TemplateApiServiceInterface
 open System.Collections.Generic

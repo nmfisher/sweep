@@ -1,5 +1,5 @@
 namespace Sweep
-open UserModel
+open Sweep.Model.User
 open UserApiHandlerParams
 open UserApiServiceInterface
 open System.Collections.Generic

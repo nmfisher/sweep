@@ -104,8 +104,7 @@ module App =
           .AddResponseCaching()
           .AddGiraffe()
           |> AuthSchemes.configureServices      
-          |> CustomHandlers.configureServices
-          |> ignore          
+          |> CustomHandlers.configureServices services
     services.AddDataProtection() |> ignore
 
   let configureLogging (loggerBuilder : ILoggingBuilder) =

@@ -68,7 +68,7 @@ module Cosmos =
 
   
   // Events
-  let addEvent (event:EventModel.Event) userId = 
+  let addEvent (event:Event.Event) userId = 
     let id = (Guid.NewGuid().ToString())
     let loggedEvent = { 
       EventName=event.EventName;
@@ -93,17 +93,17 @@ module Cosmos =
     |> AsyncSeq.toArray
                
   let getTemplate id userId = 
-    <@ (fun (template:TemplateModel.Template) idx  -> template.UserId = userId && template.Id = id) @> 
+    <@ (fun (template:Template.Template) idx  -> template.UserId = userId && template.Id = id) @> 
       |> LeafExpressionConverter.QuotationToExpression 
       |> unbox<Expression<Func<Template,int,bool>>>
       |> getItemsAsync<Template> 
       |> AsyncSeq.firstOrDefault
 
   let listTemplates userId = 
-    <@ (fun (template:TemplateModel.Template) idx  -> template.UserId = userId) @> 
+    <@ (fun (template:Template.Template) idx  -> template.UserId = userId) @> 
       |> LeafExpressionConverter.QuotationToExpression 
       |> unbox<Expression<Func<Template,int,bool>>>
-      |> getItemsAsync<TemplateModel.Template>
+      |> getItemsAsync<Template.Template>
 
   // Users    
   let saveUser id username apiKey orgId = createItemAsync {Id=id;ApiKey=apiKey;Username=username;Password="";OrganizationId=orgId} |> ignore

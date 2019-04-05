@@ -1,5 +1,5 @@
 namespace Sweep
-open MessageModel
+open Sweep.Model.Message
 open MessageApiHandlerParams
 open MessageApiServiceInterface
 open System.Collections.Generic

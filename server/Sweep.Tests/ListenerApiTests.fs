@@ -7,7 +7,6 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.TestHost
-open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
@@ -16,11 +15,11 @@ open TestHelper
 open ListenerApiHandlerTestsHelper
 open Sweep.ListenerApiHandler
 open Sweep.ListenerApiHandlerParams
-open Sweep.ListenerModel
+open Sweep.Model.Listener
 open Newtonsoft.Json
 open Sweep
-open Sweep.TemplateModel
-open Sweep.ListenerTemplateModel
+open Sweep.Model.Template
+open Sweep.Model.ListenerTemplate
 
 module ListenerApiHandlerTests =
 

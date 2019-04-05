@@ -1,7 +1,7 @@
 namespace Sweep
 
-open ListenerModel
-open ListenerTemplateModel
+open Sweep.Model.Listener
+open Sweep.Model.ListenerTemplate
 open System.Collections.Generic
 
 module ListenerApiHandlerParams = 
@@ -53,12 +53,7 @@ module ListenerApiHandlerParams =
       content:string;
       
     }
-    
-    type AddListenerTemplateStatusCode500Response = {
-      content:string;
-      
-    }
-    type AddListenerTemplateResult = AddListenerTemplateDefaultStatusCode of AddListenerTemplateDefaultStatusCodeResponse|AddListenerTemplateStatusCode404 of AddListenerTemplateStatusCode404Response|AddListenerTemplateStatusCode500 of AddListenerTemplateStatusCode500Response
+    type AddListenerTemplateResult = AddListenerTemplateDefaultStatusCode of AddListenerTemplateDefaultStatusCodeResponse|AddListenerTemplateStatusCode404 of AddListenerTemplateStatusCode404Response
 
     type AddListenerTemplateArgs = {
       pathParams:AddListenerTemplatePathParams;
@@ -123,12 +118,7 @@ module ListenerApiHandlerParams =
       content:string;
       
     }
-    
-    type DeleteListenerTemplateStatusCode500Response = {
-      content:string;
-      
-    }
-    type DeleteListenerTemplateResult = DeleteListenerTemplateDefaultStatusCode of DeleteListenerTemplateDefaultStatusCodeResponse|DeleteListenerTemplateStatusCode404 of DeleteListenerTemplateStatusCode404Response|DeleteListenerTemplateStatusCode500 of DeleteListenerTemplateStatusCode500Response
+    type DeleteListenerTemplateResult = DeleteListenerTemplateDefaultStatusCode of DeleteListenerTemplateDefaultStatusCodeResponse|DeleteListenerTemplateStatusCode404 of DeleteListenerTemplateStatusCode404Response
 
     type DeleteListenerTemplateArgs = {
       pathParams:DeleteListenerTemplatePathParams;

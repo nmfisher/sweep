@@ -7,7 +7,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open MessageApiHandlerParams
 open MessageApiServiceInterface
 open MessageApiServiceImplementation
-open MessageModel
+open Sweep.Model.Message
 
 module MessageApiHandler = 
 

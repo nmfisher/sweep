@@ -7,7 +7,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open TemplateApiHandlerParams
 open TemplateApiServiceInterface
 open TemplateApiServiceImplementation
-open TemplateModel
+open Sweep.Model.Template
 
 module TemplateApiHandler = 
 

@@ -7,8 +7,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open EventApiHandlerParams
 open EventApiServiceInterface
 open EventApiServiceImplementation
-open EventModel
-open EventRequestBodyModel
+open Sweep.Model.Event
+open Sweep.Model.EventRequestBody
 
 module EventApiHandler = 
 

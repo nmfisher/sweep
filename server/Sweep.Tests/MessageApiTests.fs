@@ -7,7 +7,6 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.TestHost
-open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
@@ -16,7 +15,7 @@ open TestHelper
 open MessageApiHandlerTestsHelper
 open Sweep.MessageApiHandler
 open Sweep.MessageApiHandlerParams
-open Sweep.MessageModel
+open Sweep.Model.Message
 open Newtonsoft.Json
 
 module MessageApiHandlerTests =

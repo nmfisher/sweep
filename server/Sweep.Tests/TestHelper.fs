@@ -7,7 +7,6 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.TestHost
-open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
@@ -18,6 +17,7 @@ open Microsoft.Extensions.Logging
 open Giraffe
 open Microsoft.AspNetCore.Identity
 open FSharp.Data.Sql.Providers
+open Microsoft.Extensions.DependencyInjection
 
 module TestHelper = 
 

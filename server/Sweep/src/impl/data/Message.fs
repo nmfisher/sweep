@@ -1,6 +1,6 @@
 namespace Sweep.Data
 
-open Sweep.MessageModel
+open Sweep.Model.Message
 open Sql
 open Sweep.Exceptions
 open Newtonsoft.Json

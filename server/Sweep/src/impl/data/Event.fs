@@ -6,7 +6,7 @@ open Sql
 open Sweep.Exceptions
 open Newtonsoft.Json
 
-type Event = Sweep.EventModel.Event
+type Event = Sweep.Model.Event.Event
 
 module Event = 
 

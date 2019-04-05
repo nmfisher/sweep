@@ -1,7 +1,7 @@
 namespace Sweep.Data
 
 open System
-open Sweep.TemplateModel
+open Sweep.Model.Template
 open Sql
 open Sweep.Exceptions
 open Newtonsoft.Json

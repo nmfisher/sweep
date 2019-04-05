@@ -230,8 +230,6 @@ paths:
           description: Successfully deleted
         404:
           description: Listener not found
-        500:
-          description: Unknown error
       security:
       - Google: []
       summary: Disassociates a Template from a Listener
@@ -255,7 +253,7 @@ paths:
         schema:
           type: string
         style: simple
-      - description: Template id to delete
+      - description: Template id to associate with the Listener
         explode: false
         in: path
         name: templateId
@@ -265,11 +263,9 @@ paths:
         style: simple
       responses:
         200:
-          description: Successfully deleted
+          description: Successfully added
         404:
-          description: Listener not found
-        500:
-          description: Unknown error
+          description: Listener or template not found
       security:
       - Google: []
       summary: Associates a Template to a Listener
@@ -647,8 +643,12 @@ components:
         templateId: templateId
       properties:
         listenerId:
+          maxLength: 36
+          minLength: 36
           type: string
         templateId:
+          maxLength: 36
+          minLength: 36
           type: string
         organizationId:
           type: string

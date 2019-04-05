@@ -1,7 +1,7 @@
 namespace Sweep
 
-open EventModel
-open EventRequestBodyModel
+open Sweep.Model.Event
+open Sweep.Model.EventRequestBody
 open System.Collections.Generic
 
 module EventApiHandlerParams = 

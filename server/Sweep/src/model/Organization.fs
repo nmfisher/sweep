@@ -1,8 +1,9 @@
-namespace Sweep
+namespace Sweep.Model
+
 open System
 open System.Collections.Generic
 
-module OrganizationModel = 
+module Organization = 
 
   //#region Organization
 

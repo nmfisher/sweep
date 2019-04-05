@@ -7,7 +7,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open UserApiHandlerParams
 open UserApiServiceInterface
 open UserApiServiceImplementation
-open UserModel
+open Sweep.Model.User
 
 module UserApiHandler = 
 

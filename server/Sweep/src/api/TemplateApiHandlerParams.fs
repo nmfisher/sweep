@@ -1,6 +1,6 @@
 namespace Sweep
 
-open TemplateModel
+open Sweep.Model.Template
 open System.Collections.Generic
 
 module TemplateApiHandlerParams = 

@@ -1,21 +1,21 @@
 namespace Sweep
 
 open System
-open UserModel
+open Sweep.Model.User
 open Microsoft.FSharp.Linq.RuntimeHelpers
 open System.Linq.Expressions
 open FSharp.Control.AsyncSeqExtensions
 open FSharp.Control
-open TemplateModel
+open Sweep.Model.Template
 open System.Linq.Expressions
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Sql
 open Sweep.Data.Sql
 open Sweep.Exceptions
 open Newtonsoft.Json
-open ListenerModel
-open ListenerTemplateModel
-open MessageModel
+open Sweep.Model.Listener
+open Sweep.Model.ListenerTemplate
+open Sweep.Model.Message
 open System.Collections.Generic
 
 module CompositionRoot =

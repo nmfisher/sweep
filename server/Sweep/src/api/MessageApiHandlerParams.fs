@@ -1,6 +1,6 @@
 namespace Sweep
 
-open MessageModel
+open Sweep.Model.Message
 open System.Collections.Generic
 
 module MessageApiHandlerParams = 

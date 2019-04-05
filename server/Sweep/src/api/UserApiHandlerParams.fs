@@ -1,6 +1,6 @@
 namespace Sweep
 
-open UserModel
+open Sweep.Model.User
 open System.Collections.Generic
 
 module UserApiHandlerParams = 

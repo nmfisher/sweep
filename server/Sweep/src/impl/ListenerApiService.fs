@@ -1,6 +1,6 @@
 namespace Sweep
 
-open ListenerModel
+open Sweep.Model.Listener
 open ListenerApiHandlerParams
 open ListenerApiServiceInterface
 open System.Collections.Generic
@@ -84,8 +84,6 @@ module ListenerApiServiceImplementation =
           with
           | NotFoundException(msg) ->
             AddListenerTemplateStatusCode404 { content = msg }
-          | e ->          
-            AddListenerTemplateStatusCode500 { content = e.ToString() }
             
         member this.DeleteListenerTemplate ctx args =
           try
@@ -96,8 +94,6 @@ module ListenerApiServiceImplementation =
           with
           | NotFoundException(msg) ->
             DeleteListenerTemplateStatusCode404 { content = msg }
-          | e ->          
-            DeleteListenerTemplateStatusCode500 { content = e.ToString() }
 
         member this.ListListenerTemplates ctx args =
           try

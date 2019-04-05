@@ -1,7 +1,7 @@
 namespace Sweep
 
 open System
-open UserModel
+open Sweep.Model.User
 open Microsoft.FSharp.Linq.RuntimeHelpers
 open System.Linq.Expressions
 open FSharp.Control.AsyncSeqExtensions
