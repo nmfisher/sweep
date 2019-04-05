@@ -26,6 +26,7 @@ module EventQueueTests =
   [<Fact>]
   let ``Render default subject``() =
     task {
+      TestHelper.initialize() |> ignore
       let template = {
         Subject="";
         Content = "";
@@ -55,23 +56,7 @@ module EventQueueTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
-      // create a listener
-      {
-          EventName="some_event";
-          TemplateId="foo";
-          OrganizationId="";
-          Id="";
-      } 
-        |> encode
-        |> HttpPost client "/listeners"
-        |> isStatus (enum<HttpStatusCode>(200))
-      
-      let listener = 
-        HttpGet client "/listeners" 
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> JsonConvert.DeserializeObject<Listener[]>
-        |> Seq.head
+      TestHelper.initialize() |> ignore
       
       // create a template
       {
@@ -98,18 +83,55 @@ module EventQueueTests =
         |> JsonConvert.DeserializeObject<Template[]>
         |> Seq.head
 
-      // associate the template with a listener
+      // create a listener
       {
-        TemplateId = template.Id;
-        EventName = "my_event";
-        Id = "";
-        OrganizationId = ""
-      }
+          EventName="some_event";
+          TemplateId=template.Id;
+          OrganizationId="";
+          Id="";
+      } 
         |> encode
         |> HttpPost client "/listeners"
         |> isStatus (enum<HttpStatusCode>(200))
         |> ignore
-      let dequeued = Sweep.EventQueue.dequeue()
-      ()
+      
+      let listener = 
+        HttpGet client "/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      // create an event
+      { EventName = "some_event"; Params=dict ["key","val" :> obj] ; Id = ""; ReceivedOn=DateTime.Now; ProcessedOn=DateTime.Now; Error=""; OrganizationId="" }
+      |> encode
+      |> HttpPost client "/events"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore 
+
+      let dequeued = Sweep.EventQueue.dequeue() |> Seq.toArray
+      dequeued 
+      |> shouldBeLength 1
+      |> Seq.head 
+      |> (fun (x, y) -> 
+        x.EventName |> shouldEqual "some_event" |> ignore
+        y.Content |> shouldEqual "Hello" |> ignore)
     }
       
+  [<Fact>]
+  let ``Send test email``() =
+    task {
+      let event = { EventName = "some_event"; Params=dict ["key","val" :> obj] ; Id = ""; ReceivedOn=DateTime.Now; ProcessedOn=DateTime.Now; Error=""; OrganizationId="" }
+      let template =   {
+        Content="Hello";
+        SendTo=[|"nick.fisher@avinium.com"|];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
+        Id="";
+        OrganizationId="";
+        UserId="";
+        Deleted=false;
+      } 
+      Sweep.EventQueue.handle "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" "default@co" "Default" "Default Subject!" (event, template)
+    }
