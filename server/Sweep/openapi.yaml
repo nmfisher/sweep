@@ -102,7 +102,7 @@ paths:
         schema:
           type: string
         style: simple
-      - description: Listener id to delete
+      - description: ID of listener to return
         explode: false
         in: path
         name: listenerId
@@ -115,160 +115,9 @@ paths:
           description: Successfully deleted
         404:
           description: Listener not found
-        500:
-          description: Unknown error
       security:
       - Google: []
       summary: Deletes a Listener
-      tags:
-      - listener
-    get:
-      description: Returns a single listener
-      operationId: getListenerById
-      parameters:
-      - description: ID of listener to return
-        explode: false
-        in: path
-        name: listenerId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Listener'
-          description: successful operation
-        404:
-          description: Listener not found
-      summary: Find Listener by ID
-      tags:
-      - listener
-    put:
-      operationId: updateListener
-      parameters:
-      - description: ID of listener to return
-        explode: false
-        in: path
-        name: listenerId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        $ref: '#/components/requestBodies/Listener'
-      responses:
-        200:
-          description: Successfully updated
-        404:
-          description: Listener not found
-        422:
-          description: Validation exception
-      security:
-      - Google: []
-      summary: Update an existing Listener
-      tags:
-      - listener
-  /listeners/{listenerId}/templates:
-    get:
-      description: Returns a list of templates associated with this listener
-      operationId: listListenerTemplates
-      parameters:
-      - description: ID of listener
-        explode: false
-        in: path
-        name: listenerId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/ListenerTemplate'
-                type: array
-          description: successful operation
-        404:
-          description: Listener not found
-      summary: List Templates for Listener
-      tags:
-      - listener
-  /listeners/{listenerId}/templates/{templateId}:
-    delete:
-      operationId: deleteListenerTemplate
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
-      - description: Listener id to disassociate
-        explode: false
-        in: path
-        name: listenerId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Template id to delete
-        explode: false
-        in: path
-        name: templateId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        200:
-          description: Successfully deleted
-        404:
-          description: Listener not found
-      security:
-      - Google: []
-      summary: Disassociates a Template from a Listener
-      tags:
-      - listener
-    post:
-      operationId: addListenerTemplate
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
-      - description: Listener id to disassociate
-        explode: false
-        in: path
-        name: listenerId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Template id to associate with the Listener
-        explode: false
-        in: path
-        name: templateId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        200:
-          description: Successfully added
-        404:
-          description: Listener or template not found
-      security:
-      - Google: []
-      summary: Associates a Template to a Listener
       tags:
       - listener
   /messages:
@@ -613,36 +462,11 @@ components:
     Listener:
       example:
         organizationId: organizationId
-        deleted: true
         eventName: eventName
         id: id
-        userId: userId
-      properties:
-        id:
-          maxLength: 36
-          minLength: 36
-          type: string
-        eventName:
-          type: string
-        userId:
-          type: string
-        organizationId:
-          type: string
-        deleted:
-          type: boolean
-      required:
-      - eventName
-      - id
-      - organizationId
-      - userId
-      type: object
-    ListenerTemplate:
-      example:
-        organizationId: organizationId
-        listenerId: listenerId
         templateId: templateId
       properties:
-        listenerId:
+        id:
           maxLength: 36
           minLength: 36
           type: string
@@ -650,10 +474,12 @@ components:
           maxLength: 36
           minLength: 36
           type: string
+        eventName:
+          type: string
         organizationId:
           type: string
       required:
-      - listenerId
+      - eventName
       - organizationId
       - templateId
       type: object

@@ -8,7 +8,6 @@ open ListenerApiHandlerParams
 open ListenerApiServiceInterface
 open ListenerApiServiceImplementation
 open Sweep.Model.Listener
-open Sweep.Model.ListenerTemplate
 
 module ListenerApiHandler = 
 
@@ -37,25 +36,6 @@ module ListenerApiHandler =
         }
     //#endregion
 
-    //#region AddListenerTemplate
-    /// <summary>
-    /// Associates a Template to a Listener
-    /// </summary>
-
-    let AddListenerTemplate (pathParams:AddListenerTemplatePathParams) : HttpHandler = 
-      fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-          let serviceArgs = {   pathParams=pathParams;  } : AddListenerTemplateArgs
-          let result = ListenerApiService.AddListenerTemplate ctx serviceArgs
-          return! (match result with 
-                      | AddListenerTemplateDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> text resolved.content 
-                      | AddListenerTemplateStatusCode404 resolved ->
-                            setStatusCode 404 >=> text resolved.content 
-          ) next ctx
-        }
-    //#endregion
-
     //#region DeleteListener
     /// <summary>
     /// Deletes a Listener
@@ -70,65 +50,6 @@ module ListenerApiHandler =
                       | DeleteListenerDefaultStatusCode resolved ->
                             setStatusCode 200 >=> text resolved.content 
                       | DeleteListenerStatusCode404 resolved ->
-                            setStatusCode 404 >=> text resolved.content 
-                      | DeleteListenerStatusCode500 resolved ->
-                            setStatusCode 500 >=> text resolved.content 
-          ) next ctx
-        }
-    //#endregion
-
-    //#region DeleteListenerTemplate
-    /// <summary>
-    /// Disassociates a Template from a Listener
-    /// </summary>
-
-    let DeleteListenerTemplate (pathParams:DeleteListenerTemplatePathParams) : HttpHandler = 
-      fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-          let serviceArgs = {   pathParams=pathParams;  } : DeleteListenerTemplateArgs
-          let result = ListenerApiService.DeleteListenerTemplate ctx serviceArgs
-          return! (match result with 
-                      | DeleteListenerTemplateDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> text resolved.content 
-                      | DeleteListenerTemplateStatusCode404 resolved ->
-                            setStatusCode 404 >=> text resolved.content 
-          ) next ctx
-        }
-    //#endregion
-
-    //#region GetListenerById
-    /// <summary>
-    /// Find Listener by ID
-    /// </summary>
-
-    let GetListenerById (pathParams:GetListenerByIdPathParams) : HttpHandler = 
-      fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-          let serviceArgs = {   pathParams=pathParams;  } : GetListenerByIdArgs
-          let result = ListenerApiService.GetListenerById ctx serviceArgs
-          return! (match result with 
-                      | GetListenerByIdDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> json resolved.content 
-                      | GetListenerByIdStatusCode404 resolved ->
-                            setStatusCode 404 >=> text resolved.content 
-          ) next ctx
-        }
-    //#endregion
-
-    //#region ListListenerTemplates
-    /// <summary>
-    /// List Templates for Listener
-    /// </summary>
-
-    let ListListenerTemplates (pathParams:ListListenerTemplatesPathParams) : HttpHandler = 
-      fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-          let serviceArgs = {   pathParams=pathParams;  } : ListListenerTemplatesArgs
-          let result = ListenerApiService.ListListenerTemplates ctx serviceArgs
-          return! (match result with 
-                      | ListListenerTemplatesDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> json resolved.content 
-                      | ListListenerTemplatesStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx
         }
@@ -146,29 +67,6 @@ module ListenerApiHandler =
           return! (match result with 
                       | ListListenersDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-          ) next ctx
-        }
-    //#endregion
-
-    //#region UpdateListener
-    /// <summary>
-    /// Update an existing Listener
-    /// </summary>
-
-    let UpdateListener (pathParams:UpdateListenerPathParams) : HttpHandler = 
-      fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-          let! bodyParams = 
-            ctx.BindJsonAsync<UpdateListenerBodyParams>()
-          let serviceArgs = {   pathParams=pathParams; bodyParams=bodyParams } : UpdateListenerArgs
-          let result = ListenerApiService.UpdateListener ctx serviceArgs
-          return! (match result with 
-                      | UpdateListenerDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> text resolved.content 
-                      | UpdateListenerStatusCode404 resolved ->
-                            setStatusCode 404 >=> text resolved.content 
-                      | UpdateListenerStatusCode422 resolved ->
-                            setStatusCode 422 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

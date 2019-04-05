@@ -61,16 +61,9 @@ module CompositionRoot =
 
   // Listeners
   let addListener  = Sweep.Data.Listener.add
-  let getListener = Sweep.Data.Listener.get
   let deleteListener = Sweep.Data.Listener.delete
   let listListeners = Sweep.Data.Listener.list
-  let updateListener = Sweep.Data.Listener.update
       
   // Messages
   let getMessage = Sweep.Data.Message.get
   let listMessages = Sweep.Data.Message.list
-
-  // ListenerTemplates  
-  let listListenerTemplates = Sweep.Data.ListenerTemplate.list getListener
-  let createListenerTemplate = Sweep.Data.ListenerTemplate.create getListener 
-  let deleteListenerTemplate = Sweep.Data.ListenerTemplate.delete  

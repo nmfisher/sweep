@@ -10,10 +10,9 @@ module Listener =
 
   type Listener = {
     Id : string;
+    TemplateId : string;
     EventName : string;
-    UserId : string;
     OrganizationId : string;
-    Deleted : bool;
   }
   //#endregion
   

@@ -12,6 +12,7 @@ open TestHelper
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open System.Text
+open Newtonsoft.Json
 open Sweep.EventQueue
 open Sweep.Model.Template
 open Sweep.Model.Listener
@@ -52,21 +53,21 @@ module EventQueueTests =
   [<Fact>]
   let ``Dequeue and inspect generated SQL``() =
     task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
       // create a listener
-      let listener =
       {
           EventName="some_event";
-          UserId="";
+          TemplateId="foo";
           OrganizationId="";
           Id="";
-          Deleted=false;
       } 
-      |> encode
-      |> HttpPost client "/listeners"
-      |> isStatus (enum<HttpStatusCode>(200))
+        |> encode
+        |> HttpPost client "/listeners"
+        |> isStatus (enum<HttpStatusCode>(200))
       
       let listener = 
-        |> HttpGet client "/listeners" 
+        HttpGet client "/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener[]>
@@ -97,11 +98,18 @@ module EventQueueTests =
         |> JsonConvert.DeserializeObject<Template[]>
         |> Seq.head
 
-      // associate the template with the listenery       
-      let path = "/listeners/" + listener.Id + "/templates/" + template.Id
-
-      HttpPost client path null
+      // associate the template with a listener
+      {
+        TemplateId = template.Id;
+        EventName = "my_event";
+        Id = "";
+        OrganizationId = ""
+      }
+        |> encode
+        |> HttpPost client "/listeners"
         |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
       let dequeued = Sweep.EventQueue.dequeue()
+      ()
     }
       
