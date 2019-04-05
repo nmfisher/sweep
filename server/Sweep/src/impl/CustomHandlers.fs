@@ -84,4 +84,6 @@ module CustomHandlers =
   let configureServices (services:IServiceCollection) (authBuilder:AuthenticationBuilder) = 
     let serviceProvider = services.BuildServiceProvider()
     let settings = serviceProvider.GetService<IConfiguration>()
+    // let queue = EventQueue.EventQueue(settings)
+    // queue.Start() |> ignore
     services

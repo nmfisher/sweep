@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Content Include="openapi.yaml" />
+    <Content Include="appsettings.json" />
     <Compile Include="helpers/Helpers.fs" />
     <Compile Include="model/Event.fs" />
     <Compile Include="model/EventRequestBody.fs" />
@@ -74,6 +75,7 @@
     <Compile Include="impl/UserApiService.fs" />
     <Compile Include="api/UserApiHandler.fs" />
     <Compile Include="impl/ApiKeyValidation.fs" />
+    <Compile Include="impl/EventQueue.fs" />
     <Compile Include="impl/CustomHandlers.fs" />
     <Compile Include="auth/AuthSchemes.fs" />
     <Compile Include="Program.fs" />

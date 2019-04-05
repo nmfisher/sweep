@@ -778,6 +778,9 @@ components:
         - sendTo
         - sendTo
         deleted: true
+        subject: subject
+        fromName: fromName
+        fromAddress: fromAddress
         id: id
         userId: userId
         content: content
@@ -787,6 +790,12 @@ components:
           minLength: 36
           type: string
         content:
+          type: string
+        subject:
+          type: string
+        fromAddress:
+          type: string
+        fromName:
           type: string
         sendTo:
           items:
@@ -800,9 +809,12 @@ components:
           type: boolean
       required:
       - content
+      - fromAddress
+      - fromName
       - id
       - organizationId
       - sendTo
+      - subject
       - userId
       type: object
   securitySchemes:

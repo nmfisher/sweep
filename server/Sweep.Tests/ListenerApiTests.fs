@@ -34,10 +34,8 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      lock(dbLock) (fun () ->
-        initialize() |> ignore
-      )
-
+      initialize() |> ignore
+      
       let path = "/listeners"
       {
           EventName="some_event";
