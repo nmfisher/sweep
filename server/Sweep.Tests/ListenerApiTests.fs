@@ -99,6 +99,9 @@ module ListenerApiHandlerTests =
       {
           Content="Hello";
           SendTo=[|"foo@bar"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -214,6 +217,9 @@ module ListenerApiHandlerTests =
       {
           Content="Hello";
           SendTo=[|"foo@bar"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -330,6 +336,9 @@ module ListenerApiHandlerTests =
       {
           Content="Hello";
           SendTo=[|"foo@bar"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";

@@ -77,6 +77,9 @@ CREATE TABLE IF NOT EXISTS `Organization` (
 CREATE TABLE IF NOT EXISTS `Template` (
   `id` CHAR(36) NOT NULL,
   `content` TEXT NOT NULL,
+  `subject` TEXT NOT NULL,
+  `fromAddress` TEXT NOT NULL,
+  `fromName` TEXT NOT NULL,
   `sendTo` JSON NOT NULL,
   `userId` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL,

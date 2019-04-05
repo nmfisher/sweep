@@ -684,6 +684,9 @@ components:
       required:
         - id
         - content
+        - subject
+        - fromAddress
+        - fromName
         - sendTo
         - userId
         - organizationId
@@ -693,6 +696,12 @@ components:
           minLength: 36
           maxLength: 36
         content:
+          type: string
+        subject:
+          type: string
+        fromAddress:
+          type: string
+        fromName:
           type: string
         sendTo:
           type: array

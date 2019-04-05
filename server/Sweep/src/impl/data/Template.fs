@@ -18,11 +18,14 @@ module Template =
       value
 
 
-  let add (content:string) (sendTo:string[]) (organizationId:string) (userId:string) =
+  let add args organizationId userId =
     let ctx = Sql.GetDataContext()
     let template = ctx.SweepDevelopment.Template.Create()
-    template.Content <- content
-    template.SendTo <- JsonConvert.SerializeObject sendTo
+    template.Content <- args.Content
+    template.Subject <- args.Subject
+    template.FromName <- args.FromName
+    template.FromAddress <- args.FromAddress
+    template.SendTo <- JsonConvert.SerializeObject args.SendTo
     template.OrganizationId <- organizationId
     template.UserId <- userId
     template.Id <- Guid.NewGuid().ToString()
@@ -56,7 +59,7 @@ module Template =
     else
       row.MapTo<Template>(deserializeTemplate)
 
-  let update id content sendTo organizationId = 
+  let update id args organizationId = 
     let ctx = Sql.GetDataContext()
     let row = query {      
       for template in ctx.SweepDevelopment.Template do
@@ -67,8 +70,11 @@ module Template =
     if isNull row then
       raise (NotFoundException("Not found"))
     else
-      row.SendTo <- JsonConvert.SerializeObject sendTo
-      row.Content <- content
+      row.SendTo <- JsonConvert.SerializeObject args.SendTo
+      row.Content <- args.Content
+      row.Subject <- args.Subject
+      row.FromAddress <- args.FromAddress
+      row.FromName <- args.FromName
       ctx.SubmitUpdates()
 
   let list organizationId =

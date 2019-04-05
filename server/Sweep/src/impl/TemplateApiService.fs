@@ -42,15 +42,12 @@ module TemplateApiServiceImplementation =
         member this.AddTemplate ctx args =
             let orgId = getOrgId ctx.User.Claims
             let userId = getUserId ctx.User.Claims
-            
-            // if isNull args.bodyParams then
-            //   AddTemplateStatusCode422 { content = "Body cannot be empty" }
-            // else 
+
             match validateTemplate args.bodyParams.Content args.bodyParams.SendTo  with
             | Some err ->
               AddTemplateStatusCode422 { content = err  }  
             | None ->            
-              CompositionRoot.addTemplate args.bodyParams.Content args.bodyParams.SendTo orgId userId |> ignore
+              CompositionRoot.addTemplate args.bodyParams orgId userId |> ignore
               AddTemplateDefaultStatusCode { content = "OK" }
 
         member this.DeleteTemplate ctx args =
@@ -85,7 +82,7 @@ module TemplateApiServiceImplementation =
             | Some err ->
               UpdateTemplateStatusCode422 { content = err }
             | None ->
-              CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams.Content args.bodyParams.SendTo orgId
+              CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams orgId
               UpdateTemplateDefaultStatusCode { content = "OK" }
           with
           | NotFoundException(msg) ->

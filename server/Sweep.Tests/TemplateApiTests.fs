@@ -23,6 +23,19 @@ module TemplateApiHandlerTests =
   // ---------------------------------
   // Tests
   // ---------------------------------
+  let getTemplate () = 
+    {
+          Content="Hello";
+          SendTo=[|"foo@bar"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
+          Id="";
+          OrganizationId="";
+          UserId="";
+          Deleted=false;
+      } 
+      
   [<Fact>]
   let ``AddTemplate - Create a new Template returns 200 where Success`` () =
     task {
@@ -31,14 +44,7 @@ module TemplateApiHandlerTests =
       initialize()
 
       let path = "/templates"
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
@@ -47,6 +53,9 @@ module TemplateApiHandlerTests =
       {
           Content="Hello {{recipient}}";
           SendTo=[|"{{recipient}}"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -66,9 +75,14 @@ module TemplateApiHandlerTests =
       initialize()
 
       let path = "/templates"
+
+      // missing content
       {
           Content="";
           SendTo=[|"foo@bar"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -78,10 +92,14 @@ module TemplateApiHandlerTests =
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
-
+      
+      // missing sendTo
       {
           Content="Some content";
           SendTo=[||];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -92,9 +110,13 @@ module TemplateApiHandlerTests =
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
 
+      // malformed sendTo
       {
           Content="Some content";
           SendTo=[|"not an email"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -105,9 +127,13 @@ module TemplateApiHandlerTests =
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
 
+      // malformed sendTo
       {
           Content="Some content";
           SendTo=[|"{{missing}}"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -127,14 +153,7 @@ module TemplateApiHandlerTests =
       initialize()
 
       let path = "/templates"
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
@@ -189,14 +208,7 @@ module TemplateApiHandlerTests =
       initialize()
 
       let path = "/templates"
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
@@ -218,7 +230,11 @@ module TemplateApiHandlerTests =
         |> (fun x ->
           x.Content |> shouldEqual "Hello" |> ignore
           x.SendTo |> shouldBeLength 1 |> ignore
-          x.SendTo.[0] |> shouldEqual "foo@bar" |> ignore)        
+          x.SendTo.[0] |> shouldEqual "foo@bar" |> ignore
+          x.Subject |> shouldEqual "Some subject" |> ignore
+          x.FromAddress |> shouldEqual "baz@qux" |> ignore
+          x.FromName |> shouldEqual "Baz" |> ignore
+          )        
       }
 
   [<Fact>]
@@ -243,14 +259,7 @@ module TemplateApiHandlerTests =
       initialize()
 
       let path = "/templates"
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
@@ -259,6 +268,9 @@ module TemplateApiHandlerTests =
       {
           Content="Hello Again";
           SendTo=[|"baz@qux"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -286,14 +298,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
       // create a template then fetch its id
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPost client "/templates"
       |> isStatus (enum<HttpStatusCode>(200))
@@ -309,6 +314,9 @@ module TemplateApiHandlerTests =
       {
           Content="Hello Again";
           SendTo=[|"foo@bar";"baz@qux"|];
+          Subject="Some other subject";
+          FromAddress="me@you";
+          FromName="Gaz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -329,6 +337,9 @@ module TemplateApiHandlerTests =
               x.SendTo |> shouldBeLength 2 |> ignore
               x.SendTo |> Seq.head |> shouldEqual "foo@bar" |> ignore
               x.SendTo |> Seq.last |> shouldEqual "baz@qux" |> ignore
+              x.Subject |> shouldEqual "Some other subject" |> ignore
+              x.FromAddress |> shouldEqual "me@you" |> ignore
+              x.FromName |> shouldEqual "Gaz" |> ignore
               )
         |> ignore
     }
@@ -340,14 +351,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
       let path = "/templates/{templateId}"
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPut client path
       |> isStatus (enum<HttpStatusCode>(404))
@@ -361,14 +365,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      getTemplate()
       |> encode
       |> HttpPost client "/templates"
       |> isStatus (enum<HttpStatusCode>(200))
@@ -384,6 +381,9 @@ module TemplateApiHandlerTests =
       {
           Content="";
           SendTo=[|"baz@qux"|];
+          Subject="Some subject";
+          FromAddress="baz@qux";
+          FromName="Baz";
           Id="";
           OrganizationId="";
           UserId="";
@@ -397,6 +397,9 @@ module TemplateApiHandlerTests =
       {
         Content="Hello Again";
         SendTo=[||];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
         Id="";
         OrganizationId="";
         UserId="";
