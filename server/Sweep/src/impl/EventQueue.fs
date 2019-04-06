@@ -10,37 +10,35 @@ open Sweep.Model.Template
 open Sweep.Model.Listener
 open System
 open FSharp.Data.Sql
+open System.Net
+open Sweep.Model.Message
 
 
 module EventQueue = 
+
+  type MailDefaults = {
+    FromAddress:string;
+    FromName:string;
+    Subject:string;
+  }    
+
+  let (<=>) a b = 
+    match String.IsNullOrWhiteSpace(a) with
+    | true ->
+      b 
+    | false ->
+      a
+
+  FSharp.Data.Sql.Common.QueryEvents.SqlQueryEvent |> Microsoft.FSharp.Control.Event.add (printfn "Executing SQL: %O") |> ignore
   
-  let send (apiKey:string) from subject recipients plainTextContent htmlContent  =
-    let client = SendGridClient(apiKey)
-    MailHelper.CreateSingleEmailToMultipleRecipients(from, recipients, subject, plainTextContent, htmlContent, true)
+  let send (client:ISendGridClient) (message:Message)  =
+    let from = EmailAddress(message.FromAddress, message.FromName)
+    let recipients = message.SendTo |> Seq.map EmailAddress |> ResizeArray<EmailAddress>
+    let message = MailHelper.CreateSingleEmailToMultipleRecipients(from, recipients, message.Subject, message.Content, message.Content, true)
+    message
     |> client.SendEmailAsync
     |> Async.AwaitTask
     |> Async.RunSynchronously
-
-  let getFrom (template:Template) defaultFromName defaultFromAddress =
-    let fromAddress = (fun () -> 
-        match template.FromAddress with 
-          | null ->
-            defaultFromAddress
-          | _ ->
-            template.FromAddress)
-
-    let fromName = (fun () ->
-        match template.FromName with 
-          | null ->
-            defaultFromName
-          | _ ->
-            template.FromName)
-    EmailAddress(fromAddress(), fromName())
-
-  let getRecipients (template:Template) =
-    template.SendTo
-    |> Seq.map (fun x -> EmailAddress(x))
-    |> ResizeArray<EmailAddress>
 
   let getHtmlContent (template:Template) (event:Event) =
     StubbleBuilder().Build().Render(template.Content, event.Params)
@@ -55,22 +53,41 @@ module EventQueue =
     | false ->
       StubbleBuilder().Build().Render(template.Subject, event.Params)    
 
-  let handle apiKey defaultFromAddress defaultFromName defaultSubject (event, template) =
-    let from = getFrom template defaultFromAddress defaultFromAddress
-    let subject = getSubject template event defaultSubject
-    let recipients = getRecipients template
-    let plainTextContent = getPlainTextContent template event
-    let htmlContent = getHtmlContent template event
+  let handle client mailDefaults onSuccess onError (event:Event, template:Template) =
+    let message = 
+      {
+          Id = Guid.NewGuid().ToString();
+          FromAddress = (<=>) template.FromAddress  mailDefaults.FromAddress;
+          FromName = (<=>) template.FromName  mailDefaults.FromName;
+          Subject = (<=>) template.Subject  mailDefaults.Subject;
+          Content = getHtmlContent template event;
+          SendTo = template.SendTo;
+          OrganizationId = template.OrganizationId
+      } : Message
+    
+    let resp = send client message 
+    
+    match resp.StatusCode with 
+    | HttpStatusCode.Accepted ->
+        onSuccess event message
+    | _ ->
+        resp.Body.ReadAsStringAsync()
+          |> Async.AwaitTask
+          |> Async.RunSynchronously
+          |> onError event 
 
-    let foo = send apiKey from subject recipients plainTextContent htmlContent
-    ()
-
-  type EventListener = {
-    eventId: string;
-    listenerId: string
-  }
-
-  FSharp.Data.Sql.Common.QueryEvents.SqlQueryEvent |> Microsoft.FSharp.Control.Event.add (printfn "Executing SQL: %O") |> ignore
+  let update (event:Event) error =
+    let ctx = Sweep.Data.Sql.Sql.GetDataContext()
+    let row = 
+      query {      
+        for row in ctx.SweepDevelopment.Event do
+        where (row.Id = event.Id)
+        select (row)
+        exactlyOneOrDefault
+      }     
+    row.ProcessedOn <- Some(DateTime.Now)
+    row.Error <- Some(error)
+    ctx.SubmitUpdates()    
     
   let dequeue () = 
     let ctx = Sweep.Data.Sql.Sql.GetDataContext()
@@ -89,7 +106,21 @@ module EventQueue =
     printfn "%A" DateTime.Now
     timer.Start()
     printfn "%A" "A-OK"
+    let client = SendGridClient(apiKey)
+    let mailDefaults = {
+      FromAddress=defaultFromAddress;
+      FromName=defaultFromName;
+      Subject=defaultSubject;
+    }
+    
+    let onSuccess (event:Event) (message:Message) = 
+      update event null
+      Message.save message
+
+    let onError event error =
+      update event error
+    
     while true do
-      Async.AwaitEvent (timer.Elapsed)
-      dequeue() |> Seq.map (handle apiKey defaultFromAddress defaultFromName defaultSubject)
+      Async.AwaitEvent (timer.Elapsed) |> ignore
+      dequeue() |> Seq.map (handle client mailDefaults onSuccess onError) 
       printfn "%A" DateTime.Now

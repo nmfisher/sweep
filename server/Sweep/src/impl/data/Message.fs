@@ -39,3 +39,15 @@ module Message =
     } 
     |> Seq.map (fun x -> x.MapTo<Message>(deserializeMessage))
     |> Seq.toArray
+
+  let save message =
+    let ctx = Sql.GetDataContext()
+    let row = ctx.SweepDevelopment.Message.Create()
+    row.Content <- message.Content
+    row.Subject <- message.Subject
+    row.FromName <- message.FromName
+    row.FromAddress <- message.FromAddress
+    row.SendTo <- JsonConvert.SerializeObject message.SendTo
+    row.OrganizationId <- message.OrganizationId
+    row.Id <- message.Id
+    ctx.SubmitUpdates()

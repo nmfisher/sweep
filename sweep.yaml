@@ -502,31 +502,7 @@ components:
           type: string
         organizationId:
           type: string
-    Message:
-      type: object
-      required:
-        - id
-        - content
-        - sentTo
-        - userId
-        - organizationId
-      properties:
-        id:
-          type: string
-          minLength: 36
-          maxLength: 36
-        content:
-          type: string
-          example: <html><body>Hi!</body></html>
-        sentTo:
-          type: array
-          items:
-            type: string
-        userId:
-          type: string
-        organizationId:
-          type: string
-    Template:
+    BaseMessage:
       type: object
       required:
         - id
@@ -535,7 +511,6 @@ components:
         - fromAddress
         - fromName
         - sendTo
-        - userId
         - organizationId
       properties:
         id:
@@ -554,12 +529,22 @@ components:
           type: array
           items: 
             type: string
-        userId  :
-          type: string
         organizationId:
           type: string
-        deleted:
-          type: boolean
+    Message:
+      allOf:
+        - $ref: '#/components/schemas/BaseMessage'
+    Template:
+      allOf:
+        - $ref: '#/components/schemas/BaseMessage'
+        - type: object
+          required:
+            - userId
+          properties:
+            deleted:
+              type: boolean
+            userId:
+              type: string
   requestBodies:
     Listener:
       content:

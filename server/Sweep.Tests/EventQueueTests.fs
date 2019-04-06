@@ -8,15 +8,20 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.TestHost
+open System.Threading.Tasks
 open TestHelper
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
-open System.Text
+open Giraffe
+open Foq
 open Newtonsoft.Json
 open Sweep.EventQueue
 open Sweep.Model.Template
 open Sweep.Model.Listener
 open Sweep.Model.Event
+open SendGrid
+open System.Text
+open Microsoft.AspNetCore.Http.Headers
 
 module EventQueueTests =
 
@@ -48,7 +53,13 @@ module EventQueueTests =
          OrganizationId = "123";
          Error = "";
       }
-      getSubject template event "foo" |> shouldEqual "foo" |> ignore
+       let defaults = {
+          FromAddress = "default@co";
+          FromName = "Default"; 
+          Subject ="";
+      }
+
+      getSubject defaults event "foo" |> shouldEqual "foo" |> ignore
     }
   
   [<Fact>]
@@ -121,7 +132,20 @@ module EventQueueTests =
   [<Fact>]
   let ``Send test email``() =
     task {
-      let event = { EventName = "some_event"; Params=dict ["key","val" :> obj] ; Id = ""; ReceivedOn=DateTime.Now; ProcessedOn=DateTime.Now; Error=""; OrganizationId="" }
+      let resp = new Response(statusCode=HttpStatusCode.Accepted, responseBody=(encode "OK"), responseHeaders=null)
+
+      let client = Mock<ISendGridClient>.With(fun c -> <@ c.SendEmailAsync(any()) --> Task.FromResult(resp) @>)
+
+      let event = { 
+        EventName = "some_event"; 
+        Params=dict ["key","val" :> obj] ; 
+        Id = ""; 
+        ReceivedOn=DateTime.Now; 
+        ProcessedOn=DateTime.Now; 
+        Error=""; 
+        OrganizationId=""
+      }
+
       let template =   {
         Content="Hello";
         SendTo=[|"nick.fisher@avinium.com"|];
@@ -133,5 +157,22 @@ module EventQueueTests =
         UserId="";
         Deleted=false;
       } 
-      Sweep.EventQueue.handle "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" "default@co" "Default" "Default Subject!" (event, template)
+
+      let defaults = {
+          FromAddress = "default@co";
+          FromName = "Default"; 
+          Subject ="Default Subject!";
+      }
+
+      let mutable success = false
+      let onSuccess evt msg = 
+        success <- true
+      
+      let onError evt err = 
+        ()
+
+      Sweep.EventQueue.handle client defaults onSuccess onError (event, template)
+
+      Assert.True(success)
+      
     }

@@ -6,6 +6,20 @@
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `BaseMessage` generated from model 'BaseMessage'
+--
+
+CREATE TABLE IF NOT EXISTS `BaseMessage` (
+  `id` CHAR(36) NOT NULL,
+  `content` TEXT NOT NULL,
+  `subject` TEXT NOT NULL,
+  `fromAddress` TEXT NOT NULL,
+  `fromName` TEXT NOT NULL,
+  `sendTo` JSON NOT NULL,
+  `organizationId` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Table structure for table `Event` generated from model 'Event'
 --
 
@@ -46,8 +60,10 @@ CREATE TABLE IF NOT EXISTS `Listener` (
 CREATE TABLE IF NOT EXISTS `Message` (
   `id` CHAR(36) NOT NULL,
   `content` TEXT NOT NULL,
-  `sentTo` JSON NOT NULL,
-  `userId` TEXT NOT NULL,
+  `subject` TEXT NOT NULL,
+  `fromAddress` TEXT NOT NULL,
+  `fromName` TEXT NOT NULL,
+  `sendTo` JSON NOT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -70,9 +86,9 @@ CREATE TABLE IF NOT EXISTS `Template` (
   `fromAddress` TEXT NOT NULL,
   `fromName` TEXT NOT NULL,
   `sendTo` JSON NOT NULL,
-  `userId` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL,
-  `deleted` TINYINT(1) DEFAULT NULL
+  `deleted` TINYINT(1) DEFAULT NULL,
+  `userId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

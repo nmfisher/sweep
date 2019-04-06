@@ -30,11 +30,13 @@ module MessageApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
       let id = (Guid.NewGuid().ToString())
-      sprintf "INSERT INTO message (id,content,sentTo,userId,organizationId) VALUES('%s', '%s', '%s', '%s', '%s')" 
+      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s')" 
         id
+        ""
         "some content"
         "[\"user@foo.com\"]"
-        "userId"
+        "me@you.com"
+        "Me"
         "orgId"
         |> TestHelper.execute 
       
@@ -65,11 +67,13 @@ module MessageApiHandlerTests =
 
       let id = (Guid.NewGuid().ToString())
 
-      sprintf "INSERT INTO message (id,content,sentTo,userId,organizationId) VALUES('%s', '%s', '%s', '%s', '%s')" 
+      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s')" 
         id
+        ""
         "some content"
         "[\"user@foo.com\"]"
-        "userId"
+        "me@you.com"
+        "Me"
         "orgId"
         |> TestHelper.execute 
 
@@ -82,6 +86,6 @@ module MessageApiHandlerTests =
         |> Seq.head
         |> (fun x -> 
           x.Content |> shouldEqual "some content" |> ignore
-          x.SentTo |> shouldBeLength 1 |> Seq.head |> shouldEqual "user@foo.com" |> ignore)
+          x.SendTo |> shouldBeLength 1 |> Seq.head |> shouldEqual "user@foo.com" |> ignore)
     }
 

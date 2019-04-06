@@ -2,6 +2,7 @@ namespace Sweep.Model
 
 open System
 open System.Collections.Generic
+open Sweep.Model.BaseMessage
 
 module Template = 
 
@@ -15,9 +16,9 @@ module Template =
     FromAddress : string;
     FromName : string;
     SendTo : string[];
-    UserId : string;
     OrganizationId : string;
     Deleted : bool;
+    UserId : string;
   }
   //#endregion
   

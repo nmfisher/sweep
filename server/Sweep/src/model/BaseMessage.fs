@@ -2,14 +2,13 @@ namespace Sweep.Model
 
 open System
 open System.Collections.Generic
-open Sweep.Model.BaseMessage
 
-module Message = 
+module BaseMessage = 
 
-  //#region Message
+  //#region BaseMessage
 
 
-  type Message = {
+  type BaseMessage = {
     Id : string;
     Content : string;
     Subject : string;

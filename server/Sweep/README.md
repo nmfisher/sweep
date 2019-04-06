@@ -6,13 +6,14 @@ A [Giraffe](https://github.com/giraffe-fsharp/Giraffe) server stub for the Sweep
 
 The following models have been auto-generated from the provided OpenAPI schema:
 
-model/EventModel.fs
+model/BaseMessageModel.fs
 model/UserModel.fs
 model/TemplateModel.fs
 model/OrganizationModel.fs
 model/MessageModel.fs
 model/ListenerModel.fs
 model/EventRequestBodyModel.fs
+model/EventModel.fs
 
 ## Operations
 

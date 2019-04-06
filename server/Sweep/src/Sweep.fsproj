@@ -38,6 +38,7 @@
     <Content Include="openapi.yaml" />
     <Content Include="appsettings.json" />
     <Compile Include="helpers/Helpers.fs" />
+    <Compile Include="model/BaseMessage.fs" />
     <Compile Include="model/Event.fs" />
     <Compile Include="model/EventRequestBody.fs" />
     <Compile Include="model/User.fs" />

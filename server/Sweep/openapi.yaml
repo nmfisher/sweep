@@ -471,8 +471,6 @@ components:
           minLength: 36
           type: string
         templateId:
-          maxLength: 36
-          minLength: 36
           type: string
         eventName:
           type: string
@@ -565,51 +563,7 @@ components:
       required:
       - id
       type: object
-    Message:
-      example:
-        organizationId: organizationId
-        sentTo:
-        - sentTo
-        - sentTo
-        id: id
-        userId: userId
-        content: <html><body>Hi!</body></html>
-      properties:
-        id:
-          maxLength: 36
-          minLength: 36
-          type: string
-        content:
-          example: <html><body>Hi!</body></html>
-          type: string
-        sentTo:
-          items:
-            type: string
-          type: array
-        userId:
-          type: string
-        organizationId:
-          type: string
-      required:
-      - content
-      - id
-      - organizationId
-      - sentTo
-      - userId
-      type: object
-    Template:
-      example:
-        organizationId: organizationId
-        sendTo:
-        - sendTo
-        - sendTo
-        deleted: true
-        subject: subject
-        fromName: fromName
-        fromAddress: fromAddress
-        id: id
-        userId: userId
-        content: content
+    BaseMessage:
       properties:
         id:
           maxLength: 36
@@ -627,12 +581,8 @@ components:
           items:
             type: string
           type: array
-        userId:
-          type: string
         organizationId:
           type: string
-        deleted:
-          type: boolean
       required:
       - content
       - fromAddress
@@ -641,8 +591,21 @@ components:
       - organizationId
       - sendTo
       - subject
-      - userId
       type: object
+    Message:
+      allOf:
+      - $ref: '#/components/schemas/BaseMessage'
+    Template:
+      allOf:
+      - $ref: '#/components/schemas/BaseMessage'
+      - properties:
+          deleted:
+            type: boolean
+          userId:
+            type: string
+        required:
+        - userId
+        type: object
   securitySchemes:
     Google:
       flows:
