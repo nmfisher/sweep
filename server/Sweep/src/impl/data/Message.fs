@@ -11,7 +11,7 @@ module Message =
     match prop with
      | "Id" ->
         value.ToString() :> obj
-     | "SentTo" ->   
+     | "SendTo" ->   
         JsonConvert.DeserializeObject<string[]> (value.ToString()) :> obj
      | _ -> 
         value
