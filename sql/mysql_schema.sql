@@ -96,10 +96,10 @@ CREATE TABLE IF NOT EXISTS `Template` (
 --
 
 CREATE TABLE IF NOT EXISTS `User` (
-  `id` CHAR(36) NOT NULL,
+  `id` VARCHAR(100) NOT NULL,
   `username` TEXT DEFAULT NULL,
   `password` TEXT DEFAULT NULL,
   `apiKey` TEXT DEFAULT NULL,
-  `organizationId` TEXT DEFAULT NULL
+  `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

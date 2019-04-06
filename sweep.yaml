@@ -489,11 +489,12 @@ components:
       type: object
       required:
         - id
+        - organizationId
       properties:
         id:
           type: string
-          minLength: 36
-          maxLength: 36
+          minLength: 1
+          maxLength: 100
         username:
           type: string
         password:
@@ -539,7 +540,7 @@ components:
         - $ref: '#/components/schemas/BaseMessage'
         - type: object
           required:
-            - userId
+            - userId  
           properties:
             deleted:
               type: boolean

@@ -43,7 +43,7 @@ module CustomHandlers =
         let email = (ctx.User.["email"].ToString())
         let orgId = fetchOrCreateUser id email 
 
-        ctx.Identity.AddClaim(new Claim(ClaimTypes.GroupSid, orgId))
+        ctx.Identity.AddClaim(Claim(ClaimTypes.GroupSid, orgId))
     } :> Tasks.Task
 
   let setOAuthOptions name (options:OAuthOptions) scopes (settings:IConfiguration) = 
@@ -63,6 +63,9 @@ module CustomHandlers =
   
   let logout = signOut CookieAuthenticationDefaults.AuthenticationScheme >=> text "Logged out"
 
+  let redirectToLogin = 
+    htmlFile "view/login.html" 
+
   let challenge (scheme : string) (redirectUri : string) : HttpHandler =
         fun (next : HttpFunc) (ctx : HttpContext) ->
             task {
@@ -75,11 +78,16 @@ module CustomHandlers =
   let handlers : HttpHandler list = [
     GET >=> 
       choose [
-        route "/login-with-GitHub" >=> challenge "GitHub" "/events"
-        route "/login-with-Google" >=> challenge "Google" "/events"
+        route "/login-with-GitHub" >=> challenge "GitHub" "/dashboard"
+        route "/login-with-Google" >=> challenge "Google" "/dashboard"
+        route "/" >=> requiresAuthentication redirectToLogin >=> htmlFile "wwwroot/index.html"
+        route "/dashboard" >=> requiresAuthentication redirectToLogin >=> htmlFile "wwwroot/index.html"
         route "/logout" >=> logout
       ]
   ]
+
+  let configureApp (app : IApplicationBuilder) =
+    app
 
   let configureServices (services:IServiceCollection) (authBuilder:AuthenticationBuilder) = 
     let serviceProvider = services.BuildServiceProvider()

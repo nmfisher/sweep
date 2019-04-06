@@ -549,8 +549,8 @@ components:
         username: username
       properties:
         id:
-          maxLength: 36
-          minLength: 36
+          maxLength: 100
+          minLength: 1
           type: string
         username:
           type: string
@@ -562,6 +562,7 @@ components:
           type: string
       required:
       - id
+      - organizationId
       type: object
     BaseMessage:
       properties:

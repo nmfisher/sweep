@@ -38,30 +38,16 @@ module App =
   // Web app
   // ---------------------------------
 
-  let loginView =
-    html [] [
-        head [] [
-            title [] [ str "Welcome" ]
-        ]
-        body [] [
-            h1 [] [ str "Welcome" ]
-            a [_href "/login-with-GitHub"] [ str "Login with GitHub" ]
-            a [_href "/login-with-Google"] [ str "Login with Google" ]
-            a [_href "/login-with-api_key"] [ str "Login with api_key" ]
-        ]
-    ]
-  
-  let redirectToLogin : HttpHandler = 
-    htmlView loginView    
-
   let HttpGet = GET
   let HttpPost = POST
   let HttpPut = PUT
   let HttpDelete = DELETE
 
+  let redirectToLogin : HttpHandler = 
+    CustomHandlers.redirectToLogin
+
   let webApp =
     choose (CustomHandlers.handlers @ [
-      HttpGet >=> route "/login" >=> redirectToLogin
       HttpPost >=> route "/events" >=> requiresAuthentication redirectToLogin >=> EventApiHandler.AddEvent;
       HttpGet >=> routeBind<GetEventByIdPathParams> "/events/{eventId}"  (fun x -> requiresAuthentication redirectToLogin >=> EventApiHandler.GetEventById x);
       HttpGet >=> route "/events" >=> requiresAuthentication redirectToLogin >=> EventApiHandler.ListEvents;
@@ -93,6 +79,8 @@ module App =
       .UseAuthentication()
       .UseResponseCaching()
       .UseGiraffe webApp
+    CustomHandlers.configureApp app    |> ignore
+    ()
 
   let configureServices (services : IServiceCollection) =
     services
@@ -100,6 +88,7 @@ module App =
           .AddGiraffe()
           |> AuthSchemes.configureServices      
           |> CustomHandlers.configureServices services
+          |> ignore
     services.AddDataProtection() |> ignore
 
   let configureLogging (loggerBuilder : ILoggingBuilder) =

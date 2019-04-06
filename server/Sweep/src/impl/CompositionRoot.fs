@@ -39,6 +39,7 @@ module CompositionRoot =
     let ctx = Sql.GetDataContext()
     let user = ctx.SweepDevelopment.User.Create()
     user.Id <- id
+    user.OrganizationId <- id // TODO - need to allow multi-user organizations
     ctx.SubmitUpdates()
 
   let getUser id : User option = 
