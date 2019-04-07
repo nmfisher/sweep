@@ -52,7 +52,12 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import axios from 'axios';
+axios.defaults.withCredentials = true;
+import { EventApiFp, EventApiFactory } from '../lib/dist/api.js';
+import { Configuration, ConfigurationParameters } from '../lib/dist/configuration.js';
+
 export default {
   data () {
     return {
@@ -200,6 +205,13 @@ export default {
     complete (index) {
       this.list[index] = !this.list[index]
     }
+  },
+  mounted() {
+    var vm = this;
+    EventApiFactory().listEvents({withCredentials:true}).then((resp) => {
+      vm.items = resp;
+      console.log(vm.items);
+    });  
   }
 }
 </script>

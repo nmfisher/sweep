@@ -122,38 +122,38 @@ Sweep.raise("signup", {"username":"bill@gates.com", firstName:"Bill", lastName:"
           color="tertiary"
           title="Events & Templates"
         >
-        <v-flex 
-            xs1
-        >
-            <v-btn
-              href="https://www.creative-tim.com/product/vuetify-material-dashboard"
-              target="_blank"
-              color="secondary"
-              block
-            >
-                Create
-            </v-btn>
-        </v-flex>
+        <v-flex
+            xs12
+            md6
+          >
+            <v-text-field
+              label="Event Name"
+              class="purple-input" 
+              @keyup.enter="addEvent"
+              v-model="newListener"/>
+          </v-flex>
           <v-data-table
+            v-if="listeners.length > 0"
             :headers="headers"
-            :items="items"
+            :items="listeners"
+            no-data-text="None configured."
             hide-actions
           >
             <template
               slot="headerCell"
               slot-scope="{ header }"
             >
-              <span
-                class="subheading font-weight-light text-success text--darken-3"
-                v-text="header.text"
-              />
             </template>
             <template
               slot="items"
               slot-scope="{ item }"
             >
-              <td><span>{{ item.event }}</span></td>
-              <td class="">
+              <td>
+                <h3>{{ item.eventName }}</h3>
+                <v-icon slot="activator" @click="showingCodeDialog = true" style="cursor:pointer">mdi-code-not-equal-variant</v-icon>
+                <v-icon @click="showingTemplateDialog = true">
+                    mdi-animation
+                </v-icon>
                 <v-menu
                 bottom
                 left
@@ -180,13 +180,6 @@ Sweep.raise("signup", {"username":"bill@gates.com", firstName:"Bill", lastName:"
                     </v-card>
                 </v-menu>
               </td>
-            <td>
-                <v-icon slot="activator" @click="showingCodeDialog = true" style="cursor:pointer">mdi-code-not-equal-variant</v-icon>
-            </td>
-            <td>
-                <v-icon @click="showingTemplateDialog = true">
-                    mdi-animation
-                </v-icon></td>
             </template>
           </v-data-table>
         </material-card>
@@ -195,129 +188,119 @@ Sweep.raise("signup", {"username":"bill@gates.com", firstName:"Bill", lastName:"
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from 'vue'
 import VuePrism from 'vue-prism'
 Vue.use(VuePrism);
 import 'prismjs/components/prism-csharp'
 import 'prismjs/components/prism-fsharp'
+
 import 'prismjs/components/prism-python'
 import 'prismjs/themes/prism-twilight.css'
 import 'jodit/build/jodit.min.css'
 import AceEditorOnVue from 'ace-editor-on-vue';
 import JoditVue from 'jodit-vue'
 import Jodit from 'jodit';
+import { TemplateApiFactory, ListenerApiFactory } from '../lib';
+
 export default {
-    methods: {
-        editorInit: function () {
-            require('brace/ext/language_tools') //language extension prerequsite...
-            require('brace/mode/html')                
-            require('brace/mode/javascript')    //language
-            require('brace/mode/less')
-            require('brace/theme/chrome')
-            require('brace/snippets/javascript') //snippet
-        }
-    },
-    components: { JoditVue, 
-        editor: require('vue2-ace-editor'),
-    },
-  data: () => ({
-   content: `<html style="background:#eee;color:#333;font-family:'Helvetica'">
-   <h1>Hi %%username%%</h1>
-   <p>Thanks for signing up!</p>
-   <p>Best regards,</p>
-   <p>Bill</p>
-   </html>`,
-    config: {
-        lang: 'json', // default `json`
-        theme: 'xcode', // default `xcode`
-        options: { // options for Ace
-            useSoftTabs: true, // default 2 space characters for indent
-            tabSize: 2
-        }
-    },
-    joditConfig:{
-        defaultMode: Jodit.MODE_SOURCE,
-        buttons: ['source',
-        '|',
-        'fontsize',
-        'font',
-        'bold',
-        'strikethrough',
-        'underline',
-        'italic',
-        '|',
-        'superscript',
-        'subscript',
-        '|',
-        'ul',
-        'ol',
-        '|',
-        'outdent',
-        'indent',
-        '|',
-        'brush',
-        '|',
-        'image',
-        'table',
-        'link',
-        '|',
-        'align',
-        'hr',
-        '|',
-        'symbol'],
-        toolbarButtonSize: "large"
-    },
-    showingCodeDialog:false,
-    showingTemplateDialog:false,
-    parameters:{"username":"bill@gates.com", 
-        "firstName":"Bill",
-        "lastName":"Gates"
+   data: () => ({
+    content: `<html style="background:#eee;color:#333;font-family:'Helvetica'">
+    <h1>Hi %%username%%</h1>
+    <p>Thanks for signing up!</p>
+    <p>Best regards,</p>
+    <p>Bill</p>
+    </html>`,
+      config: {
+          lang: 'json', // default `json`
+          theme: 'xcode', // default `xcode`
+          options: { // options for Ace
+              useSoftTabs: true, // default 2 space characters for indent
+              tabSize: 2
+          }
+      },
+      joditConfig:{
+          defaultMode: Jodit.MODE_SOURCE,
+          buttons: ['source',
+          '|',
+          'fontsize',
+          'font',
+          'bold',
+          'strikethrough',
+          'underline',
+          'italic',
+          '|',
+          'superscript',
+          'subscript',
+          '|',
+          'ul',
+          'ol',
+          '|',
+          'outdent',
+          'indent',
+          '|',
+          'brush',
+          '|',
+          'image',
+          'table',
+          'link',
+          '|',
+          'align',
+          'hr',
+          '|',
+          'symbol'],
+          toolbarButtonSize: "large"
+      },
+      showingCodeDialog:false,
+      showingTemplateDialog:false,
+      parameters:{
+          "username":"bill@gates.com", 
+          "firstName":"Bill",
+          "lastName":"Gates"
+          },
+      headers: [
+        {
+          sortable: false,
+          text: 'Event',
+          value: 'event'
         },
-    headers: [
-      {
-        sortable: false,
-        text: 'Event',
-        value: 'event'
+      ],
+      listeners: [],
+      newListener:"",
+      tabs:0
+  }),
+  mounted() {
+    var vm = this;
+    ListenerApiFactory().listListeners({withCredentials:true}).then((resp) => {
+      vm.listeners = resp.data;
+    });
+  },
+  methods: {
+      addEvent(e) {
+        var vm = this;
+        ListenerApiFactory().addListener({eventName:this.newListener, templateId:null, organizationId:null}, {withCredentials:true}).then((resp) => {
+          this.listeners.push({
+            eventName:vm.newListener
+          });
+          vm.newListener = null;
+        });
+        
+        
       },
-      {
-        sortable:false,
-        text:'Parameters',
-        value:'parameters'
-      },
-      {
-        sortable:false,
-        text:'Code',
-        value:'code'
-      },
-      {
-        sortable: false,
-        text: 'Template',
-        value: 'template'
-      },
-    ],
-    items: [
-      {
-        event: 'signup',
-      },
-      {
-        event: 'signup + 7 days',
-      },
-      {
-        event: 'click_widget',
-      },
-      {
-        event: 'request_password_change',
-      },
-      {
-        event: 'password_changed',
-      },
-      {
-        event: '[none]',
-      },
-    ],
-    tabs:0
-  })
+      editorInit: function () {
+          require('brace/ext/language_tools') //language extension prerequsite...
+          require('brace/mode/html')                
+          require('brace/mode/javascript')    //language
+          require('brace/mode/less')
+          require('brace/theme/chrome')
+          require('brace/snippets/javascript') //snippet
+      }
+  },
+  components: { 
+      JoditVue, 
+      editor: require('vue2-ace-editor'),
+  },
+ 
 }
 </script>
 <style lang="scss">
