@@ -337,6 +337,56 @@ exports.ListenerApiAxiosParamCreator = function (configuration) {
         },
         /**
          *
+         * @summary Associates a Template to a Listener
+         * @param {string} listenerId Listener id to disassociate
+         * @param {string} templateId Template id to associate with the Listener
+         * @param {string} [apiKey]
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addListenerTemplate: function (listenerId, templateId, apiKey, options) {
+            if (options === void 0) { options = {}; }
+            // verify required parameter 'listenerId' is not null or undefined
+            if (listenerId === null || listenerId === undefined) {
+                throw new base_1.RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling addListenerTemplate.');
+            }
+            // verify required parameter 'templateId' is not null or undefined
+            if (templateId === null || templateId === undefined) {
+                throw new base_1.RequiredError('templateId', 'Required parameter templateId was null or undefined when calling addListenerTemplate.');
+            }
+            var localVarPath = "/listeners/{listenerId}/templates/{templateId}"
+                .replace("{" + "listenerId" + "}", encodeURIComponent(String(listenerId)))
+                .replace("{" + "templateId" + "}", encodeURIComponent(String(templateId)));
+            var localVarUrlObj = url.parse(localVarPath, true);
+            var baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            var localVarRequestOptions = __assign({ method: 'POST' }, baseOptions, options);
+            var localVarHeaderParameter = {};
+            var localVarQueryParameter = {};
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                var localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+            if (apiKey !== undefined && apiKey !== null) {
+                localVarHeaderParameter['api_key'] = String(apiKey);
+            }
+            localVarUrlObj.query = __assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = __assign({}, localVarHeaderParameter, options.headers);
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         *
          * @summary Deletes a Listener
          * @param {string} listenerId ID of listener to return
          * @param {string} [apiKey]
@@ -370,6 +420,88 @@ exports.ListenerApiAxiosParamCreator = function (configuration) {
             if (apiKey !== undefined && apiKey !== null) {
                 localVarHeaderParameter['api_key'] = String(apiKey);
             }
+            localVarUrlObj.query = __assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = __assign({}, localVarHeaderParameter, options.headers);
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         *
+         * @summary Disassociates a Template from a Listener
+         * @param {string} listenerId Listener id to disassociate
+         * @param {string} templateId Template id to delete
+         * @param {string} [apiKey]
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteListenerTemplate: function (listenerId, templateId, apiKey, options) {
+            if (options === void 0) { options = {}; }
+            // verify required parameter 'listenerId' is not null or undefined
+            if (listenerId === null || listenerId === undefined) {
+                throw new base_1.RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling deleteListenerTemplate.');
+            }
+            // verify required parameter 'templateId' is not null or undefined
+            if (templateId === null || templateId === undefined) {
+                throw new base_1.RequiredError('templateId', 'Required parameter templateId was null or undefined when calling deleteListenerTemplate.');
+            }
+            var localVarPath = "/listeners/{listenerId}/templates/{templateId}"
+                .replace("{" + "listenerId" + "}", encodeURIComponent(String(listenerId)))
+                .replace("{" + "templateId" + "}", encodeURIComponent(String(templateId)));
+            var localVarUrlObj = url.parse(localVarPath, true);
+            var baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            var localVarRequestOptions = __assign({ method: 'DELETE' }, baseOptions, options);
+            var localVarHeaderParameter = {};
+            var localVarQueryParameter = {};
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                var localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+            if (apiKey !== undefined && apiKey !== null) {
+                localVarHeaderParameter['api_key'] = String(apiKey);
+            }
+            localVarUrlObj.query = __assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = __assign({}, localVarHeaderParameter, options.headers);
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of templates associated with this listener
+         * @summary List Templates for Listener
+         * @param {string} listenerId ID of listener
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listListenerTemplates: function (listenerId, options) {
+            if (options === void 0) { options = {}; }
+            // verify required parameter 'listenerId' is not null or undefined
+            if (listenerId === null || listenerId === undefined) {
+                throw new base_1.RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling listListenerTemplates.');
+            }
+            var localVarPath = "/listeners/{listenerId}/templates"
+                .replace("{" + "listenerId" + "}", encodeURIComponent(String(listenerId)));
+            var localVarUrlObj = url.parse(localVarPath, true);
+            var baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            var localVarRequestOptions = __assign({ method: 'GET' }, baseOptions, options);
+            var localVarHeaderParameter = {};
+            var localVarQueryParameter = {};
             localVarUrlObj.query = __assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -439,6 +571,24 @@ exports.ListenerApiFp = function (configuration) {
         },
         /**
          *
+         * @summary Associates a Template to a Listener
+         * @param {string} listenerId Listener id to disassociate
+         * @param {string} templateId Template id to associate with the Listener
+         * @param {string} [apiKey]
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addListenerTemplate: function (listenerId, templateId, apiKey, options) {
+            var localVarAxiosArgs = exports.ListenerApiAxiosParamCreator(configuration).addListenerTemplate(listenerId, templateId, apiKey, options);
+            return function (axios, basePath) {
+                if (axios === void 0) { axios = axios_1.default; }
+                if (basePath === void 0) { basePath = base_1.BASE_PATH; }
+                var axiosRequestArgs = __assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         *
          * @summary Deletes a Listener
          * @param {string} listenerId ID of listener to return
          * @param {string} [apiKey]
@@ -447,6 +597,40 @@ exports.ListenerApiFp = function (configuration) {
          */
         deleteListener: function (listenerId, apiKey, options) {
             var localVarAxiosArgs = exports.ListenerApiAxiosParamCreator(configuration).deleteListener(listenerId, apiKey, options);
+            return function (axios, basePath) {
+                if (axios === void 0) { axios = axios_1.default; }
+                if (basePath === void 0) { basePath = base_1.BASE_PATH; }
+                var axiosRequestArgs = __assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         *
+         * @summary Disassociates a Template from a Listener
+         * @param {string} listenerId Listener id to disassociate
+         * @param {string} templateId Template id to delete
+         * @param {string} [apiKey]
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteListenerTemplate: function (listenerId, templateId, apiKey, options) {
+            var localVarAxiosArgs = exports.ListenerApiAxiosParamCreator(configuration).deleteListenerTemplate(listenerId, templateId, apiKey, options);
+            return function (axios, basePath) {
+                if (axios === void 0) { axios = axios_1.default; }
+                if (basePath === void 0) { basePath = base_1.BASE_PATH; }
+                var axiosRequestArgs = __assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Returns a list of templates associated with this listener
+         * @summary List Templates for Listener
+         * @param {string} listenerId ID of listener
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listListenerTemplates: function (listenerId, options) {
+            var localVarAxiosArgs = exports.ListenerApiAxiosParamCreator(configuration).listListenerTemplates(listenerId, options);
             return function (axios, basePath) {
                 if (axios === void 0) { axios = axios_1.default; }
                 if (basePath === void 0) { basePath = base_1.BASE_PATH; }
@@ -489,6 +673,18 @@ exports.ListenerApiFactory = function (configuration, basePath, axios) {
         },
         /**
          *
+         * @summary Associates a Template to a Listener
+         * @param {string} listenerId Listener id to disassociate
+         * @param {string} templateId Template id to associate with the Listener
+         * @param {string} [apiKey]
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addListenerTemplate: function (listenerId, templateId, apiKey, options) {
+            return exports.ListenerApiFp(configuration).addListenerTemplate(listenerId, templateId, apiKey, options)(axios, basePath);
+        },
+        /**
+         *
          * @summary Deletes a Listener
          * @param {string} listenerId ID of listener to return
          * @param {string} [apiKey]
@@ -497,6 +693,28 @@ exports.ListenerApiFactory = function (configuration, basePath, axios) {
          */
         deleteListener: function (listenerId, apiKey, options) {
             return exports.ListenerApiFp(configuration).deleteListener(listenerId, apiKey, options)(axios, basePath);
+        },
+        /**
+         *
+         * @summary Disassociates a Template from a Listener
+         * @param {string} listenerId Listener id to disassociate
+         * @param {string} templateId Template id to delete
+         * @param {string} [apiKey]
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteListenerTemplate: function (listenerId, templateId, apiKey, options) {
+            return exports.ListenerApiFp(configuration).deleteListenerTemplate(listenerId, templateId, apiKey, options)(axios, basePath);
+        },
+        /**
+         * Returns a list of templates associated with this listener
+         * @summary List Templates for Listener
+         * @param {string} listenerId ID of listener
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listListenerTemplates: function (listenerId, options) {
+            return exports.ListenerApiFp(configuration).listListenerTemplates(listenerId, options)(axios, basePath);
         },
         /**
          * Returns a list of Listeners
@@ -533,6 +751,19 @@ var ListenerApi = /** @class */ (function (_super) {
     };
     /**
      *
+     * @summary Associates a Template to a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to associate with the Listener
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    ListenerApi.prototype.addListenerTemplate = function (listenerId, templateId, apiKey, options) {
+        return exports.ListenerApiFp(this.configuration).addListenerTemplate(listenerId, templateId, apiKey, options)(this.axios, this.basePath);
+    };
+    /**
+     *
      * @summary Deletes a Listener
      * @param {string} listenerId ID of listener to return
      * @param {string} [apiKey]
@@ -542,6 +773,30 @@ var ListenerApi = /** @class */ (function (_super) {
      */
     ListenerApi.prototype.deleteListener = function (listenerId, apiKey, options) {
         return exports.ListenerApiFp(this.configuration).deleteListener(listenerId, apiKey, options)(this.axios, this.basePath);
+    };
+    /**
+     *
+     * @summary Disassociates a Template from a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to delete
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    ListenerApi.prototype.deleteListenerTemplate = function (listenerId, templateId, apiKey, options) {
+        return exports.ListenerApiFp(this.configuration).deleteListenerTemplate(listenerId, templateId, apiKey, options)(this.axios, this.basePath);
+    };
+    /**
+     * Returns a list of templates associated with this listener
+     * @summary List Templates for Listener
+     * @param {string} listenerId ID of listener
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    ListenerApi.prototype.listListenerTemplates = function (listenerId, options) {
+        return exports.ListenerApiFp(this.configuration).listListenerTemplates(listenerId, options)(this.axios, this.basePath);
     };
     /**
      * Returns a list of Listeners

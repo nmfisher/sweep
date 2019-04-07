@@ -82,12 +82,12 @@ module EventQueueTests =
           Deleted=false;
       } 
       |> encode
-      |> HttpPost client "/templates"
+      |> HttpPost client "/1.0.0/templates"
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
 
       let template = 
-        "/templates" 
+        "/1.0.0/templates" 
         |> HttpGet client
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
@@ -97,17 +97,16 @@ module EventQueueTests =
       // create a listener
       {
           EventName="some_event";
-          TemplateId=template.Id;
           OrganizationId="";
           Id="";
       } 
         |> encode
-        |> HttpPost client "/listeners"
+        |> HttpPost client "/1.0.0/listeners"
         |> isStatus (enum<HttpStatusCode>(200))
         |> ignore
       
       let listener = 
-        HttpGet client "/listeners" 
+        HttpGet client "/1.0.0/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener[]>
@@ -116,7 +115,7 @@ module EventQueueTests =
       // create an event
       { EventName = "some_event"; Params=dict ["key","val" :> obj] ; Id = ""; ReceivedOn=DateTime.Now; ProcessedOn=DateTime.Now; Error=""; OrganizationId="" }
       |> encode
-      |> HttpPost client "/events"
+      |> HttpPost client "/1.0.0/events"
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore 
 

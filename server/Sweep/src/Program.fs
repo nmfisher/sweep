@@ -52,7 +52,10 @@ module App =
       HttpGet >=> routeBind<GetEventByIdPathParams> "/1.0.0/events/{eventId}"  (fun x -> requiresAuthentication authFailure >=> EventApiHandler.GetEventById x);
       HttpGet >=> route "/1.0.0/events" >=> requiresAuthentication authFailure >=> EventApiHandler.ListEvents;
       HttpPost >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=> ListenerApiHandler.AddListener;
+      HttpPost >=> routeBind<AddListenerTemplatePathParams> "/1.0.0/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.AddListenerTemplate x) x);
       HttpDelete >=> routeBind<DeleteListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.DeleteListener x);
+      HttpDelete >=> routeBind<DeleteListenerTemplatePathParams> "/1.0.0/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.DeleteListenerTemplate x) x);
+      HttpGet >=> routeBind<ListListenerTemplatesPathParams> "/1.0.0/listeners/{listenerId}/templates"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.ListListenerTemplates x);
       HttpGet >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=> ListenerApiHandler.ListListeners;
       HttpGet >=> routeBind<GetMessageByIdPathParams> "/1.0.0/messages/{messageId}"  (fun x -> requiresAuthentication authFailure >=> MessageApiHandler.GetMessageById x);
       HttpGet >=> route "/1.0.0/messages" >=> requiresAuthentication authFailure >=> MessageApiHandler.ListMessages;

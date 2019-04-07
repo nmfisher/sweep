@@ -93,7 +93,8 @@ module EventQueue =
     let ctx = Sweep.Data.Sql.Sql.GetDataContext()
     query {      
       for template in ctx.SweepDevelopment.Template do
-      join listener in ctx.SweepDevelopment.Listener on (template.Id = listener.TemplateId)
+      join listenertemplate in ctx.SweepDevelopment.Listenertemplate on (template.Id = listenertemplate.TemplateId)
+      join listener in ctx.SweepDevelopment.Listener on (listenertemplate.ListenerId = listener.Id)
       join event in ctx.SweepDevelopment.Event on (listener.EventName = event.EventName)
       where (template.OrganizationId = listener.OrganizationId)
       select (event, template)

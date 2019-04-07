@@ -43,7 +43,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      let path = "/templates"
+      let path = "/1.0.0/templates"
       getTemplate()
       |> encode
       |> HttpPost client path
@@ -74,7 +74,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      let path = "/templates"
+      let path = "/1.0.0/templates"
 
       // missing content
       {
@@ -152,7 +152,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      let path = "/templates"
+      let path = "/1.0.0/templates"
       getTemplate()
       |> encode
       |> HttpPost client path
@@ -160,13 +160,13 @@ module TemplateApiHandlerTests =
       |> ignore
       
       let template = 
-        HttpGet client "/templates"
+        HttpGet client "/1.0.0/templates"
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Template[]>
         |> Seq.head
 
-      let path = "/templates/" + template.Id
+      let path = "/1.0.0/templates/" + template.Id
 
       HttpDelete client path
         |> isStatus (enum<HttpStatusCode>(200))
@@ -176,7 +176,7 @@ module TemplateApiHandlerTests =
         |> isStatus (enum<HttpStatusCode>(404))
         |> ignore
 
-      HttpGet client "/templates"          
+      HttpGet client "/1.0.0/templates"          
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Template[]>
@@ -193,7 +193,7 @@ module TemplateApiHandlerTests =
 
       // add your setup code here
 
-      let path = "/templates/{templateId}"
+      let path = "/1.0.0/templates/{templateId}"
 
       HttpDelete client path
         |> isStatus (enum<HttpStatusCode>(404))
@@ -207,7 +207,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      let path = "/templates"
+      let path = "/1.0.0/templates"
       getTemplate()
       |> encode
       |> HttpPost client path
@@ -215,13 +215,13 @@ module TemplateApiHandlerTests =
       |> ignore
       
       let template = 
-        HttpGet client "/templates"
+        HttpGet client "/1.0.0/templates"
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Template[]>
         |> Seq.head
 
-      let path = "/templates/" + template.Id
+      let path = "/1.0.0/templates/" + template.Id
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
@@ -244,7 +244,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      let path = "/templates/{templateId}"
+      let path = "/1.0.0/templates/{templateId}"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(404))
@@ -258,7 +258,7 @@ module TemplateApiHandlerTests =
       use client = server.CreateClient()
       initialize()
 
-      let path = "/templates"
+      let path = "/1.0.0/templates"
       getTemplate()
       |> encode
       |> HttpPost client path
@@ -281,7 +281,7 @@ module TemplateApiHandlerTests =
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
       
-      let path = "/templates"
+      let path = "/1.0.0/templates"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
@@ -300,12 +300,12 @@ module TemplateApiHandlerTests =
       // create a template then fetch its id
       getTemplate()
       |> encode
-      |> HttpPost client "/templates"
+      |> HttpPost client "/1.0.0/templates"
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
 
       let template = 
-        HttpGet client "/templates"
+        HttpGet client "/1.0.0/templates"
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Template[]>
@@ -323,12 +323,12 @@ module TemplateApiHandlerTests =
           Deleted=false;
       } 
         |> encode
-        |> HttpPut client ("/templates/" + template.Id)
+        |> HttpPut client ("/1.0.0/templates/" + template.Id)
         |> isStatus (enum<HttpStatusCode>(200))
         |> ignore
 
       // refetch the template
-      HttpGet client ("/templates/" + template.Id)
+      HttpGet client ("/1.0.0/templates/" + template.Id)
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText 
         |> JsonConvert.DeserializeObject<Template>
@@ -350,7 +350,7 @@ module TemplateApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
       initialize()
-      let path = "/templates/{templateId}"
+      let path = "/1.0.0/templates/{templateId}"
       getTemplate()
       |> encode
       |> HttpPut client path
@@ -367,12 +367,12 @@ module TemplateApiHandlerTests =
 
       getTemplate()
       |> encode
-      |> HttpPost client "/templates"
+      |> HttpPost client "/1.0.0/templates"
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
 
       let template = 
-        HttpGet client "/templates"
+        HttpGet client "/1.0.0/templates"
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Template[]>
@@ -390,7 +390,7 @@ module TemplateApiHandlerTests =
           Deleted=false;
       } 
         |> encode
-        |> HttpPut client ("/templates/" + template.Id)
+        |> HttpPut client ("/1.0.0/templates/" + template.Id)
         |> isStatus (enum<HttpStatusCode>(422))
         |> ignore
 
@@ -406,7 +406,7 @@ module TemplateApiHandlerTests =
         Deleted=false;
       }  
       |> encode
-      |> HttpPut client ("/templates/" + template.Id)
+      |> HttpPut client ("/1.0.0/templates/" + template.Id)
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
     }

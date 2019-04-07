@@ -37,7 +37,7 @@ module EventApiHandlerTests =
 
       initialize() |> ignore
 
-      let path = "/events"
+      let path = "/1.0.0/events"
 
       {
           EventRequestBody.EventName="some_event";
@@ -57,7 +57,7 @@ module EventApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      let path = "/events"
+      let path = "/1.0.0/events"
 
       { 
         EventRequestBody.EventName="";
@@ -81,18 +81,18 @@ module EventApiHandlerTests =
         Params=dict [ "param1","value1":>obj];
       } 
       |> encode
-      |> HttpPost client "/events"
+      |> HttpPost client "/1.0.0/events"
       |> ignore
       
       let eventId = 
-        HttpGet client "/events"
+        HttpGet client "/1.0.0/events"
           |> isStatus (enum<HttpStatusCode>(200))
           |> readText
           |> JsonConvert.DeserializeObject<Event[]>
           |> Seq.head
           |> (fun x-> x.Id)
 
-      let path = "/events/" + eventId
+      let path = "/1.0.0/events/" + eventId
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
@@ -112,7 +112,7 @@ module EventApiHandlerTests =
 
       // add your setup code here
 
-      let path = "/events/111"
+      let path = "/1.0.0/events/111"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(404))
@@ -131,7 +131,7 @@ module EventApiHandlerTests =
         initialize() |> ignore
       )
 
-      let path = "/events"
+      let path = "/1.0.0/events"
 
       HttpGet client path
       |> isStatus (enum<HttpStatusCode>(200))

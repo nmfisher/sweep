@@ -50,9 +50,8 @@ module AuthSchemes =
 
   let cookieAuth (o : CookieAuthenticationOptions) =
     do
-        o.Cookie.HttpOnly     <- false
-        o.Cookie.SecurePolicy <- CookieSecurePolicy.None
-        o.Cookie.SameSite <-  SameSiteMode.None
+        o.Cookie.HttpOnly     <- true
+        o.Cookie.SecurePolicy <- CookieSecurePolicy.SameAsRequest
         o.SlidingExpiration   <- true
         o.ExpireTimeSpan      <- TimeSpan.FromDays 7.0
 

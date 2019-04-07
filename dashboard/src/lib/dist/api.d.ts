@@ -151,17 +151,36 @@ export interface Listener {
      * @type {string}
      * @memberof Listener
      */
-    templateId: string;
-    /**
-     *
-     * @type {string}
-     * @memberof Listener
-     */
     eventName: string;
     /**
      *
      * @type {string}
      * @memberof Listener
+     */
+    organizationId: string;
+}
+/**
+ *
+ * @export
+ * @interface ListenerTemplate
+ */
+export interface ListenerTemplate {
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerTemplate
+     */
+    listenerId: string;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerTemplate
+     */
+    templateId: string;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerTemplate
      */
     organizationId: string;
 }
@@ -461,6 +480,16 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
     addListener(listener: Listener, options?: any): RequestArgs;
     /**
      *
+     * @summary Associates a Template to a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to associate with the Listener
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    addListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): RequestArgs;
+    /**
+     *
      * @summary Deletes a Listener
      * @param {string} listenerId ID of listener to return
      * @param {string} [apiKey]
@@ -468,6 +497,24 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
      * @throws {RequiredError}
      */
     deleteListener(listenerId: string, apiKey?: string, options?: any): RequestArgs;
+    /**
+     *
+     * @summary Disassociates a Template from a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to delete
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): RequestArgs;
+    /**
+     * Returns a list of templates associated with this listener
+     * @summary List Templates for Listener
+     * @param {string} listenerId ID of listener
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listListenerTemplates(listenerId: string, options?: any): RequestArgs;
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
@@ -491,6 +538,16 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
     addListener(listener: Listener, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
      *
+     * @summary Associates a Template to a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to associate with the Listener
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    addListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    /**
+     *
      * @summary Deletes a Listener
      * @param {string} listenerId ID of listener to return
      * @param {string} [apiKey]
@@ -498,6 +555,24 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
      * @throws {RequiredError}
      */
     deleteListener(listenerId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    /**
+     *
+     * @summary Disassociates a Template from a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to delete
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    /**
+     * Returns a list of templates associated with this listener
+     * @summary List Templates for Listener
+     * @param {string} listenerId ID of listener
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listListenerTemplates(listenerId: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListenerTemplate[]>;
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
@@ -521,6 +596,16 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
     addListener(listener: Listener, options?: any): AxiosPromise<Response>;
     /**
      *
+     * @summary Associates a Template to a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to associate with the Listener
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    addListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
+    /**
+     *
      * @summary Deletes a Listener
      * @param {string} listenerId ID of listener to return
      * @param {string} [apiKey]
@@ -528,6 +613,24 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
      * @throws {RequiredError}
      */
     deleteListener(listenerId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
+    /**
+     *
+     * @summary Disassociates a Template from a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to delete
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
+    /**
+     * Returns a list of templates associated with this listener
+     * @summary List Templates for Listener
+     * @param {string} listenerId ID of listener
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listListenerTemplates(listenerId: string, options?: any): AxiosPromise<ListenerTemplate[]>;
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
@@ -554,6 +657,17 @@ export declare class ListenerApi extends BaseAPI {
     addListener(listener: Listener, options?: any): AxiosPromise<Response>;
     /**
      *
+     * @summary Associates a Template to a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to associate with the Listener
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    addListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
+    /**
+     *
      * @summary Deletes a Listener
      * @param {string} listenerId ID of listener to return
      * @param {string} [apiKey]
@@ -562,6 +676,26 @@ export declare class ListenerApi extends BaseAPI {
      * @memberof ListenerApi
      */
     deleteListener(listenerId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
+    /**
+     *
+     * @summary Disassociates a Template from a Listener
+     * @param {string} listenerId Listener id to disassociate
+     * @param {string} templateId Template id to delete
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
+    /**
+     * Returns a list of templates associated with this listener
+     * @summary List Templates for Listener
+     * @param {string} listenerId ID of listener
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    listListenerTemplates(listenerId: string, options?: any): AxiosPromise<ListenerTemplate[]>;
     /**
      * Returns a list of Listeners
      * @summary List all Listeners

@@ -48,8 +48,17 @@ CREATE TABLE IF NOT EXISTS `EventRequestBody` (
 
 CREATE TABLE IF NOT EXISTS `Listener` (
   `id` CHAR(36) DEFAULT NULL,
-  `templateId` TEXT NOT NULL,
   `eventName` TEXT NOT NULL,
+  `organizationId` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ListenerTemplate` generated from model 'ListenerTemplate'
+--
+
+CREATE TABLE IF NOT EXISTS `ListenerTemplate` (
+  `listenerId` CHAR(36) NOT NULL,
+  `templateId` CHAR(36) NOT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -40,7 +40,7 @@ module MessageApiHandlerTests =
         "orgId"
         |> TestHelper.execute 
       
-      "/messages/" + id
+      "/1.0.0/messages/" + id
       |> HttpGet client
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
@@ -52,7 +52,7 @@ module MessageApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      let path = "/messages/{messageId}".Replace("messageId", "ADDME")
+      let path = "/1.0.0/messages/{messageId}".Replace("messageId", "ADDME")
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(404))
@@ -77,7 +77,7 @@ module MessageApiHandlerTests =
         "orgId"
         |> TestHelper.execute 
 
-      let path = "/messages"
+      let path = "/1.0.0/messages"
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))

@@ -23,7 +23,7 @@ module ListenerApiServiceImplementation =
             else             
               let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims
-              addListener args.bodyParams.EventName args.bodyParams.TemplateId userId orgId
+              addListener args.bodyParams.EventName userId orgId
               AddListenerDefaultStatusCode { content = "OK" }
           with
           | e ->           
@@ -44,6 +44,36 @@ module ListenerApiServiceImplementation =
           let orgId = getOrgId ctx.User.Claims
           let listeners = listListeners orgId
           ListListenersDefaultStatusCode { content = listeners }
+
+        member this.AddListenerTemplate ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.createListenerTemplate args.pathParams.listenerId args.pathParams.templateId orgId
+            AddListenerTemplateDefaultStatusCode { content = "OK" }
+          with
+          | NotFoundException(msg) ->
+            AddListenerTemplateStatusCode404 { content = msg }
+            
+        member this.DeleteListenerTemplate ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.deleteListenerTemplate args.pathParams.listenerId args.pathParams.templateId orgId |> ignore
+            DeleteListenerTemplateDefaultStatusCode { content = "OK" }
+          with
+          | NotFoundException(msg) ->
+            DeleteListenerTemplateStatusCode404 { content = msg }
+
+        member this.ListListenerTemplates ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            let listeners = CompositionRoot.listListenerTemplates args.pathParams.listenerId orgId
+            ListListenerTemplatesDefaultStatusCode { content = listeners }
+          with
+          | NotFoundException(msg) ->
+              ListListenerTemplatesStatusCode404 { content = msg }
 
       //#endregion
 

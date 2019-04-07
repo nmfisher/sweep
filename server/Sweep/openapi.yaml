@@ -14,7 +14,7 @@ externalDocs:
   url: http://swagger.io
 servers:
 - description: Sweep API
-  url: https://api.sweephq.com/1.0.0
+  url: https://sweep-development.ngrok.io/1.0.0
 tags:
 - description: A User
   name: user
@@ -118,6 +118,106 @@ paths:
       security:
       - Google: []
       summary: Deletes a Listener
+      tags:
+      - listener
+  /listeners/{listenerId}/templates:
+    get:
+      description: Returns a list of templates associated with this listener
+      operationId: listListenerTemplates
+      parameters:
+      - description: ID of listener
+        explode: false
+        in: path
+        name: listenerId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ListenerTemplate'
+                type: array
+          description: successful operation
+        404:
+          description: Listener not found
+      summary: List Templates for Listener
+      tags:
+      - listener
+  /listeners/{listenerId}/templates/{templateId}:
+    delete:
+      operationId: deleteListenerTemplate
+      parameters:
+      - explode: false
+        in: header
+        name: api_key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Listener id to disassociate
+        explode: false
+        in: path
+        name: listenerId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Template id to delete
+        explode: false
+        in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          description: Successfully deleted
+        404:
+          description: Listener not found
+      security:
+      - Google: []
+      summary: Disassociates a Template from a Listener
+      tags:
+      - listener
+    post:
+      operationId: addListenerTemplate
+      parameters:
+      - explode: false
+        in: header
+        name: api_key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Listener id to disassociate
+        explode: false
+        in: path
+        name: listenerId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Template id to associate with the Listener
+        explode: false
+        in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          description: Successfully added
+        404:
+          description: Listener or template not found
+      security:
+      - Google: []
+      summary: Associates a Template to a Listener
       tags:
       - listener
   /messages:
@@ -464,13 +564,10 @@ components:
         organizationId: organizationId
         eventName: eventName
         id: id
-        templateId: templateId
       properties:
         id:
           maxLength: 36
           minLength: 36
-          type: string
-        templateId:
           type: string
         eventName:
           type: string
@@ -478,6 +575,26 @@ components:
           type: string
       required:
       - eventName
+      - organizationId
+      type: object
+    ListenerTemplate:
+      example:
+        organizationId: organizationId
+        listenerId: listenerId
+        templateId: templateId
+      properties:
+        listenerId:
+          maxLength: 36
+          minLength: 36
+          type: string
+        templateId:
+          maxLength: 36
+          minLength: 36
+          type: string
+        organizationId:
+          type: string
+      required:
+      - listenerId
       - organizationId
       - templateId
       type: object

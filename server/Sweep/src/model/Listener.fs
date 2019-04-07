@@ -10,7 +10,6 @@ module Listener =
 
   type Listener = {
     Id : string;
-    TemplateId : string;
     EventName : string;
     OrganizationId : string;
   }
