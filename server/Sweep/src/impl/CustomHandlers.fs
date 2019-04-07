@@ -20,6 +20,8 @@ open Giraffe.GiraffeViewEngine
 open Microsoft.AspNetCore.Authentication.OAuth
 open System.Diagnostics
 open Microsoft.AspNetCore.Http
+open System.IO
+open Microsoft.AspNetCore.Cors.Infrastructure
 
 module CustomHandlers = 
 
@@ -61,10 +63,20 @@ module CustomHandlers =
     | _ -> 
       ()
   
-  let logout = signOut CookieAuthenticationDefaults.AuthenticationScheme >=> text "Logged out"
+  //let logout = signOut CookieAuthenticationDefaults.AuthenticationScheme >=> text "Logged out"
+  let signOut (authScheme : string) : HttpHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            do! ctx.SignOutAsync authScheme
+            
+            for cookie in ctx.Request.Cookies do
+              ctx.Response.Cookies.Delete(cookie.Key)
+
+            return! next ctx
+  }
 
   let redirectToLogin = 
-    htmlFile "view/login.html" 
+    htmlFile "wwwroot/login.html" 
 
   let challenge (scheme : string) (redirectUri : string) : HttpHandler =
         fun (next : HttpFunc) (ctx : HttpContext) ->
@@ -74,7 +86,7 @@ module CustomHandlers =
                         AuthenticationProperties(RedirectUri = redirectUri))
                 return! next ctx
             }
-  
+
   let handlers : HttpHandler list = [
     GET >=> 
       choose [
@@ -82,16 +94,28 @@ module CustomHandlers =
         route "/login-with-Google" >=> challenge "Google" "/dashboard"
         route "/" >=> requiresAuthentication redirectToLogin >=> htmlFile "wwwroot/index.html"
         route "/dashboard" >=> requiresAuthentication redirectToLogin >=> htmlFile "wwwroot/index.html"
-        route "/logout" >=> logout
+        route "/logout" >=> signOut CookieAuthenticationDefaults.AuthenticationScheme >=> redirectToLogin 
       ]
   ]
 
-  let configureApp (app : IApplicationBuilder) =
-    app
+  let configureCors (builder : CorsPolicyBuilder) =
+    builder.WithOrigins([|"http://localhost:8080";"http://sweep-development.ngrok.io";|])
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials()
+           |> ignore
+
+  let configureApp (app : IApplicationBuilder) = 
+    app.UseCors(configureCors)
+
+  let configureWebHost (builder: IWebHostBuilder)  =
+      builder
+        .UseContentRoot(".")
+        .UseWebRoot("wwwroot")
 
   let configureServices (services:IServiceCollection) (authBuilder:AuthenticationBuilder) = 
     let serviceProvider = services.BuildServiceProvider()
     let settings = serviceProvider.GetService<IConfiguration>()
     // let queue = EventQueue.EventQueue(settings)
     // queue.Start() |> ignore
-    services
+    services.AddCors()

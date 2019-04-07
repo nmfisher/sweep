@@ -32,10 +32,9 @@ module AuthSchemes =
 
   let checkEnvironment (settings:IConfiguration) name =
     if (isNull settings.[name + "ClientId"]) then
-      System.Diagnostics.Trace.Fail(name + "ClientId is not set.")
+      raise (Exception(name + "ClientId is not set."))
     else if (isNull settings.[name + "ClientSecret"]) then
-      System.Diagnostics.Trace.Fail(name + "ClientSecret is not set.")
-
+      raise (Exception((name + "ClientSecret is not set.")))
 
   let build settings name =  
     // check that "xxxClientId" and "xxxClientSecret" configuration variables have been set for all OAuth providers
@@ -51,8 +50,9 @@ module AuthSchemes =
 
   let cookieAuth (o : CookieAuthenticationOptions) =
     do
-        o.Cookie.HttpOnly     <- true
-        o.Cookie.SecurePolicy <- CookieSecurePolicy.SameAsRequest
+        o.Cookie.HttpOnly     <- false
+        o.Cookie.SecurePolicy <- CookieSecurePolicy.None
+        o.Cookie.SameSite <-  SameSiteMode.None
         o.SlidingExpiration   <- true
         o.ExpireTimeSpan      <- TimeSpan.FromDays 7.0
 

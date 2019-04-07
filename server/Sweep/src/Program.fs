@@ -43,30 +43,30 @@ module App =
   let HttpPut = PUT
   let HttpDelete = DELETE
 
-  let redirectToLogin : HttpHandler = 
-    CustomHandlers.redirectToLogin
+  let authFailure : HttpHandler = 
+    setStatusCode 401 >=> text "You must be authenticated to access this resource."
 
   let webApp =
     choose (CustomHandlers.handlers @ [
-      HttpPost >=> route "/events" >=> requiresAuthentication redirectToLogin >=> EventApiHandler.AddEvent;
-      HttpGet >=> routeBind<GetEventByIdPathParams> "/events/{eventId}"  (fun x -> requiresAuthentication redirectToLogin >=> EventApiHandler.GetEventById x);
-      HttpGet >=> route "/events" >=> requiresAuthentication redirectToLogin >=> EventApiHandler.ListEvents;
-      HttpPost >=> route "/listeners" >=> requiresAuthentication redirectToLogin >=> ListenerApiHandler.AddListener;
-      HttpDelete >=> routeBind<DeleteListenerPathParams> "/listeners/{listenerId}"  (fun x -> requiresAuthentication redirectToLogin >=> ListenerApiHandler.DeleteListener x);
-      HttpGet >=> route "/listeners" >=> requiresAuthentication redirectToLogin >=> ListenerApiHandler.ListListeners;
-      HttpGet >=> routeBind<GetMessageByIdPathParams> "/messages/{messageId}"  (fun x -> requiresAuthentication redirectToLogin >=> MessageApiHandler.GetMessageById x);
-      HttpGet >=> route "/messages" >=> requiresAuthentication redirectToLogin >=> MessageApiHandler.ListMessages;
-      HttpPost >=> route "/templates" >=> requiresAuthentication redirectToLogin >=> TemplateApiHandler.AddTemplate;
-      HttpDelete >=> routeBind<DeleteTemplatePathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.DeleteTemplate x);
-      HttpGet >=> routeBind<GetTemplateByIdPathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.GetTemplateById x);
-      HttpGet >=> route "/templates" >=> requiresAuthentication redirectToLogin >=> TemplateApiHandler.ListTemplate;
-      HttpPut >=> routeBind<UpdateTemplatePathParams> "/templates/{templateId}"  (fun x -> requiresAuthentication redirectToLogin >=> TemplateApiHandler.UpdateTemplate x);
-      HttpPost >=> route "/user" >=> requiresAuthentication redirectToLogin >=> UserApiHandler.CreateUser;
-      HttpDelete >=> routeBind<DeleteUserPathParams> "/user/{userId}"  (fun x -> requiresAuthentication redirectToLogin >=> UserApiHandler.DeleteUser x);
-      HttpGet >=> routeBind<GetUserByNamePathParams> "/user/{userId}"  (fun x -> requiresAuthentication redirectToLogin >=> UserApiHandler.GetUserByName x);
-      HttpGet >=> route "/user/login" >=> requiresAuthentication redirectToLogin >=> UserApiHandler.LoginUser;
-      HttpGet >=> route "/user/logout" >=> requiresAuthentication redirectToLogin >=> UserApiHandler.LogoutUser;
-      HttpPut >=> routeBind<UpdateUserPathParams> "/user/{userId}"  (fun x -> requiresAuthentication redirectToLogin >=> UserApiHandler.UpdateUser x);
+      HttpPost >=> route "/1.0.0/events" >=> requiresAuthentication authFailure >=> EventApiHandler.AddEvent;
+      HttpGet >=> routeBind<GetEventByIdPathParams> "/1.0.0/events/{eventId}"  (fun x -> requiresAuthentication authFailure >=> EventApiHandler.GetEventById x);
+      HttpGet >=> route "/1.0.0/events" >=> requiresAuthentication authFailure >=> EventApiHandler.ListEvents;
+      HttpPost >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=> ListenerApiHandler.AddListener;
+      HttpDelete >=> routeBind<DeleteListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.DeleteListener x);
+      HttpGet >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=> ListenerApiHandler.ListListeners;
+      HttpGet >=> routeBind<GetMessageByIdPathParams> "/1.0.0/messages/{messageId}"  (fun x -> requiresAuthentication authFailure >=> MessageApiHandler.GetMessageById x);
+      HttpGet >=> route "/1.0.0/messages" >=> requiresAuthentication authFailure >=> MessageApiHandler.ListMessages;
+      HttpPost >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=> TemplateApiHandler.AddTemplate;
+      HttpDelete >=> routeBind<DeleteTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.DeleteTemplate x);
+      HttpGet >=> routeBind<GetTemplateByIdPathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.GetTemplateById x);
+      HttpGet >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=> TemplateApiHandler.ListTemplate;
+      HttpPut >=> routeBind<UpdateTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.UpdateTemplate x);
+      HttpPost >=> route "/1.0.0/user" >=> requiresAuthentication authFailure >=> UserApiHandler.CreateUser;
+      HttpDelete >=> routeBind<DeleteUserPathParams> "/1.0.0/user/{userId}"  (fun x -> requiresAuthentication authFailure >=> UserApiHandler.DeleteUser x);
+      HttpGet >=> routeBind<GetUserByNamePathParams> "/1.0.0/user/{userId}"  (fun x -> requiresAuthentication authFailure >=> UserApiHandler.GetUserByName x);
+      HttpGet >=> route "/1.0.0/user/login" >=> requiresAuthentication authFailure >=> UserApiHandler.LoginUser;
+      HttpGet >=> route "/1.0.0/user/logout" >=> requiresAuthentication authFailure >=> UserApiHandler.LogoutUser;
+      HttpPut >=> routeBind<UpdateUserPathParams> "/1.0.0/user/{userId}"  (fun x -> requiresAuthentication authFailure >=> UserApiHandler.UpdateUser x);
       RequestErrors.notFound (text "Not Found") 
     ])
   // ---------------------------------
@@ -77,10 +77,10 @@ module App =
     app.UseGiraffeErrorHandler(errorHandler)
       .UseStaticFiles()
       .UseAuthentication()
-      .UseResponseCaching()
-      .UseGiraffe webApp
-    CustomHandlers.configureApp app    |> ignore
-    ()
+      .UseResponseCaching() |> ignore
+    CustomHandlers.configureApp app |> ignore
+    app.UseGiraffe webApp |> ignore
+    
 
   let configureServices (services : IServiceCollection) =
     services
@@ -98,11 +98,11 @@ module App =
 
   [<EntryPoint>]
   let main _ =
-    Trace.Listeners.Add(new TextWriterTraceListener(Console.Out))
-    WebHost.CreateDefaultBuilder()
-          .Configure(Action<IApplicationBuilder> configureApp)
-          .ConfigureServices(configureServices)
-          .ConfigureLogging(configureLogging)
-          .Build()
-          .Run()
+    let builder = WebHost.CreateDefaultBuilder()
+                    .Configure(Action<IApplicationBuilder> configureApp)
+                    .ConfigureServices(configureServices)
+                    .ConfigureLogging(configureLogging)
+                    |> CustomHandlers.configureWebHost
+    builder.Build()
+            .Run()
     0
