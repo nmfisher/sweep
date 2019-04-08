@@ -32,10 +32,10 @@ module EventQueue =
 
   let parseCondition listener =
     match listener.Condition with 
-      | null -> None
-      | _ -> match Listener.parse listener.Condition with
-                | None -> raise (Exception("Invalid condition"))
-                | Some parse -> Some(parse)
+      | null -> 
+        None
+      | _ -> 
+          Listener.parse listener.Condition |> Some
 
   let handle (events:seq<Event>) mailer (listenerAction:Sweep.Model.ListenerAction.ListenerAction) =
     let listener = Listener.get listenerAction.ListenerId listenerAction.OrganizationId : Listener

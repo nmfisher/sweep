@@ -21,8 +21,6 @@ module ListenerApiServiceImplementation =
             let parsedCondition = Sweep.Data.Listener.parse args.bodyParams.Condition
             if String.IsNullOrEmpty(args.bodyParams.EventName) then
               AddListenerStatusCode422 { content = "Event name must not be empty"  }
-            else if (not (String.IsNullOrWhiteSpace(args.bodyParams.Condition)) && parsedCondition.IsNone) then
-              AddListenerStatusCode422 { content = "Invalid condition specified"  }
             else             
               let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims

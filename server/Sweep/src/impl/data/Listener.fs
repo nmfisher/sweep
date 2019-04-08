@@ -24,17 +24,31 @@ module Listener =
   }
 
   let parse condition = 
-    let rgx = Regex.Match(condition, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON ([a-zA-Z0-9]+)")
+    let rgx = Regex.Match(condition, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
 
     match rgx.Success with
     | true ->
-      Some({
-        EventName=rgx.Captures.[0].Value;
-        Duration=TimeSpan();
-        Key= match rgx.Captures.[2].Value with | "NULL" -> None | _ -> Some(rgx.Captures.[2].Value) 
-      })
+      let num = Convert.ToInt32(rgx.Groups.[3].Value)
+      let timespan = (
+        match rgx.Groups.[4].Value with
+          | "DAYS" ->
+            TimeSpan(num,0,0,0)
+          | "HOURS" ->
+            TimeSpan(0,num,0,0)
+          | "MINUTES" ->
+            TimeSpan(0,0,num,0)
+          | _ ->
+            raise (Exception("Condition could not be correctly parsed.")))
+      if timespan.TotalDays > (float 28) then
+        raise (Exception("Maximum condition duration is 28 days."))
+      {
+        EventName=rgx.Groups.[2].Value;
+        Duration=timespan;
+        Key= match rgx.Groups.[6].Value with | "NULL" -> None | _ -> Some(rgx.Groups.[6].Value) 
+      }
     | false ->
-      None
+      raise (Exception("Condition could not be correctly parsed."))
+
 
   let add eventName condition userId orgId = 
     let ctx = Sql.GetDataContext()
