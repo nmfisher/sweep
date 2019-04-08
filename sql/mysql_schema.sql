@@ -49,7 +49,21 @@ CREATE TABLE IF NOT EXISTS `EventRequestBody` (
 CREATE TABLE IF NOT EXISTS `Listener` (
   `id` CHAR(36) DEFAULT NULL,
   `eventName` TEXT NOT NULL,
-  `organizationId` TEXT NOT NULL
+  `organizationId` TEXT NOT NULL,
+  `condition` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ListenerAction` generated from model 'ListenerAction'
+--
+
+CREATE TABLE IF NOT EXISTS `ListenerAction` (
+  `id` CHAR(36) NOT NULL,
+  `eventId` CHAR(36) NOT NULL,
+  `listenerId` CHAR(36) NOT NULL,
+  `organizationId` CHAR(36) NOT NULL,
+  `completed` TINYINT(1) NOT NULL,
+  `error` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

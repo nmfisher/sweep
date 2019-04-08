@@ -48,4 +48,44 @@ module Event =
       where (event.OrganizationId = organizationId)
       select (event)
     } |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
+
+  let listAllAfter eventId = 
+    let ctx = Sql.GetDataContext()  
+    let baseEvent = 
+      query {
+        for event in ctx.SweepDevelopment.Event do 
+        where (event.Id = eventId)
+        select event
+      } |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
+        |> Seq.head
+    query {      
+      for event in ctx.SweepDevelopment.Event do
+      where (baseEvent.ReceivedOn >= event.ReceivedOn)
+      select event
+    } 
+    |> Seq.map (fun x-> x.MapTo<Event>(deserializeEvent))  
+
+  let listAllUnprocessed () = 
+    let ctx = Sql.GetDataContext()
+    query {      
+      for event in ctx.SweepDevelopment.Event do
+      where (event.ProcessedOn.IsNone)
+      select event
+    } 
+    |> Seq.map (fun x-> x.MapTo<Event>(deserializeEvent))  
+
+  let markAsProcessed (event:Event) =
+    let ctx = Sql.GetDataContext()
+    let row = 
+        query {
+          for evt in ctx.SweepDevelopment.Event do
+          where (evt.Id = event.Id)                    
+          select evt
+          exactlyOneOrDefault
+        }    
+    row.ProcessedOn <- Some(DateTime.Now)
+    ctx.SubmitUpdates()
+
+
+  
   

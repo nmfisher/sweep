@@ -49,6 +49,7 @@ module ListenerApiServiceImplementation =
           try
             let userId = getUserId ctx.User.Claims
             let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.getListener args.pathParams.listenerId orgId |> ignore // throws NotFoundException
             CompositionRoot.createListenerTemplate args.pathParams.listenerId args.pathParams.templateId orgId
             AddListenerTemplateDefaultStatusCode { content = "OK" }
           with
@@ -59,6 +60,7 @@ module ListenerApiServiceImplementation =
           try
             let userId = getUserId ctx.User.Claims
             let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.getListener args.pathParams.listenerId orgId |> ignore // throws NotFoundException
             CompositionRoot.deleteListenerTemplate args.pathParams.listenerId args.pathParams.templateId orgId |> ignore
             DeleteListenerTemplateDefaultStatusCode { content = "OK" }
           with
@@ -69,6 +71,7 @@ module ListenerApiServiceImplementation =
           try
             let userId = getUserId ctx.User.Claims
             let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.getListener args.pathParams.listenerId orgId |> ignore // throws NotFoundException
             let listeners = CompositionRoot.listListenerTemplates args.pathParams.listenerId orgId
             ListListenerTemplatesDefaultStatusCode { content = listeners }
           with

@@ -12,6 +12,7 @@ module Listener =
     Id : string;
     EventName : string;
     OrganizationId : string;
+    Condition : string;
   }
   //#endregion
   

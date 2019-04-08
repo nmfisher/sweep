@@ -562,6 +562,7 @@ components:
     Listener:
       example:
         organizationId: organizationId
+        condition: condition
         eventName: eventName
         id: id
       properties:
@@ -573,8 +574,40 @@ components:
           type: string
         organizationId:
           type: string
+        condition:
+          type: string
       required:
+      - condition
       - eventName
+      - organizationId
+      type: object
+    ListenerAction:
+      properties:
+        id:
+          maxLength: 36
+          minLength: 36
+          type: string
+        eventId:
+          maxLength: 36
+          minLength: 36
+          type: string
+        listenerId:
+          maxLength: 36
+          minLength: 36
+          type: string
+        organizationId:
+          maxLength: 36
+          minLength: 36
+          type: string
+        completed:
+          type: boolean
+        error:
+          type: string
+      required:
+      - completed
+      - eventId
+      - id
+      - listenerId
       - organizationId
       type: object
     ListenerTemplate:

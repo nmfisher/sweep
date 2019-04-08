@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers:
   - description: Sweep API
-    url: 'https://api.sweephq.com/1.0.0'
+    url: 'https://sweep-development.ngrok.io/1.0.0'
 info:
   description: API definitions for the Sweep server/dashboard.
   version: "1.0.0-oas3"
@@ -122,6 +122,92 @@ paths:
           description: Successfully deleted
         '404':
           description: Listener not found
+      security:
+        - Google: []
+  '/listeners/{listenerId}/templates':
+    get:
+      tags:
+        - listener
+      summary: List Templates for Listener 
+      description: Returns a list of templates associated with this listener
+      operationId: listListenerTemplates
+      parameters:
+        - name: listenerId  
+          in: path
+          description: ID of listener 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListenerTemplate' 
+        '404':
+          description: Listener not found
+  '/listeners/{listenerId}/templates/{templateId}':
+    delete:
+      tags:
+        - listener
+      summary: Disassociates a Template from a Listener
+      operationId: deleteListenerTemplate
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: listenerId
+          in: path
+          description: Listener id to disassociate
+          required: true
+          schema:
+            type: string
+        - name: templateId
+          in: path
+          description: Template id to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted
+        '404':
+          description: Listener not found
+      security:
+        - Google: []
+    post:
+      tags:
+        - listener
+      summary: Associates a Template to a Listener
+      operationId: addListenerTemplate
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: listenerId
+          in: path
+          description: Listener id to disassociate
+          required: true
+          schema:
+            type: string
+        - name: templateId
+          in: path
+          description: Template id to associate with the Listener
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully added
+        '404':
+          description: Listener or template not found
       security:
         - Google: []
   /messages:
@@ -425,18 +511,64 @@ components:
     Listener:
       type: object
       required:
-        - templateId
         - eventName
+        - condition
         - organizationId
       properties:
         id:
           type: string
           minLength: 36
           maxLength: 36
-        templateId:
-          type: string
         eventName:
           type: string
+        organizationId:
+          type: string
+        condition:
+          type: string
+    ListenerAction:
+      type: object
+      required:
+        - id
+        - eventId
+        - listenerId
+        - organizationId
+        - completed
+      properties:
+        id:
+          type: string
+          minLength: 36
+          maxLength: 36
+        eventId:
+          type: string
+          minLength: 36
+          maxLength: 36
+        listenerId:
+          type: string
+          minLength: 36
+          maxLength: 36
+        organizationId:
+          type: string
+          minLength: 36
+          maxLength: 36
+        completed:
+          type: boolean
+        error:
+          type: string
+    ListenerTemplate:
+      type: object
+      required:
+        - listenerId
+        - templateId
+        - organizationId
+      properties:
+        listenerId:
+          type: string
+          minLength: 36
+          maxLength: 36
+        templateId:
+          type: string
+          minLength: 36
+          maxLength: 36
         organizationId:
           type: string
     EventRequestBody:

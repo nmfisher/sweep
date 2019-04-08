@@ -3,125 +3,86 @@ namespace Sweep
 open Microsoft.Extensions.Configuration
 open System.Collections.Generic
 open Sweep.Data
-open Stubble.Core.Builders
-open SendGrid
-open SendGrid.Helpers.Mail
 open Sweep.Model.Template
 open Sweep.Model.Listener
+open Sweep.Model.ListenerAction
 open System
 open FSharp.Data.Sql
 open System.Net
 open Sweep.Model.Message
+open SendGrid
+open Sweep.Data.Listener
 
 
 module EventQueue = 
 
-  type MailDefaults = {
-    FromAddress:string;
-    FromName:string;
-    Subject:string;
-  }    
-
-  let (<=>) a b = 
-    match String.IsNullOrWhiteSpace(a) with
-    | true ->
-      b 
-    | false ->
-      a
-
-  FSharp.Data.Sql.Common.QueryEvents.SqlQueryEvent |> Microsoft.FSharp.Control.Event.add (printfn "Executing SQL: %O") |> ignore
   
-  let send (client:ISendGridClient) (message:Message)  =
-    let from = EmailAddress(message.FromAddress, message.FromName)
-    let recipients = message.SendTo |> Seq.map EmailAddress |> ResizeArray<EmailAddress>
-    let message = MailHelper.CreateSingleEmailToMultipleRecipients(from, recipients, message.Subject, message.Content, message.Content, true)
-    message
-    |> client.SendEmailAsync
-    |> Async.AwaitTask
-    |> Async.RunSynchronously
+  let noLongerApplies (event:Event) (condition:ListenerCondition) =
+    event.ReceivedOn.Add(condition.Duration) >= DateTime.Now
 
-  let getHtmlContent (template:Template) (event:Event) =
-    StubbleBuilder().Build().Render(template.Content, event.Params)
+  let isMetBy (events: seq<Event>) (parent:Event) (condition:ListenerCondition)  =
+    events 
+    |> Seq.map (fun x ->
+      let matching = x.ReceivedOn.Subtract(condition.Duration) >= parent.ReceivedOn && x.EventName = condition.EventName
+      match condition.Key with
+        | None -> matching
+        | Some key -> matching && (x.Params.[key].Equals(parent.Params.[key])))
+    |> Seq.isEmpty
+    |> not
 
-  let getPlainTextContent (template:Template) (event:Event) =
-    StubbleBuilder().Build().Render(template.Content, event.Params)
+  let parseCondition listener =
+    match listener.Condition with 
+      | null -> None
+      | _ -> match Listener.parse listener.Condition with
+                | None -> raise (Exception("Invalid condition"))
+                | Some parse -> Some(parse)
 
-  let getSubject template (event:Event) defaultSubject  = 
-    match String.IsNullOrWhiteSpace(template.Subject) with
-    | true -> 
-      defaultSubject
-    | false ->
-      StubbleBuilder().Build().Render(template.Subject, event.Params)    
+  let handle (events:seq<Event>) mailer (listenerAction:Sweep.Model.ListenerAction.ListenerAction) =
+    let listener = Listener.get listenerAction.ListenerId listenerAction.OrganizationId : Listener
+    let templates = CompositionRoot.listTemplatesForListener listener.Id listener.OrganizationId
+    let parent = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head : Event
 
-  let handle client mailDefaults onSuccess onError (event:Event, template:Template) =
-    let message = 
-      {
-          Id = Guid.NewGuid().ToString();
-          FromAddress = (<=>) template.FromAddress  mailDefaults.FromAddress;
-          FromName = (<=>) template.FromName  mailDefaults.FromName;
-          Subject = (<=>) template.Subject  mailDefaults.Subject;
-          Content = getHtmlContent template event;
-          SendTo = template.SendTo;
-          OrganizationId = template.OrganizationId
-      } : Message
-    
-    let resp = send client message 
-    
-    match resp.StatusCode with 
-    | HttpStatusCode.Accepted ->
-        onSuccess event message
-    | _ ->
-        resp.Body.ReadAsStringAsync()
-          |> Async.AwaitTask
-          |> Async.RunSynchronously
-          |> onError event 
+    match parseCondition listener with
+    | None ->
+        try 
+          let event = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head
+          mailer event templates
+          ListenerAction.markAsComplete listenerAction.Id None
+        with 
+        | e -> 
+          ListenerAction.markAsComplete listenerAction.Id (Some(e.ToString()))
+        
+    | Some condition ->
+        if (condition |> isMetBy events parent) then 
+          let event = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head
+          mailer event templates
 
-  let update (event:Event) error =
-    let ctx = Sweep.Data.Sql.Sql.GetDataContext()
-    let row = 
-      query {      
-        for row in ctx.SweepDevelopment.Event do
-        where (row.Id = event.Id)
-        select (row)
-        exactlyOneOrDefault
-      }     
-    row.ProcessedOn <- Some(DateTime.Now)
-    row.Error <- Some(error)
-    ctx.SubmitUpdates()    
-    
-  let dequeue () = 
-    let ctx = Sweep.Data.Sql.Sql.GetDataContext()
-    query {      
-      for template in ctx.SweepDevelopment.Template do
-      join listenertemplate in ctx.SweepDevelopment.Listenertemplate on (template.Id = listenertemplate.TemplateId)
-      join listener in ctx.SweepDevelopment.Listener on (listenertemplate.ListenerId = listener.Id)
-      join event in ctx.SweepDevelopment.Event on (listener.EventName = event.EventName)
-      where (template.OrganizationId = listener.OrganizationId)
-      select (event, template)
-    } 
-    |> Seq.map (fun (x,y) -> x.MapTo<Event>(Event.deserializeEvent), y.MapTo<Template>(Template.deserializeTemplate))
-    |> Seq.toList
-  
+        if (condition |> noLongerApplies parent) then
+          ListenerAction.markAsComplete listenerAction.Id None
+
+
   let initialize delay apiKey defaultFromAddress defaultFromName defaultSubject = 
     let timer = new Timers.Timer(60000.)
     printfn "%A" DateTime.Now
     timer.Start()
     printfn "%A" "A-OK"
-    let client = SendGridClient(apiKey)
-    let mailDefaults = {
-      FromAddress=defaultFromAddress;
-      FromName=defaultFromName;
-      Subject=defaultSubject;
-    }
-    
-    let onSuccess (event:Event) (message:Message) = 
-      update event null
-      Message.save message
-
-    let onError event error =
-      update event error
+    let mailer = 
+      MailHandler.handle 
+        (SendGridClient(apiKey)) 
+        { 
+          FromAddress=defaultFromAddress;
+          FromName=defaultFromName;
+          Subject=defaultSubject;
+        }
     
     while true do
       Async.AwaitEvent (timer.Elapsed) |> ignore
-      dequeue() |> Seq.map (handle client mailDefaults onSuccess onError) 
+      // dequeue all events and create ListenerActions for all listeners that match
+      Event.listAllUnprocessed() |> Seq.map ListenerAction.createFromEvent |> Seq.map Event.markAsProcessed |> ignore
+
+      // dequeue all incomplete listenerActions
+      let incomplete = ListenerAction.listIncomplete() 
+      // get all events since the first action
+      let events = incomplete |> Seq.head |> (fun x -> Event.listAllAfter x.EventId)
+      incomplete |> Seq.map (handle events mailer) |> ignore
       printfn "%A" DateTime.Now

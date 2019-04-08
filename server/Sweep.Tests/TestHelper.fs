@@ -21,8 +21,6 @@ open Microsoft.Extensions.DependencyInjection
 
 module TestHelper = 
 
-  let dbLock = obj()
-
   let encode x = 
     x 
     |> Newtonsoft.Json.JsonConvert.SerializeObject 

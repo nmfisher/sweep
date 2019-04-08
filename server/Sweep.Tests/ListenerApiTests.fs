@@ -23,8 +23,6 @@ open Sweep.Model.ListenerTemplate
 
 module ListenerApiHandlerTests =
 
-  let dbLock = obj()
-
   // ---------------------------------
   // Tests
   // ---------------------------------

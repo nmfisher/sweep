@@ -5,14 +5,36 @@ open Sql
 open System
 open Sweep.Exceptions
 open Newtonsoft.Json
+open System.Text.RegularExpressions
+open System
 
 module Listener = 
+
   let deserializeListener (prop,value) =
      match prop with
      | "Id" ->
         value.ToString() :> obj
      | _ -> 
         value
+
+  type ListenerCondition = {
+    EventName:string;
+    Duration:TimeSpan;
+    Key: string option;
+  }
+
+  let parse condition = 
+    let rgx = Regex.Match(condition, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON ([a-zA-Z0-9]+)")
+
+    match rgx.Success with
+    | true ->
+      Some({
+        EventName=rgx.Captures.[0].Value;
+        Duration=TimeSpan();
+        Key= match rgx.Captures.[2].Value with | "NULL" -> None | _ -> Some(rgx.Captures.[2].Value) 
+      })
+    | false ->
+      None
 
   let add eventName userId orgId = 
     let ctx = Sql.GetDataContext()

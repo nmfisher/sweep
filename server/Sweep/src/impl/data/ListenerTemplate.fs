@@ -1,17 +1,18 @@
 namespace Sweep.Data
 
 open Sweep.Model.ListenerTemplate
+open Sweep.Model.Template
 open Sql
 open Sweep.Exceptions
+open Sweep.Model
 
 module ListenerTemplate = 
 
   let deserializeListenerTemplate (prop,value) =
     value.ToString() :> obj
 
-  let list getListener listenerId organizationId = 
+  let list listenerId organizationId = 
     let ctx = Sql.GetDataContext()
-    getListener listenerId organizationId |> ignore // throws NotFoundException
     query {      
       for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
       where (listenerTemplate.ListenerId = listenerId && listenerTemplate.OrganizationId = organizationId)
@@ -20,7 +21,7 @@ module ListenerTemplate =
     |> Seq.map (fun x -> x.MapTo<ListenerTemplate>(deserializeListenerTemplate))
     |> Seq.toArray
 
-  let create getListener listenerId templateId organizationId = 
+  let create listenerId templateId organizationId = 
     let ctx = Sql.GetDataContext()
     let existing = query {      
       for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
@@ -32,7 +33,6 @@ module ListenerTemplate =
     | false ->
       () // noop
     | true ->
-      getListener listenerId organizationId |> ignore // throws NotFoundException
       let listenerTemplate = ctx.SweepDevelopment.Listenertemplate.Create()
       listenerTemplate.OrganizationId <- organizationId
       listenerTemplate.ListenerId <- listenerId
@@ -53,3 +53,27 @@ module ListenerTemplate =
     | false ->    
       listenerTemplate.Delete()
       ctx.SubmitUpdates()
+
+  let get listenerId organizationId = 
+    let ctx = Sql.GetDataContext()
+    let listenerTemplate = query {      
+      for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
+      where (listenerTemplate.ListenerId = listenerId && listenerTemplate.OrganizationId = organizationId)
+      select (listenerTemplate)
+      exactlyOneOrDefault
+    } 
+    match isNull listenerTemplate with
+    | true -> 
+      raise (NotFoundException("Not found"))
+    | false ->    
+      listenerTemplate.Delete()
+      ctx.SubmitUpdates()
+
+  let listTemplatesForListener listenerId orgId = 
+    let ctx = Sql.GetDataContext() 
+    query {
+      for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
+      join template in ctx.SweepDevelopment.Template on (listenerTemplate.TemplateId = template.Id)
+      where (listenerTemplate.ListenerId = listenerId && listenerTemplate.OrganizationId = orgId)
+      select listenerTemplate
+    } |> Seq.map(fun x -> x.MapTo<Template>(Template.deserializeTemplate))
