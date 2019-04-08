@@ -14,7 +14,7 @@ module Program =
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
                 //ListenerApiHandlerTests.``AddListener - Create a new Listener returns 200 where successful operation``() :> Task;
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
-                // ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task;
+                ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task;
                 //MessageApiHandlerTests.``GetMessageById - Find message by ID returns 200 where successful operation``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 404 where message not found``() :> Task;
                 // MessageApiHandlerTests.``ListMessages - List all messages returns 200 where successful operation``() :> Task
@@ -30,7 +30,7 @@ module Program =
                 //EventQueueTests.``Dequeue and inspect generated SQL``() :> Task;
                 // EventQueueTests.``Render default subject``() :> Task;
                 // MailHandlerTests.``Send test email``() :> Task
-                ListenerTests.``Validate Listener Condition``() :> Task
+                // ListenerTests.``Validate Listener Condition``() :> Task
                 ]
                 |> List.toArray
     Task.WaitAll(tasks)

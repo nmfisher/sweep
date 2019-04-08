@@ -18,7 +18,7 @@ module ListenerApiServiceImplementation =
       
         member this.AddListener ctx args =
           try
-            let parsedCondition = Sweep.Data.Listener.parse args.bodyParams.Condition
+            Sweep.Data.Listener.parse args.bodyParams.Condition |> ignore // just to validate the condition string
             if String.IsNullOrEmpty(args.bodyParams.EventName) then
               AddListenerStatusCode422 { content = "Event name must not be empty"  }
             else             

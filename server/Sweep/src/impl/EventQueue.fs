@@ -30,19 +30,12 @@ module EventQueue =
     |> Seq.isEmpty
     |> not
 
-  let parseCondition listener =
-    match listener.Condition with 
-      | null -> 
-        None
-      | _ -> 
-          Listener.parse listener.Condition |> Some
-
   let handle (events:seq<Event>) mailer (listenerAction:Sweep.Model.ListenerAction.ListenerAction) =
     let listener = Listener.get listenerAction.ListenerId listenerAction.OrganizationId : Listener
     let templates = CompositionRoot.listTemplatesForListener listener.Id listener.OrganizationId
     let parent = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head : Event
 
-    match parseCondition listener with
+    match Listener.parse listener.Condition with
     | None ->
         try 
           let event = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head

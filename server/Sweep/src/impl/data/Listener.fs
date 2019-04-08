@@ -24,30 +24,33 @@ module Listener =
   }
 
   let parse condition = 
-    let rgx = Regex.Match(condition, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
-
-    match rgx.Success with
+    match String.IsNullOrWhiteSpace(condition) with
     | true ->
-      let num = Convert.ToInt32(rgx.Groups.[3].Value)
-      let timespan = (
-        match rgx.Groups.[4].Value with
-          | "DAYS" ->
-            TimeSpan(num,0,0,0)
-          | "HOURS" ->
-            TimeSpan(0,num,0,0)
-          | "MINUTES" ->
-            TimeSpan(0,0,num,0)
-          | _ ->
-            raise (Exception("Condition could not be correctly parsed.")))
-      if timespan.TotalDays > (float 28) then
-        raise (Exception("Maximum condition duration is 28 days."))
-      {
-        EventName=rgx.Groups.[2].Value;
-        Duration=timespan;
-        Key= match rgx.Groups.[6].Value with | "NULL" -> None | _ -> Some(rgx.Groups.[6].Value) 
-      }
-    | false ->
-      raise (Exception("Condition could not be correctly parsed."))
+      None
+    | false ->        
+      let rgx = Regex.Match(condition, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
+      match rgx.Success with
+      | true ->
+        let num = Convert.ToInt32(rgx.Groups.[3].Value)
+        let timespan = (
+          match rgx.Groups.[4].Value with
+            | "DAYS" ->
+              TimeSpan(num,0,0,0)
+            | "HOURS" ->
+              TimeSpan(0,num,0,0)
+            | "MINUTES" ->
+              TimeSpan(0,0,num,0)
+            | _ ->
+              raise (Exception("Condition could not be correctly parsed.")))
+        if timespan.TotalDays > (float 28) then
+          raise (Exception("Maximum condition duration is 28 days."))
+        Some({
+          EventName=rgx.Groups.[2].Value;
+          Duration=timespan;
+          Key= match rgx.Groups.[6].Value with | "NULL" -> None | _ -> Some(rgx.Groups.[6].Value) 
+        })
+      | false ->
+        raise (Exception("Condition could not be correctly parsed."))
 
 
   let add eventName condition userId orgId = 
