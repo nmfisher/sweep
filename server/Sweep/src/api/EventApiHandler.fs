@@ -31,8 +31,8 @@ module EventApiHandler =
           return! (match result with 
                       | AddEventDefaultStatusCode resolved ->
                             setStatusCode 200 >=> text resolved.content 
-                      | AddEventStatusCode405 resolved ->
-                            setStatusCode 405 >=> text resolved.content 
+                      | AddEventStatusCode422 resolved ->
+                            setStatusCode 422 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

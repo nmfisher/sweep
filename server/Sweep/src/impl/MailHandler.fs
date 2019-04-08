@@ -59,14 +59,14 @@ module MailHandler =
       } : Sweep.Model.Message.Message
     
     
-  let handle client mailDefaults event templates = 
+  let handle client mailDefaults saver event templates = 
     let messages = templates |> Seq.map (toMessage mailDefaults event)
     
     for message in messages do
       let resp = send client message 
       match resp.StatusCode with 
       | HttpStatusCode.Accepted ->
-          Sweep.Data.Message.save message
+          saver message
       | _ ->
         let error = 
           resp.Body.ReadAsStringAsync()

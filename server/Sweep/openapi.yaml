@@ -52,7 +52,7 @@ paths:
       responses:
         200:
           description: An event has been successfully created.
-        405:
+        422:
           description: Invalid input
       security:
       - api_key: []
@@ -84,7 +84,7 @@ paths:
       responses:
         200:
           description: successful operation
-        405:
+        422:
           description: Invalid input
       security:
       - Google: []

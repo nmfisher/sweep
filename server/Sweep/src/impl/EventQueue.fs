@@ -66,14 +66,15 @@ module EventQueue =
     printfn "%A" DateTime.Now
     timer.Start()
     printfn "%A" "A-OK"
-    let mailer = 
-      MailHandler.handle 
-        (SendGridClient(apiKey)) 
-        { 
-          FromAddress=defaultFromAddress;
-          FromName=defaultFromName;
-          Subject=defaultSubject;
-        }
+    let client = SendGridClient(apiKey)
+    let defaults = 
+      { 
+        FromAddress=defaultFromAddress;
+        FromName=defaultFromName;
+        Subject=defaultSubject;
+      } : MailHandler.MailDefaults
+    let saver = Sweep.Data.Message.save
+    let mailer = MailHandler.handle client defaults saver
     
     while true do
       Async.AwaitEvent (timer.Elapsed) |> ignore

@@ -19,7 +19,7 @@ module EventApiServiceImplementation =
         member this.AddEvent ctx args =
           try
             if String.IsNullOrWhiteSpace(args.bodyParams.EventName) then
-              AddEventStatusCode405 { content = "Event name must not be empty" }
+              AddEventStatusCode422 { content = "Event name must not be empty" }
             else 
               let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims
@@ -27,7 +27,7 @@ module EventApiServiceImplementation =
               AddEventDefaultStatusCode { content = "OK" }
           with 
           | e ->   
-            AddEventStatusCode405 { content = e.ToString() }
+            AddEventStatusCode422 { content = e.ToString() }
 
         member this.GetEventById ctx args =
           let userId = getUserId ctx.User.Claims

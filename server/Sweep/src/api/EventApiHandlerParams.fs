@@ -18,11 +18,11 @@ module EventApiHandlerParams =
       
     }
     
-    type AddEventStatusCode405Response = {
+    type AddEventStatusCode422Response = {
       content:string;
       
     }
-    type AddEventResult = AddEventDefaultStatusCode of AddEventDefaultStatusCodeResponse|AddEventStatusCode405 of AddEventStatusCode405Response
+    type AddEventResult = AddEventDefaultStatusCode of AddEventDefaultStatusCodeResponse|AddEventStatusCode422 of AddEventStatusCode422Response
 
     type AddEventArgs = {
       bodyParams:AddEventBodyParams

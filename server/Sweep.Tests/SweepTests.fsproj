@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Compile Include="TestHelper.fs" />
+    <Compile Include="MailHandlerTests.fs" />
     <Compile Include="EventQueueTests.fs" />
     <Compile Include="EventApiTestsHelper.fs" />
     <Compile Include="EventApiTests.fs" />

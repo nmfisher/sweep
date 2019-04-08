@@ -18,11 +18,11 @@ module ListenerApiHandlerParams =
       
     }
     
-    type AddListenerStatusCode405Response = {
+    type AddListenerStatusCode422Response = {
       content:string;
       
     }
-    type AddListenerResult = AddListenerDefaultStatusCode of AddListenerDefaultStatusCodeResponse|AddListenerStatusCode405 of AddListenerStatusCode405Response
+    type AddListenerResult = AddListenerDefaultStatusCode of AddListenerDefaultStatusCodeResponse|AddListenerStatusCode422 of AddListenerStatusCode422Response
 
     type AddListenerArgs = {
       bodyParams:AddListenerBodyParams

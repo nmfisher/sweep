@@ -29,40 +29,6 @@ module EventQueueTests =
   // Tests
   // ---------------------------------
   [<Fact>]
-  let ``Render default subject``() =
-    task {
-      TestHelper.initialize() |> ignore
-      let template = {
-        Subject="";
-        Content = "";
-        FromAddress="foo@bar";
-        FromName="Foo";
-        SendTo=[|"baz@qux"|];
-        UserId="";
-        OrganizationId="";
-        Deleted=false;
-        Id="";
-      }
-
-      let event = {
-         EventName="SOMEEVENT";
-         Params=dict ["key1","val1" :> obj];
-         Id = "";
-         ReceivedOn = DateTime.Now;
-         ProcessedOn = DateTime.Now;
-         OrganizationId = "123";
-         Error = "";
-      }
-       let defaults = {
-          FromAddress = "default@co";
-          FromName = "Default"; 
-          Subject ="";
-      }
-
-      getSubject defaults event "foo" |> shouldEqual "foo" |> ignore
-    }
-  
-  [<Fact>]
   let ``Dequeue and inspect generated SQL``() =
     task {
       use server = new TestServer(createHost())
@@ -99,6 +65,7 @@ module EventQueueTests =
           EventName="some_event";
           OrganizationId="";
           Id="";
+          Condition="";
       } 
         |> encode
         |> HttpPost client "/1.0.0/listeners"
@@ -119,59 +86,9 @@ module EventQueueTests =
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore 
 
-      let dequeued = Sweep.EventQueue.dequeue() |> Seq.toArray
+      let dequeued = Sweep.Data.Event.listAllUnprocessed() |> Seq.toArray
       dequeued 
       |> shouldBeLength 1
       |> Seq.head 
-      |> (fun (x, y) -> 
-        x.EventName |> shouldEqual "some_event" |> ignore
-        y.Content |> shouldEqual "Hello" |> ignore)
-    }
-      
-  [<Fact>]
-  let ``Send test email``() =
-    task {
-      let resp = new Response(statusCode=HttpStatusCode.Accepted, responseBody=(encode "OK"), responseHeaders=null)
-
-      let client = Mock<ISendGridClient>.With(fun c -> <@ c.SendEmailAsync(any()) --> Task.FromResult(resp) @>)
-
-      let event = { 
-        EventName = "some_event"; 
-        Params=dict ["key","val" :> obj] ; 
-        Id = ""; 
-        ReceivedOn=DateTime.Now; 
-        ProcessedOn=DateTime.Now; 
-        Error=""; 
-        OrganizationId=""
-      }
-
-      let template =   {
-        Content="Hello";
-        SendTo=[|"nick.fisher@avinium.com"|];
-        Subject="Some subject";
-        FromAddress="baz@qux";
-        FromName="Baz";
-        Id="";
-        OrganizationId="";
-        UserId="";
-        Deleted=false;
-      } 
-
-      let defaults = {
-          FromAddress = "default@co";
-          FromName = "Default"; 
-          Subject ="Default Subject!";
-      }
-
-      let mutable success = false
-      let onSuccess evt msg = 
-        success <- true
-      
-      let onError evt err = 
-        ()
-
-      Sweep.EventQueue.handle client defaults onSuccess onError (event, template)
-
-      Assert.True(success)
-      
+      |> (fun x -> x.EventName |> shouldEqual "some_event" |> ignore)
     }

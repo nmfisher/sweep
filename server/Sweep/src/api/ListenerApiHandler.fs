@@ -31,8 +31,8 @@ module ListenerApiHandler =
           return! (match result with 
                       | AddListenerDefaultStatusCode resolved ->
                             setStatusCode 200 >=> text resolved.content 
-                      | AddListenerStatusCode405 resolved ->
-                            setStatusCode 405 >=> text resolved.content 
+                      | AddListenerStatusCode422 resolved ->
+                            setStatusCode 422 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

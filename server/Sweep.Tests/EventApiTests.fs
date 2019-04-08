@@ -52,7 +52,7 @@ module EventApiHandlerTests =
   }
 
   [<Fact>]
-  let ``AddEvent - Raise an event returns 405 where Invalid input`` () =
+  let ``AddEvent - Raise an event returns 422 where Invalid input`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
@@ -65,7 +65,7 @@ module EventApiHandlerTests =
       }
       |> encode
       |> HttpPost client path
-      |> isStatus (enum<HttpStatusCode>(405))
+      |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
     }
 
@@ -127,9 +127,7 @@ module EventApiHandlerTests =
       use client = server.CreateClient()
 
       // add your setup code here
-      lock(dbLock) (fun () ->
-        initialize() |> ignore
-      )
+      initialize() |> ignore
 
       let path = "/1.0.0/events"
 

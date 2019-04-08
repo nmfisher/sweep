@@ -36,12 +36,17 @@ module Listener =
     | false ->
       None
 
-  let add eventName userId orgId = 
+  let add eventName condition userId orgId = 
     let ctx = Sql.GetDataContext()
     let listener = ctx.SweepDevelopment.Listener.Create()
     listener.Id <- Guid.NewGuid().ToString()
     listener.EventName <- eventName
     listener.OrganizationId <- orgId
+    match String.IsNullOrWhiteSpace(condition) with
+    | true -> 
+      listener.Condition <- None
+    | false ->
+      listener.Condition <- Some(condition)
     ctx.SubmitUpdates()
 
   let get id orgId =

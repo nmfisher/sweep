@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `Listener` (
   `id` CHAR(36) DEFAULT NULL,
   `eventName` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL,
-  `condition` TEXT NOT NULL
+  `condition` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

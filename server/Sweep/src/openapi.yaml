@@ -52,7 +52,7 @@ paths:
       responses:
         200:
           description: An event has been successfully created.
-        405:
+        422:
           description: Invalid input
       security:
       - api_key: []
@@ -80,7 +80,7 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Listener'
       responses:
-        405:
+        422:
           description: Invalid input
       security:
       - Google: []
@@ -96,7 +96,7 @@ paths:
           description: Invalid ID supplied
         404:
           description: Listener not found
-        405:
+        422:
           description: Validation exception
       security:
       - Google: []
@@ -252,7 +252,7 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Template'
       responses:
-        405:
+        422:
           description: Invalid input
       security:
       - Google: []
@@ -268,7 +268,7 @@ paths:
           description: Invalid ID supplied
         404:
           description: Template not found
-        405:
+        422:
           description: Validation exception
       security:
       - Google: []
