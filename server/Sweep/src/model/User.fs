@@ -9,11 +9,11 @@ module User =
 
 
   type User = {
-    Id : string;
-    Username : string;
-    Password : string;
-    ApiKey : string;
-    OrganizationId : string;
+    Id : string ;
+    Username : string option;
+    Password : string option;
+    ApiKey : string option;
+    OrganizationId : string ;
   }
   //#endregion
   

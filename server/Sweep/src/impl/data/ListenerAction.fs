@@ -48,6 +48,7 @@ module ListenerAction =
         listenerAction.ListenerId <- listener.Id
         listenerAction.EventId <- event.Id
         listenerAction.OrganizationId <- event.OrganizationId
+        listenerAction.Error <- None
         ctx.SubmitUpdates())
       |> Seq.toList
     event       

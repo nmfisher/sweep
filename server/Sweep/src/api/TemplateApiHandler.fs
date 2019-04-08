@@ -8,6 +8,7 @@ open TemplateApiHandlerParams
 open TemplateApiServiceInterface
 open TemplateApiServiceImplementation
 open Sweep.Model.Template
+open Sweep.Model.TemplateRequestBody
 
 module TemplateApiHandler = 
 

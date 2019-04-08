@@ -1,6 +1,7 @@
 namespace Sweep
 
 open Sweep.Model.User
+open Sweep.Model.UserRequestBody
 open System.Collections.Generic
 
 module UserApiHandlerParams = 
@@ -8,7 +9,7 @@ module UserApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type CreateUserBodyParams = User
+    type CreateUserBodyParams = UserRequestBody
     //#endregion
 
     
@@ -112,7 +113,7 @@ module UserApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateUserBodyParams = User
+    type UpdateUserBodyParams = UserRequestBody
     //#endregion
 
     

@@ -47,7 +47,8 @@ module TemplateApiServiceImplementation =
             | Some err ->
               AddTemplateStatusCode422 { content = err  }  
             | None ->            
-              CompositionRoot.addTemplate args.bodyParams orgId userId |> ignore
+              
+              CompositionRoot.addTemplate args.bodyParams.Content args.bodyParams.Subject args.bodyParams.FromName args.bodyParams.FromAddress args.bodyParams.SendTo orgId userId |> ignore
               AddTemplateDefaultStatusCode { content = "OK" }
 
         member this.DeleteTemplate ctx args =
@@ -82,7 +83,7 @@ module TemplateApiServiceImplementation =
             | Some err ->
               UpdateTemplateStatusCode422 { content = err }
             | None ->
-              CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams orgId
+              CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams.Content args.bodyParams.Subject args.bodyParams.FromName args.bodyParams.FromAddress args.bodyParams.SendTo orgId
               UpdateTemplateDefaultStatusCode { content = "OK" }
           with
           | NotFoundException(msg) ->

@@ -61,10 +61,14 @@ paths:
       responses:
         '200':
           description: An event has been successfully created.
-        '405':
+        '422':
           description: Invalid input
       requestBody:
-        $ref: '#/components/requestBodies/Event'
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/EventRequestBody'
       security:
         - api_key: []
   /listeners:
@@ -93,12 +97,16 @@ paths:
       responses:
         '200':
           description: successful operation
-        '405':
+        '422':
           description: Invalid input
       security:
         - Google: []
       requestBody:
-        $ref: '#/components/requestBodies/Listener'    
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/ListenerRequestBody'
   "/listeners/{listenerId}":
     delete:
       tags:
@@ -307,7 +315,11 @@ paths:
       security:
         - Google: []
       requestBody:
-        $ref: '#/components/requestBodies/Template'
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/TemplateRequestBody'
   '/templates/{templateId}':
     get:
       tags:
@@ -353,7 +365,12 @@ paths:
       security:
         - Google: []
       requestBody:
-        $ref: '#/components/requestBodies/Template'
+        description: successful operation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequestBody'
     delete:
       tags:
         - template
@@ -390,12 +407,11 @@ paths:
         default:
           description: successful operation
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-        description: Created user object
-        required: true
+              $ref: '#/components/schemas/UserRequestBody'
   /user/login:
     get:
       tags:
@@ -479,12 +495,11 @@ paths:
         '404':
           description: User not found
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-        description: Updated user object
-        required: true
+              $ref: '#/components/schemas/UserRequestBody'
     delete:
       tags:
         - user
@@ -511,6 +526,7 @@ components:
     Listener:
       type: object
       required:
+        - id
         - eventName
         - organizationId
       properties:
@@ -522,7 +538,16 @@ components:
           type: string
         organizationId:
           type: string
-        condition:
+        trigger:
+          type: string
+    ListenerRequestBody:
+      type: object
+      required:
+        - eventName
+      properties:
+        eventName:
+          type: string
+        trigger:
           type: string
     ListenerAction:
       type: object
@@ -600,9 +625,11 @@ components:
           additionalProperties:
             type: object
         receivedOn:
-          type: dateTime
+          type: string
+          format: date-time
         processedOn:
-          type: dateTime
+          type: string
+          format: date-time
         error:
           type: string
         organizationId:
@@ -633,6 +660,13 @@ components:
         apiKey:
           type: string
         organizationId:
+          type: string
+    UserRequestBody:
+      type: object
+      required:
+        - username
+      properties:
+        username:
           type: string
     BaseMessage:
       type: object
@@ -677,28 +711,27 @@ components:
               type: boolean
             userId:
               type: string
-  requestBodies:
-    Listener:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Listener'
-      description: A Listener object to be added
-      required: true
-    Event:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EventRequestBody'
-      description: Raises an Event with associated parameters
-      required: true
-    Template:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Template'
-      description: A Template object with associated parameters
-      required: true
+    TemplateRequestBody:
+      type: object
+      required:
+        - content
+        - subject
+        - fromAddress
+        - fromName
+        - sendTo
+      properties:
+        content:
+          type: string
+        subject:
+          type: string
+        fromAddress:
+          type: string
+        fromName:
+          type: string
+        sendTo:
+          type: array
+          items: 
+            type: string
   securitySchemes:
     Google:
       type: oauth2

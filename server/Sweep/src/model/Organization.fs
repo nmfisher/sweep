@@ -9,7 +9,7 @@ module Organization =
 
 
   type Organization = {
-    Id : string;
+    Id : string ;
   }
   //#endregion
   

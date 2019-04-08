@@ -48,7 +48,11 @@ paths:
     post:
       operationId: addEvent
       requestBody:
-        $ref: '#/components/requestBodies/Event'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequestBody'
+        required: true
       responses:
         200:
           description: An event has been successfully created.
@@ -80,7 +84,11 @@ paths:
     post:
       operationId: addListener
       requestBody:
-        $ref: '#/components/requestBodies/Listener'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListenerRequestBody'
+        required: true
       responses:
         200:
           description: successful operation
@@ -311,7 +319,11 @@ paths:
     post:
       operationId: addTemplate
       requestBody:
-        $ref: '#/components/requestBodies/Template'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequestBody'
+        required: true
       responses:
         200:
           description: Success
@@ -388,7 +400,12 @@ paths:
           type: string
         style: simple
       requestBody:
-        $ref: '#/components/requestBodies/Template'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequestBody'
+        description: successful operation
+        required: true
       responses:
         200:
           description: Successfully updated
@@ -409,8 +426,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-        description: Created user object
+              $ref: '#/components/schemas/UserRequestBody'
         required: true
       responses:
         default:
@@ -524,8 +540,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-        description: Updated user object
+              $ref: '#/components/schemas/UserRequestBody'
         required: true
       responses:
         400:
@@ -536,35 +551,13 @@ paths:
       tags:
       - user
 components:
-  requestBodies:
-    Listener:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Listener'
-      description: A Listener object to be added
-      required: true
-    Event:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EventRequestBody'
-      description: Raises an Event with associated parameters
-      required: true
-    Template:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Template'
-      description: A Template object with associated parameters
-      required: true
   schemas:
     Listener:
       example:
         organizationId: organizationId
-        condition: condition
         eventName: eventName
         id: id
+        trigger: trigger
       properties:
         id:
           maxLength: 36
@@ -574,12 +567,24 @@ components:
           type: string
         organizationId:
           type: string
-        condition:
+        trigger:
           type: string
       required:
-      - condition
       - eventName
+      - id
       - organizationId
+      type: object
+    ListenerRequestBody:
+      example:
+        eventName: eventName
+        trigger: trigger
+      properties:
+        eventName:
+          type: string
+        trigger:
+          type: string
+      required:
+      - eventName
       type: object
     ListenerAction:
       properties:
@@ -649,8 +654,8 @@ components:
     Event:
       example:
         organizationId: organizationId
-        processedOn: ""
-        receivedOn: ""
+        processedOn: 2000-01-23T04:56:07.000+00:00
+        receivedOn: 2000-01-23T04:56:07.000+00:00
         eventName: eventName
         id: id
         params:
@@ -668,9 +673,11 @@ components:
             type: object
           type: object
         receivedOn:
-          type: dateTime
+          format: date-time
+          type: string
         processedOn:
-          type: dateTime
+          format: date-time
+          type: string
         error:
           type: string
         organizationId:
@@ -713,6 +720,15 @@ components:
       required:
       - id
       - organizationId
+      type: object
+    UserRequestBody:
+      example:
+        username: username
+      properties:
+        username:
+          type: string
+      required:
+      - username
       type: object
     BaseMessage:
       properties:
@@ -757,6 +773,35 @@ components:
         required:
         - userId
         type: object
+    TemplateRequestBody:
+      example:
+        sendTo:
+        - sendTo
+        - sendTo
+        subject: subject
+        fromName: fromName
+        fromAddress: fromAddress
+        content: content
+      properties:
+        content:
+          type: string
+        subject:
+          type: string
+        fromAddress:
+          type: string
+        fromName:
+          type: string
+        sendTo:
+          items:
+            type: string
+          type: array
+      required:
+      - content
+      - fromAddress
+      - fromName
+      - sendTo
+      - subject
+      type: object
   securitySchemes:
     Google:
       flows:

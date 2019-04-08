@@ -2,23 +2,18 @@ namespace Sweep.Model
 
 open System
 open System.Collections.Generic
-open Sweep.Model.BaseMessage
 
-module Template = 
+module TemplateRequestBody = 
 
-  //#region Template
+  //#region TemplateRequestBody
 
 
-  type Template = {
-    Id : string ;
+  type TemplateRequestBody = {
     Content : string ;
     Subject : string ;
     FromAddress : string ;
     FromName : string ;
     SendTo : string[] ;
-    OrganizationId : string ;
-    Deleted : bool option;
-    UserId : string ;
   }
   //#endregion
   

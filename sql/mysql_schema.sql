@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS `Event` (
   `id` CHAR(36) NOT NULL,
   `eventName` TEXT NOT NULL,
   `params` JSON DEFAULT NULL,
-  `receivedOn` dateTime NOT NULL,
-  `processedOn` dateTime DEFAULT NULL,
+  `receivedOn` DATETIME NOT NULL,
+  `processedOn` DATETIME DEFAULT NULL,
   `error` TEXT DEFAULT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS `EventRequestBody` (
 --
 
 CREATE TABLE IF NOT EXISTS `Listener` (
-  `id` CHAR(36) DEFAULT NULL,
+  `id` CHAR(36) NOT NULL,
   `eventName` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL,
-  `condition` TEXT DEFAULT NULL
+  `trigger` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -64,6 +64,15 @@ CREATE TABLE IF NOT EXISTS `ListenerAction` (
   `organizationId` CHAR(36) NOT NULL,
   `completed` TINYINT(1) NOT NULL,
   `error` TEXT DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ListenerRequestBody` generated from model 'ListenerRequestBody'
+--
+
+CREATE TABLE IF NOT EXISTS `ListenerRequestBody` (
+  `eventName` TEXT NOT NULL,
+  `trigger` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -115,6 +124,18 @@ CREATE TABLE IF NOT EXISTS `Template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Table structure for table `TemplateRequestBody` generated from model 'TemplateRequestBody'
+--
+
+CREATE TABLE IF NOT EXISTS `TemplateRequestBody` (
+  `content` TEXT NOT NULL,
+  `subject` TEXT NOT NULL,
+  `fromAddress` TEXT NOT NULL,
+  `fromName` TEXT NOT NULL,
+  `sendTo` JSON NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Table structure for table `User` generated from model 'User'
 --
 
@@ -124,5 +145,13 @@ CREATE TABLE IF NOT EXISTS `User` (
   `password` TEXT DEFAULT NULL,
   `apiKey` TEXT DEFAULT NULL,
   `organizationId` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `UserRequestBody` generated from model 'UserRequestBody'
+--
+
+CREATE TABLE IF NOT EXISTS `UserRequestBody` (
+  `username` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

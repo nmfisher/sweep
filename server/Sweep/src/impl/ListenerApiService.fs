@@ -18,13 +18,13 @@ module ListenerApiServiceImplementation =
       
         member this.AddListener ctx args =
           try
-            Sweep.Data.Listener.parse args.bodyParams.Condition |> ignore // just to validate the condition string
+            Sweep.Data.Listener.parse args.bodyParams.Trigger |> ignore // just to validate the condition string
             if String.IsNullOrEmpty(args.bodyParams.EventName) then
               AddListenerStatusCode422 { content = "Event name must not be empty"  }
             else             
               let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims
-              addListener args.bodyParams.EventName args.bodyParams.Condition userId orgId
+              addListener args.bodyParams.EventName args.bodyParams.Trigger userId orgId
               AddListenerDefaultStatusCode { content = "OK" }
           with
           | e ->           

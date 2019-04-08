@@ -10,13 +10,13 @@ module Message =
 
 
   type Message = {
-    Id : string;
-    Content : string;
-    Subject : string;
-    FromAddress : string;
-    FromName : string;
-    SendTo : string[];
-    OrganizationId : string;
+    Id : string ;
+    Content : string ;
+    Subject : string ;
+    FromAddress : string ;
+    FromName : string ;
+    SendTo : string[] ;
+    OrganizationId : string ;
   }
   //#endregion
   

@@ -8,6 +8,7 @@ open ListenerApiHandlerParams
 open ListenerApiServiceInterface
 open ListenerApiServiceImplementation
 open Sweep.Model.Listener
+open Sweep.Model.ListenerRequestBody
 open Sweep.Model.ListenerTemplate
 
 module ListenerApiHandler = 

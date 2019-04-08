@@ -3,15 +3,13 @@ namespace Sweep.Model
 open System
 open System.Collections.Generic
 
-module Listener = 
+module ListenerRequestBody = 
 
-  //#region Listener
+  //#region ListenerRequestBody
 
 
-  type Listener = {
-    Id : string ;
+  type ListenerRequestBody = {
     EventName : string ;
-    OrganizationId : string ;
     Trigger : string option;
   }
   //#endregion

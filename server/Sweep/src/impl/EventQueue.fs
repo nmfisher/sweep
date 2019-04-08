@@ -16,7 +16,6 @@ open Sweep.Data.Listener
 
 module EventQueue = 
 
-  
   let noLongerApplies (event:Event) (condition:ListenerCondition) =
     event.ReceivedOn.Add(condition.Duration) >= DateTime.Now
 
@@ -26,7 +25,7 @@ module EventQueue =
       let matching = x.ReceivedOn.Subtract(condition.Duration) >= parent.ReceivedOn && x.EventName = condition.EventName
       match condition.Key with
         | None -> matching
-        | Some key -> matching && (x.Params.[key].Equals(parent.Params.[key])))
+        | Some key -> matching && (x.Params.Value.[key].Equals(parent.Params.Value.[key])))
     |> Seq.isEmpty
     |> not
 
@@ -35,7 +34,7 @@ module EventQueue =
     let templates = CompositionRoot.listTemplatesForListener listener.Id listener.OrganizationId
     let parent = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head : Event
 
-    match Listener.parse listener.Condition with
+    match Listener.parse listener.Trigger with
     | None ->
         try 
           let event = events |> Seq.where (fun x -> x.Id = listenerAction.EventId) |> Seq.head

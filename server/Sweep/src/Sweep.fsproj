@@ -42,11 +42,14 @@
     <Compile Include="model/BaseMessage.fs" />
     <Compile Include="model/Event.fs" />
     <Compile Include="model/EventRequestBody.fs" />
+    <Compile Include="model/UserRequestBody.fs" />
     <Compile Include="model/User.fs" />
     <Compile Include="model/Template.fs" />
+    <Compile Include="model/TemplateRequestBody.fs" />
     <Compile Include="model/Message.fs" />
     <Compile Include="model/Listener.fs" />
     <Compile Include="model/ListenerAction.fs" />
+    <Compile Include="model/ListenerRequestBody.fs" />
     <Compile Include="model/ListenerTemplate.fs" />
     <Compile Include="impl/UserContext.fs" />
     <Compile Include="impl/Exceptions.fs" />

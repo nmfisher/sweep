@@ -1,6 +1,7 @@
 namespace Sweep
 
 open Sweep.Model.Template
+open Sweep.Model.TemplateRequestBody
 open System.Collections.Generic
 
 module TemplateApiHandlerParams = 
@@ -8,7 +9,7 @@ module TemplateApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddTemplateBodyParams = Template
+    type AddTemplateBodyParams = TemplateRequestBody
     //#endregion
 
     
@@ -94,7 +95,7 @@ module TemplateApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateTemplateBodyParams = Template
+    type UpdateTemplateBodyParams = TemplateRequestBody
     //#endregion
 
     

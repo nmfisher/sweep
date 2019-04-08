@@ -8,6 +8,7 @@ open UserApiHandlerParams
 open UserApiServiceInterface
 open UserApiServiceImplementation
 open Sweep.Model.User
+open Sweep.Model.UserRequestBody
 
 module UserApiHandler = 
 

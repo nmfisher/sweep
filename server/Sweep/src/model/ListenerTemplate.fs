@@ -9,9 +9,9 @@ module ListenerTemplate =
 
 
   type ListenerTemplate = {
-    ListenerId : string;
-    TemplateId : string;
-    OrganizationId : string;
+    ListenerId : string ;
+    TemplateId : string ;
+    OrganizationId : string ;
   }
   //#endregion
   

@@ -29,6 +29,42 @@ module EventQueueTests =
   // Tests
   // ---------------------------------
   [<Fact>]
+  let ``Listener condition expires when duration exceeds time elapsed since original event``() =
+    task {
+      let event = {
+        Id="some_id";
+        EventName="some_event";
+        ReceivedOn=DateTime.Now.Subtract(TimeSpan(7,0,0,0))
+        ProcessedOn=  None;
+        Params= dict [||]
+      }
+      let condition = {
+        EventName="some_event";
+        Key=None;
+        Duration=TimeSpan(5,0,0,0)
+      } : ListenerCondition
+      Assert.True(noLongerApplies event condition)
+    }
+
+  [<Fact>]
+  let ``Listener condition doesn't expire when duration has not exceeded time elapsed since original event``() =
+    task {
+      let event = {
+        Id="some_id";
+        EventName="some_event";
+        ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+        ProcessedOn=None;
+        Params=dict [||]
+      } : Event
+      let condition = {
+        EventName="some_event";
+        Key=None;
+        Duration=TimeSpan(7,0,0,0)
+      } : ListenerCondition
+      Assert.False(noLongerApplies event condition)
+    }
+
+  [<Fact>]
   let ``Dequeue and inspect generated SQL``() =
     task {
       use server = new TestServer(createHost())

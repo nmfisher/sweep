@@ -23,12 +23,12 @@ module Listener =
     Key: string option;
   }
 
-  let parse condition = 
-    match String.IsNullOrWhiteSpace(condition) with
-    | true ->
+  let parse trigger = 
+    match trigger with 
+    | None ->
       None
-    | false ->        
-      let rgx = Regex.Match(condition, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
+    | Some triggerString ->        
+      let rgx = Regex.Match(triggerString, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
       match rgx.Success with
       | true ->
         let num = Convert.ToInt32(rgx.Groups.[3].Value)
@@ -53,17 +53,13 @@ module Listener =
         raise (Exception("Condition could not be correctly parsed."))
 
 
-  let add eventName condition userId orgId = 
+  let add eventName trigger userId orgId = 
     let ctx = Sql.GetDataContext()
     let listener = ctx.SweepDevelopment.Listener.Create()
     listener.Id <- Guid.NewGuid().ToString()
     listener.EventName <- eventName
     listener.OrganizationId <- orgId
-    match String.IsNullOrWhiteSpace(condition) with
-    | true -> 
-      listener.Condition <- None
-    | false ->
-      listener.Condition <- Some(condition)
+    listener.Trigger <- trigger
     ctx.SubmitUpdates()
 
   let get id orgId =

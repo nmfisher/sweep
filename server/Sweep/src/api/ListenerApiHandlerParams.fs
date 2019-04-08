@@ -1,6 +1,7 @@
 namespace Sweep
 
 open Sweep.Model.Listener
+open Sweep.Model.ListenerRequestBody
 open Sweep.Model.ListenerTemplate
 open System.Collections.Generic
 
@@ -9,7 +10,7 @@ module ListenerApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddListenerBodyParams = Listener
+    type AddListenerBodyParams = ListenerRequestBody
     //#endregion
 
     
