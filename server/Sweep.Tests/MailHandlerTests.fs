@@ -41,18 +41,18 @@ module MailHandlerTests =
         SendTo=[|"baz@qux"|];
         UserId="";
         OrganizationId="";
-        Deleted=false;
+        Deleted=Some(false);
         Id="";
       }
 
       let event = {
          EventName="SOMEEVENT";
-         Params=dict ["key1","val1" :> obj];
+         Params=None;
          Id = "";
          ReceivedOn = DateTime.Now;
-         ProcessedOn = DateTime.Now;
+         ProcessedOn = Some(DateTime.Now);
          OrganizationId = "123";
-         Error = "";
+         Error = None;
       }
       let defaults = 
         {
@@ -73,11 +73,11 @@ module MailHandlerTests =
 
       let event = { 
         EventName = "some_event"; 
-        Params=dict ["key","val" :> obj] ; 
+        Params=None;
         Id = ""; 
         ReceivedOn=DateTime.Now; 
-        ProcessedOn=DateTime.Now; 
-        Error=""; 
+        ProcessedOn=Some(DateTime.Now); 
+        Error=None; 
         OrganizationId=""
       }
 
@@ -90,7 +90,7 @@ module MailHandlerTests =
         Id="";
         OrganizationId="";
         UserId="";
-        Deleted=false;
+        Deleted=Some(false);
       }]
 
       let defaults = {

@@ -44,7 +44,7 @@ module ListenerApiHandlerTests =
           Id="";
           OrganizationId="";
           UserId="";
-          Deleted=false;
+          Deleted=Some(false);
       } 
       |> encode
       |> HttpPost client "/1.0.0/templates"
@@ -61,7 +61,7 @@ module ListenerApiHandlerTests =
        
        // create a listener
       {
-          Condition="";
+          Trigger=None;
           EventName="some_event";
           OrganizationId="";
           Id="";
@@ -82,7 +82,7 @@ module ListenerApiHandlerTests =
 
       let path = "/1.0.0/listeners"
       {
-          Condition="";
+          Trigger=None;
           EventName="";
           OrganizationId="";
           Id="";
@@ -94,7 +94,7 @@ module ListenerApiHandlerTests =
 
       let path = "/1.0.0/listeners"
       {
-          Condition="INVALID CONDITION";
+          Trigger=Some("INVALID CONDITION");
           EventName="some_event";
           OrganizationId="";
           Id="";
@@ -204,7 +204,7 @@ module ListenerApiHandlerTests =
           Id="";
           OrganizationId="";
           UserId="";
-          Deleted=false;
+          Deleted=Some(false);
       } 
       |> encode
       |> HttpPost client "/1.0.0/templates"

@@ -41,7 +41,7 @@ module EventApiHandlerTests =
 
       {
           EventRequestBody.EventName="some_event";
-          Params=dict ["param1","value1" :> obj]
+          Params=None
       } 
       |> encode
       |> HttpPost client path
@@ -61,7 +61,7 @@ module EventApiHandlerTests =
 
       { 
         EventRequestBody.EventName="";
-        Params=dict [ "param1","value1" :> obj]
+        Params=None
       }
       |> encode
       |> HttpPost client path
@@ -78,7 +78,7 @@ module EventApiHandlerTests =
       // add your setup code here
       { 
         EventRequestBody.EventName="some_event";
-        Params=dict [ "param1","value1":>obj];
+        Params=None
       } 
       |> encode
       |> HttpPost client "/1.0.0/events"
@@ -100,8 +100,8 @@ module EventApiHandlerTests =
         |> JsonConvert.DeserializeObject<Event>
         |> (fun x -> 
             x.EventName |> shouldEqual "some_event" |> ignore
-            x.Params.Keys.Count |> shouldEqual 1 |> ignore
-            x.Params.["param1"] |> shouldEqual "value1" |> ignore)
+            x.Params.Value.Keys.Count |> shouldEqual 1 |> ignore
+            x.Params.Value.["param1"] |> shouldEqual "value1" |> ignore)
       }
 
   [<Fact>]
@@ -141,7 +141,7 @@ module EventApiHandlerTests =
       // add an event for our organization so we can ensure it's returned properly
       { 
         EventRequestBody.EventName="some_event";
-        Params= dict ["param1","value1" :> obj];
+        Params=Some(dict ["param1","value1":>obj])
       } 
       |> encode
       |> HttpPost client path
@@ -157,7 +157,7 @@ module EventApiHandlerTests =
         |> Seq.head
         |> (fun x -> 
               x.EventName |> shouldEqual "some_event" |> ignore
-              x.Params.["param1"] |> shouldEqual "value1")
+              x.Params.Value.["param1"] |> shouldEqual "value1")
         |> ignore
 
     }

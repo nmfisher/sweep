@@ -17,8 +17,11 @@ open Foq
 open Newtonsoft.Json
 open Sweep.EventQueue
 open Sweep.Model.Template
+open Sweep.Model.TemplateRequestBody
 open Sweep.Model.Listener
 open Sweep.Model.Event
+open Sweep.Model.EventRequestBody
+open Sweep.Data.Listener
 open SendGrid
 open System.Text
 open Microsoft.AspNetCore.Http.Headers
@@ -31,36 +34,44 @@ module EventQueueTests =
   [<Fact>]
   let ``Listener condition expires when duration exceeds time elapsed since original event``() =
     task {
-      let event = {
-        Id="some_id";
-        EventName="some_event";
-        ReceivedOn=DateTime.Now.Subtract(TimeSpan(7,0,0,0))
-        ProcessedOn=  None;
-        Params= dict [||]
-      }
-      let condition = {
-        EventName="some_event";
-        Key=None;
-        Duration=TimeSpan(5,0,0,0)
-      } : ListenerCondition
+      let event = 
+        {
+          Id="some_id";
+          EventName="some_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(7,0,0,0))
+          ProcessedOn=  None;
+          Params=None;
+          Error=None;
+          OrganizationId="some_id"
+        }
+      let condition = 
+        {
+          EventName="some_event";
+          Key=None;
+          Duration=TimeSpan(5,0,0,0)
+        } : ListenerCondition
       Assert.True(noLongerApplies event condition)
     }
 
   [<Fact>]
   let ``Listener condition doesn't expire when duration has not exceeded time elapsed since original event``() =
     task {
-      let event = {
-        Id="some_id";
-        EventName="some_event";
-        ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-        ProcessedOn=None;
-        Params=dict [||]
-      } : Event
-      let condition = {
-        EventName="some_event";
-        Key=None;
-        Duration=TimeSpan(7,0,0,0)
-      } : ListenerCondition
+      let event = 
+        {
+          Id="some_id";
+          EventName="some_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=None;
+          Error=None;
+          OrganizationId="some_id"
+        } : Event
+      let condition = 
+        {
+          EventName="some_event";
+          Key=None;
+          Duration=TimeSpan(7,0,0,0)
+        } : ListenerCondition
       Assert.False(noLongerApplies event condition)
     }
 
@@ -73,16 +84,12 @@ module EventQueueTests =
       
       // create a template
       {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Subject="Some subject";
-          FromAddress="baz@qux";
-          FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+        Sweep.Model.TemplateRequestBody.TemplateRequestBody.Content="Hello";
+        SendTo=[|"foo@bar"|];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
+      }
       |> encode
       |> HttpPost client "/1.0.0/templates"
       |> isStatus (enum<HttpStatusCode>(200))
@@ -101,7 +108,7 @@ module EventQueueTests =
           EventName="some_event";
           OrganizationId="";
           Id="";
-          Condition="";
+          Trigger=None;
       } 
         |> encode
         |> HttpPost client "/1.0.0/listeners"
@@ -116,7 +123,7 @@ module EventQueueTests =
         |> Seq.head
 
       // create an event
-      { EventName = "some_event"; Params=dict ["key","val" :> obj] ; Id = ""; ReceivedOn=DateTime.Now; ProcessedOn=DateTime.Now; Error=""; OrganizationId="" }
+      { EventName = "some_event"; Params=None; } : EventRequestBody
       |> encode
       |> HttpPost client "/1.0.0/events"
       |> isStatus (enum<HttpStatusCode>(200))

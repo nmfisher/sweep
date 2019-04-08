@@ -17,7 +17,7 @@ open Sweep.Data.Listener
 module EventQueue = 
 
   let noLongerApplies (event:Event) (condition:ListenerCondition) =
-    event.ReceivedOn.Add(condition.Duration) >= DateTime.Now
+    event.ReceivedOn.Add(condition.Duration) <= DateTime.Now
 
   let isMetBy (events: seq<Event>) (parent:Event) (condition:ListenerCondition)  =
     events 

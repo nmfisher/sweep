@@ -15,6 +15,7 @@ open TestHelper
 open TemplateApiHandlerTestsHelper
 open Sweep.TemplateApiHandler
 open Sweep.TemplateApiHandlerParams
+open Sweep.Model.TemplateRequestBody
 open Sweep.Model.Template
 open Newtonsoft.Json
 
@@ -25,16 +26,12 @@ module TemplateApiHandlerTests =
   // ---------------------------------
   let getTemplate () = 
     {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Subject="Some subject";
-          FromAddress="baz@qux";
-          FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      TemplateRequestBody.Content="Hello";
+      SendTo=[|"foo@bar"|];
+      Subject="Some subject";
+      FromAddress="baz@qux";
+      FromName="Baz";
+    }  
       
   [<Fact>]
   let ``AddTemplate - Create a new Template returns 200 where Success`` () =
@@ -51,15 +48,11 @@ module TemplateApiHandlerTests =
       |> ignore
 
       {
-          Content="Hello {{recipient}}";
-          SendTo=[|"{{recipient}}"|];
-          Subject="Some subject";
-          FromAddress="baz@qux";
-          FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
+        TemplateRequestBody.Content="Hello {{recipient}}";
+        SendTo=[|"{{recipient}}"|];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
       } 
       |> encode
       |> HttpPost client path
@@ -78,15 +71,11 @@ module TemplateApiHandlerTests =
 
       // missing content
       {
-          Content="";
+          TemplateRequestBody.Content="";
           SendTo=[|"foo@bar"|];
           Subject="Some subject";
           FromAddress="baz@qux";
           FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
       } 
       |> encode
       |> HttpPost client path
@@ -103,7 +92,7 @@ module TemplateApiHandlerTests =
           Id="";
           OrganizationId="";
           UserId="";
-          Deleted=false;
+          Deleted=Some(false);
       } 
       |> encode
       |> HttpPost client path
@@ -112,15 +101,11 @@ module TemplateApiHandlerTests =
 
       // malformed sendTo
       {
-          Content="Some content";
+          TemplateRequestBody.Content="Some content";
           SendTo=[|"not an email"|];
           Subject="Some subject";
           FromAddress="baz@qux";
           FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
       } 
       |> encode
       |> HttpPost client path
@@ -137,7 +122,7 @@ module TemplateApiHandlerTests =
           Id="";
           OrganizationId="";
           UserId="";
-          Deleted=false;
+          Deleted=Some(false);
       } 
       |> encode
       |> HttpPost client path
@@ -266,15 +251,11 @@ module TemplateApiHandlerTests =
       |> ignore
 
       {
-          Content="Hello Again";
+          TemplateRequestBody.Content="Hello Again";
           SendTo=[|"baz@qux"|];
           Subject="Some subject";
           FromAddress="baz@qux";
           FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
       } 
       |> encode
       |> HttpPost client path
@@ -312,15 +293,11 @@ module TemplateApiHandlerTests =
         |> Seq.head
       // update the template with some valid data
       {
-          Content="Hello Again";
+          TemplateRequestBody.Content="Hello Again";
           SendTo=[|"foo@bar";"baz@qux"|];
           Subject="Some other subject";
           FromAddress="me@you";
           FromName="Gaz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
       } 
         |> encode
         |> HttpPut client ("/1.0.0/templates/" + template.Id)
@@ -379,32 +356,24 @@ module TemplateApiHandlerTests =
         |> Seq.head
 
       {
-          Content="";
+          TemplateRequestBody.Content="";
           SendTo=[|"baz@qux"|];
           Subject="Some subject";
           FromAddress="baz@qux";
           FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=false;
-      } 
+      }
         |> encode
         |> HttpPut client ("/1.0.0/templates/" + template.Id)
         |> isStatus (enum<HttpStatusCode>(422))
         |> ignore
 
       {
-        Content="Hello Again";
+        TemplateRequestBody.Content="Hello Again";
         SendTo=[||];
         Subject="Some subject";
         FromAddress="baz@qux";
         FromName="Baz";
-        Id="";
-        OrganizationId="";
-        UserId="";
-        Deleted=false;
-      }  
+      }
       |> encode
       |> HttpPut client ("/1.0.0/templates/" + template.Id)
       |> isStatus (enum<HttpStatusCode>(422))

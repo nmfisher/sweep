@@ -13,19 +13,29 @@ module Event =
   let deserializeEvent (prop,value) =
      match prop with
      | "Params" -> 
-          if value <> null
-          then JsonConvert.DeserializeObject<Dictionary<string,obj>>(value.ToString()) |> box
-          else Unchecked.defaultof<obj[]> |> box
+        if isNull value then
+          None |> box
+        else 
+          let optional = JsonConvert.DeserializeObject<Dictionary<string,obj> option>(value.ToString())
+          match optional with
+            | Some p ->
+              Some(p :> IDictionary<string,obj>) |> box
+            | None ->
+              None |> box
      | "Id" ->
         value.ToString() :> obj
      | _ -> 
         value
   
-  let add eventName eventParams organizationId =
+  let add eventName (eventParams:IDictionary<string,obj> option) organizationId =
     let ctx = Sql.GetDataContext()
     let event = ctx.SweepDevelopment.Event.Create()
     event.EventName <- eventName
-    event.Params <- eventParams |> Newtonsoft.Json.JsonConvert.SerializeObject |> Some
+    match eventParams with
+    | Some d ->
+        event.Params <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
+    | None ->
+        event.Params <- None
     event.OrganizationId <- organizationId
     event.ReceivedOn <- DateTime.Now
     event.Id <- Guid.NewGuid().ToString()
