@@ -25,6 +25,14 @@ open Microsoft.AspNetCore.Cors.Infrastructure
 
 module CustomHandlers = 
 
+  let cookieAuth (o : CookieAuthenticationOptions) =
+    do
+        o.Cookie.HttpOnly     <- false
+        o.Cookie.SecurePolicy <- CookieSecurePolicy.SameAsRequest
+        o.Cookie.SameSite <- SameSiteMode.None
+        o.SlidingExpiration   <- true
+        o.ExpireTimeSpan      <- TimeSpan.FromDays 7.0
+
   let fetchOrCreateUser id email  = 
     match CompositionRoot.getUser id with 
     | Some u -> 

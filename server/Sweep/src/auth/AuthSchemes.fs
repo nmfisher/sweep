@@ -48,15 +48,8 @@ module AuthSchemes =
     (build settings "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings
     (build settings "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings
 
-  let cookieAuth (o : CookieAuthenticationOptions) =
-    do
-        o.Cookie.HttpOnly     <- true
-        o.Cookie.SecurePolicy <- CookieSecurePolicy.SameAsRequest
-        o.SlidingExpiration   <- true
-        o.ExpireTimeSpan      <- TimeSpan.FromDays 7.0
-
   let configureCookie (builder:AuthenticationBuilder) =
-      builder.AddCookie(cookieAuth)
+      builder.AddCookie(CustomHandlers.cookieAuth)
 
   let configureServices (services:IServiceCollection) = 
     let serviceProvider = services.BuildServiceProvider()
