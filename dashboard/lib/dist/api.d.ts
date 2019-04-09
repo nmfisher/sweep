@@ -145,7 +145,7 @@ export interface Listener {
      * @type {string}
      * @memberof Listener
      */
-    id?: string;
+    id: string;
     /**
      *
      * @type {string}
@@ -158,6 +158,74 @@ export interface Listener {
      * @memberof Listener
      */
     organizationId: string;
+    /**
+     *
+     * @type {string}
+     * @memberof Listener
+     */
+    trigger?: string;
+}
+/**
+ *
+ * @export
+ * @interface ListenerAction
+ */
+export interface ListenerAction {
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    id: string;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    eventId: string;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    listenerId: string;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    organizationId: string;
+    /**
+     *
+     * @type {boolean}
+     * @memberof ListenerAction
+     */
+    completed: boolean;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    error?: string;
+}
+/**
+ *
+ * @export
+ * @interface ListenerRequestBody
+ */
+export interface ListenerRequestBody {
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerRequestBody
+     */
+    eventName: string;
+    /**
+     *
+     * @type {string}
+     * @memberof ListenerRequestBody
+     */
+    trigger?: string;
 }
 /**
  *
@@ -310,6 +378,43 @@ export interface Template {
 /**
  *
  * @export
+ * @interface TemplateRequestBody
+ */
+export interface TemplateRequestBody {
+    /**
+     *
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    content: string;
+    /**
+     *
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    subject: string;
+    /**
+     *
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    fromAddress: string;
+    /**
+     *
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    fromName: string;
+    /**
+     *
+     * @type {Array<string>}
+     * @memberof TemplateRequestBody
+     */
+    sendTo: Array<string>;
+}
+/**
+ *
+ * @export
  * @interface User
  */
 export interface User {
@@ -345,6 +450,19 @@ export interface User {
     organizationId: string;
 }
 /**
+ *
+ * @export
+ * @interface UserRequestBody
+ */
+export interface UserRequestBody {
+    /**
+     *
+     * @type {string}
+     * @memberof UserRequestBody
+     */
+    username: string;
+}
+/**
  * EventApi - axios parameter creator
  * @export
  */
@@ -352,7 +470,7 @@ export declare const EventApiAxiosParamCreator: (configuration?: Configuration) 
     /**
      *
      * @summary Raise an event
-     * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+     * @param {EventRequestBody} eventRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -381,7 +499,7 @@ export declare const EventApiFp: (configuration?: Configuration) => {
     /**
      *
      * @summary Raise an event
-     * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+     * @param {EventRequestBody} eventRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -410,7 +528,7 @@ export declare const EventApiFactory: (configuration?: Configuration, basePath?:
     /**
      *
      * @summary Raise an event
-     * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+     * @param {EventRequestBody} eventRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -441,7 +559,7 @@ export declare class EventApi extends BaseAPI {
     /**
      *
      * @summary Raise an event
-     * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+     * @param {EventRequestBody} eventRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
@@ -473,11 +591,11 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
     /**
      *
      * @summary Create a new Listener
-     * @param {Listener} listener A Listener object to be added
+     * @param {ListenerRequestBody} listenerRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listener: Listener, options?: any): RequestArgs;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): RequestArgs;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -531,11 +649,11 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
     /**
      *
      * @summary Create a new Listener
-     * @param {Listener} listener A Listener object to be added
+     * @param {ListenerRequestBody} listenerRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listener: Listener, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -589,11 +707,11 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
     /**
      *
      * @summary Create a new Listener
-     * @param {Listener} listener A Listener object to be added
+     * @param {ListenerRequestBody} listenerRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listener: Listener, options?: any): AxiosPromise<Response>;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -649,12 +767,12 @@ export declare class ListenerApi extends BaseAPI {
     /**
      *
      * @summary Create a new Listener
-     * @param {Listener} listener A Listener object to be added
+     * @param {ListenerRequestBody} listenerRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    addListener(listener: Listener, options?: any): AxiosPromise<Response>;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -801,11 +919,11 @@ export declare const TemplateApiAxiosParamCreator: (configuration?: Configuratio
     /**
      *
      * @summary Create a new Template
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(template: Template, options?: any): RequestArgs;
+    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): RequestArgs;
     /**
      *
      * @summary Deletes a Template
@@ -834,11 +952,11 @@ export declare const TemplateApiAxiosParamCreator: (configuration?: Configuratio
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody successful operation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, template: Template, options?: any): RequestArgs;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): RequestArgs;
 };
 /**
  * TemplateApi - functional programming interface
@@ -848,11 +966,11 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
     /**
      *
      * @summary Create a new Template
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(template: Template, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
      *
      * @summary Deletes a Template
@@ -881,11 +999,11 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody successful operation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, template: Template, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
 };
 /**
  * TemplateApi - factory interface
@@ -895,11 +1013,11 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
     /**
      *
      * @summary Create a new Template
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(template: Template, options?: any): AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Deletes a Template
@@ -928,11 +1046,11 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody successful operation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, template: Template, options?: any): AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
 };
 /**
  * TemplateApi - object-oriented interface
@@ -944,12 +1062,12 @@ export declare class TemplateApi extends BaseAPI {
     /**
      *
      * @summary Create a new Template
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    addTemplate(template: Template, options?: any): AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Deletes a Template
@@ -981,12 +1099,12 @@ export declare class TemplateApi extends BaseAPI {
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody successful operation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    updateTemplate(templateId: string, template: Template, options?: any): AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
 }
 /**
  * UserApi - axios parameter creator
@@ -996,11 +1114,11 @@ export declare const UserApiAxiosParamCreator: (configuration?: Configuration) =
     /**
      * This can only be done by the logged in user.
      * @summary Create user
-     * @param {User} user Created user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser(user: User, options?: any): RequestArgs;
+    createUser(userRequestBody: UserRequestBody, options?: any): RequestArgs;
     /**
      * This can only be done by the logged in user.
      * @summary Delete user
@@ -1037,11 +1155,11 @@ export declare const UserApiAxiosParamCreator: (configuration?: Configuration) =
      * This can only be done by the logged in user.
      * @summary Updated user
      * @param {string} userId ID of the user ame that need to be updated
-     * @param {User} user Updated user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateUser(userId: string, user: User, options?: any): RequestArgs;
+    updateUser(userId: string, userRequestBody: UserRequestBody, options?: any): RequestArgs;
 };
 /**
  * UserApi - functional programming interface
@@ -1051,11 +1169,11 @@ export declare const UserApiFp: (configuration?: Configuration) => {
     /**
      * This can only be done by the logged in user.
      * @summary Create user
-     * @param {User} user Created user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser(user: User, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    createUser(userRequestBody: UserRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
      * This can only be done by the logged in user.
      * @summary Delete user
@@ -1092,11 +1210,11 @@ export declare const UserApiFp: (configuration?: Configuration) => {
      * This can only be done by the logged in user.
      * @summary Updated user
      * @param {string} userId ID of the user ame that need to be updated
-     * @param {User} user Updated user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateUser(userId: string, user: User, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    updateUser(userId: string, userRequestBody: UserRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
 };
 /**
  * UserApi - factory interface
@@ -1106,11 +1224,11 @@ export declare const UserApiFactory: (configuration?: Configuration, basePath?: 
     /**
      * This can only be done by the logged in user.
      * @summary Create user
-     * @param {User} user Created user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUser(user: User, options?: any): AxiosPromise<Response>;
+    createUser(userRequestBody: UserRequestBody, options?: any): AxiosPromise<Response>;
     /**
      * This can only be done by the logged in user.
      * @summary Delete user
@@ -1147,11 +1265,11 @@ export declare const UserApiFactory: (configuration?: Configuration, basePath?: 
      * This can only be done by the logged in user.
      * @summary Updated user
      * @param {string} userId ID of the user ame that need to be updated
-     * @param {User} user Updated user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateUser(userId: string, user: User, options?: any): AxiosPromise<Response>;
+    updateUser(userId: string, userRequestBody: UserRequestBody, options?: any): AxiosPromise<Response>;
 };
 /**
  * UserApi - object-oriented interface
@@ -1163,12 +1281,12 @@ export declare class UserApi extends BaseAPI {
     /**
      * This can only be done by the logged in user.
      * @summary Create user
-     * @param {User} user Created user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    createUser(user: User, options?: any): AxiosPromise<Response>;
+    createUser(userRequestBody: UserRequestBody, options?: any): AxiosPromise<Response>;
     /**
      * This can only be done by the logged in user.
      * @summary Delete user
@@ -1209,10 +1327,10 @@ export declare class UserApi extends BaseAPI {
      * This can only be done by the logged in user.
      * @summary Updated user
      * @param {string} userId ID of the user ame that need to be updated
-     * @param {User} user Updated user object
+     * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    updateUser(userId: string, user: User, options?: any): AxiosPromise<Response>;
+    updateUser(userId: string, userRequestBody: UserRequestBody, options?: any): AxiosPromise<Response>;
 }

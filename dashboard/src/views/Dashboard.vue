@@ -55,8 +55,8 @@
 <script lang="ts">
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-import { EventApiFp, EventApiFactory } from '../lib/dist/api.js';
-import { Configuration, ConfigurationParameters } from '../lib/dist/configuration.js';
+import { EventApiFp, EventApiFactory } from '../../lib/dist/api.js';
+import { Configuration, ConfigurationParameters } from '../../lib/dist/configuration.js';
 
 export default {
   data () {
@@ -208,10 +208,11 @@ export default {
   },
   mounted() {
     var vm = this;
-    EventApiFactory().listEvents({withCredentials:true}).then((resp) => {
-      vm.items = resp;
-      console.log(vm.items);
-    });  
+      EventApiFactory().listEvents({withCredentials:true}).then((resp) => {
+        vm.items = resp;
+      }).catch((err) => {
+        vm.$store.state.app.snackbar = err;
+      });
   }
 }
 </script>

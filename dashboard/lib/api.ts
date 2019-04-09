@@ -149,7 +149,7 @@ export interface Listener {
      * @type {string}
      * @memberof Listener
      */
-    id?: string;
+    id: string;
     /**
      * 
      * @type {string}
@@ -162,6 +162,76 @@ export interface Listener {
      * @memberof Listener
      */
     organizationId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Listener
+     */
+    trigger?: string;
+}
+
+/**
+ * 
+ * @export
+ * @interface ListenerAction
+ */
+export interface ListenerAction {
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    id: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    eventId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    listenerId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    organizationId: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ListenerAction
+     */
+    completed: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerAction
+     */
+    error?: string;
+}
+
+/**
+ * 
+ * @export
+ * @interface ListenerRequestBody
+ */
+export interface ListenerRequestBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerRequestBody
+     */
+    eventName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerRequestBody
+     */
+    trigger?: string;
 }
 
 /**
@@ -319,6 +389,44 @@ export interface Template {
 /**
  * 
  * @export
+ * @interface TemplateRequestBody
+ */
+export interface TemplateRequestBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    content: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    subject: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    fromAddress: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TemplateRequestBody
+     */
+    fromName: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof TemplateRequestBody
+     */
+    sendTo: Array<string>;
+}
+
+/**
+ * 
+ * @export
  * @interface User
  */
 export interface User {
@@ -354,6 +462,20 @@ export interface User {
     organizationId: string;
 }
 
+/**
+ * 
+ * @export
+ * @interface UserRequestBody
+ */
+export interface UserRequestBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRequestBody
+     */
+    username: string;
+}
+
 
 /**
  * EventApi - axios parameter creator
@@ -364,7 +486,7 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * 
          * @summary Raise an event
-         * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+         * @param {EventRequestBody} eventRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -489,7 +611,7 @@ export const EventApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Raise an event
-         * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+         * @param {EventRequestBody} eventRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -539,7 +661,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
         /**
          * 
          * @summary Raise an event
-         * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+         * @param {EventRequestBody} eventRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -578,7 +700,7 @@ export class EventApi extends BaseAPI {
     /**
      * 
      * @summary Raise an event
-     * @param {EventRequestBody} eventRequestBody Raises an Event with associated parameters
+     * @param {EventRequestBody} eventRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
@@ -622,14 +744,14 @@ export const ListenerApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Create a new Listener
-         * @param {Listener} listener A Listener object to be added
+         * @param {ListenerRequestBody} listenerRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listener: Listener, options: any = {}): RequestArgs {
-            // verify required parameter 'listener' is not null or undefined
-            if (listener === null || listener === undefined) {
-                throw new RequiredError('listener','Required parameter listener was null or undefined when calling addListener.');
+        addListener(listenerRequestBody: ListenerRequestBody, options: any = {}): RequestArgs {
+            // verify required parameter 'listenerRequestBody' is not null or undefined
+            if (listenerRequestBody === null || listenerRequestBody === undefined) {
+                throw new RequiredError('listenerRequestBody','Required parameter listenerRequestBody was null or undefined when calling addListener.');
             }
             const localVarPath = `/listeners`;
             const localVarUrlObj = url.parse(localVarPath, true);
@@ -657,8 +779,8 @@ export const ListenerApiAxiosParamCreator = function (configuration?: Configurat
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-            const needsSerialization = (<any>"Listener" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(listener !== undefined ? listener : {}) : (listener || "");
+            const needsSerialization = (<any>"ListenerRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(listenerRequestBody !== undefined ? listenerRequestBody : {}) : (listenerRequestBody || "");
 
             return {
                 url: url.format(localVarUrlObj),
@@ -904,12 +1026,12 @@ export const ListenerApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Create a new Listener
-         * @param {Listener} listener A Listener object to be added
+         * @param {ListenerRequestBody} listenerRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listener: Listener, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListener(listener, options);
+        addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListener(listenerRequestBody, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1001,12 +1123,12 @@ export const ListenerApiFactory = function (configuration?: Configuration, baseP
         /**
          * 
          * @summary Create a new Listener
-         * @param {Listener} listener A Listener object to be added
+         * @param {ListenerRequestBody} listenerRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listener: Listener, options?: any) {
-            return ListenerApiFp(configuration).addListener(listener, options)(axios, basePath);
+        addListener(listenerRequestBody: ListenerRequestBody, options?: any) {
+            return ListenerApiFp(configuration).addListener(listenerRequestBody, options)(axios, basePath);
         },
         /**
          * 
@@ -1075,13 +1197,13 @@ export class ListenerApi extends BaseAPI {
     /**
      * 
      * @summary Create a new Listener
-     * @param {Listener} listener A Listener object to be added
+     * @param {ListenerRequestBody} listenerRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    public addListener(listener: Listener, options?: any) {
-        return ListenerApiFp(this.configuration).addListener(listener, options)(this.axios, this.basePath);
+    public addListener(listenerRequestBody: ListenerRequestBody, options?: any) {
+        return ListenerApiFp(this.configuration).addListener(listenerRequestBody, options)(this.axios, this.basePath);
     }
 
     /**
@@ -1346,14 +1468,14 @@ export const TemplateApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Create a new Template
-         * @param {Template} template A Template object with associated parameters
+         * @param {TemplateRequestBody} templateRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(template: Template, options: any = {}): RequestArgs {
-            // verify required parameter 'template' is not null or undefined
-            if (template === null || template === undefined) {
-                throw new RequiredError('template','Required parameter template was null or undefined when calling addTemplate.');
+        addTemplate(templateRequestBody: TemplateRequestBody, options: any = {}): RequestArgs {
+            // verify required parameter 'templateRequestBody' is not null or undefined
+            if (templateRequestBody === null || templateRequestBody === undefined) {
+                throw new RequiredError('templateRequestBody','Required parameter templateRequestBody was null or undefined when calling addTemplate.');
             }
             const localVarPath = `/templates`;
             const localVarUrlObj = url.parse(localVarPath, true);
@@ -1381,8 +1503,8 @@ export const TemplateApiAxiosParamCreator = function (configuration?: Configurat
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-            const needsSerialization = (<any>"Template" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(template !== undefined ? template : {}) : (template || "");
+            const needsSerialization = (<any>"TemplateRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(templateRequestBody !== undefined ? templateRequestBody : {}) : (templateRequestBody || "");
 
             return {
                 url: url.format(localVarUrlObj),
@@ -1512,18 +1634,18 @@ export const TemplateApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
-         * @param {Template} template A Template object with associated parameters
+         * @param {TemplateRequestBody} templateRequestBody successful operation
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId: string, template: Template, options: any = {}): RequestArgs {
+        updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options: any = {}): RequestArgs {
             // verify required parameter 'templateId' is not null or undefined
             if (templateId === null || templateId === undefined) {
                 throw new RequiredError('templateId','Required parameter templateId was null or undefined when calling updateTemplate.');
             }
-            // verify required parameter 'template' is not null or undefined
-            if (template === null || template === undefined) {
-                throw new RequiredError('template','Required parameter template was null or undefined when calling updateTemplate.');
+            // verify required parameter 'templateRequestBody' is not null or undefined
+            if (templateRequestBody === null || templateRequestBody === undefined) {
+                throw new RequiredError('templateRequestBody','Required parameter templateRequestBody was null or undefined when calling updateTemplate.');
             }
             const localVarPath = `/templates/{templateId}`
                 .replace(`{${"templateId"}}`, encodeURIComponent(String(templateId)));
@@ -1552,8 +1674,8 @@ export const TemplateApiAxiosParamCreator = function (configuration?: Configurat
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-            const needsSerialization = (<any>"Template" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(template !== undefined ? template : {}) : (template || "");
+            const needsSerialization = (<any>"TemplateRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(templateRequestBody !== undefined ? templateRequestBody : {}) : (templateRequestBody || "");
 
             return {
                 url: url.format(localVarUrlObj),
@@ -1572,12 +1694,12 @@ export const TemplateApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Create a new Template
-         * @param {Template} template A Template object with associated parameters
+         * @param {TemplateRequestBody} templateRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(template: Template, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).addTemplate(template, options);
+        addTemplate(templateRequestBody: TemplateRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).addTemplate(templateRequestBody, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1629,12 +1751,12 @@ export const TemplateApiFp = function(configuration?: Configuration) {
          * 
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
-         * @param {Template} template A Template object with associated parameters
+         * @param {TemplateRequestBody} templateRequestBody successful operation
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId: string, template: Template, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).updateTemplate(templateId, template, options);
+        updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).updateTemplate(templateId, templateRequestBody, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1652,12 +1774,12 @@ export const TemplateApiFactory = function (configuration?: Configuration, baseP
         /**
          * 
          * @summary Create a new Template
-         * @param {Template} template A Template object with associated parameters
+         * @param {TemplateRequestBody} templateRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(template: Template, options?: any) {
-            return TemplateApiFp(configuration).addTemplate(template, options)(axios, basePath);
+        addTemplate(templateRequestBody: TemplateRequestBody, options?: any) {
+            return TemplateApiFp(configuration).addTemplate(templateRequestBody, options)(axios, basePath);
         },
         /**
          * 
@@ -1693,12 +1815,12 @@ export const TemplateApiFactory = function (configuration?: Configuration, baseP
          * 
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
-         * @param {Template} template A Template object with associated parameters
+         * @param {TemplateRequestBody} templateRequestBody successful operation
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId: string, template: Template, options?: any) {
-            return TemplateApiFp(configuration).updateTemplate(templateId, template, options)(axios, basePath);
+        updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any) {
+            return TemplateApiFp(configuration).updateTemplate(templateId, templateRequestBody, options)(axios, basePath);
         },
     };
 };
@@ -1713,13 +1835,13 @@ export class TemplateApi extends BaseAPI {
     /**
      * 
      * @summary Create a new Template
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    public addTemplate(template: Template, options?: any) {
-        return TemplateApiFp(this.configuration).addTemplate(template, options)(this.axios, this.basePath);
+    public addTemplate(templateRequestBody: TemplateRequestBody, options?: any) {
+        return TemplateApiFp(this.configuration).addTemplate(templateRequestBody, options)(this.axios, this.basePath);
     }
 
     /**
@@ -1762,13 +1884,13 @@ export class TemplateApi extends BaseAPI {
      * 
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
-     * @param {Template} template A Template object with associated parameters
+     * @param {TemplateRequestBody} templateRequestBody successful operation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    public updateTemplate(templateId: string, template: Template, options?: any) {
-        return TemplateApiFp(this.configuration).updateTemplate(templateId, template, options)(this.axios, this.basePath);
+    public updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any) {
+        return TemplateApiFp(this.configuration).updateTemplate(templateId, templateRequestBody, options)(this.axios, this.basePath);
     }
 
 }
@@ -1783,14 +1905,14 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * This can only be done by the logged in user.
          * @summary Create user
-         * @param {User} user Created user object
+         * @param {UserRequestBody} userRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(user: User, options: any = {}): RequestArgs {
-            // verify required parameter 'user' is not null or undefined
-            if (user === null || user === undefined) {
-                throw new RequiredError('user','Required parameter user was null or undefined when calling createUser.');
+        createUser(userRequestBody: UserRequestBody, options: any = {}): RequestArgs {
+            // verify required parameter 'userRequestBody' is not null or undefined
+            if (userRequestBody === null || userRequestBody === undefined) {
+                throw new RequiredError('userRequestBody','Required parameter userRequestBody was null or undefined when calling createUser.');
             }
             const localVarPath = `/user`;
             const localVarUrlObj = url.parse(localVarPath, true);
@@ -1809,8 +1931,8 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-            const needsSerialization = (<any>"User" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(user !== undefined ? user : {}) : (user || "");
+            const needsSerialization = (<any>"UserRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(userRequestBody !== undefined ? userRequestBody : {}) : (userRequestBody || "");
 
             return {
                 url: url.format(localVarUrlObj),
@@ -1963,18 +2085,18 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * This can only be done by the logged in user.
          * @summary Updated user
          * @param {string} userId ID of the user ame that need to be updated
-         * @param {User} user Updated user object
+         * @param {UserRequestBody} userRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(userId: string, user: User, options: any = {}): RequestArgs {
+        updateUser(userId: string, userRequestBody: UserRequestBody, options: any = {}): RequestArgs {
             // verify required parameter 'userId' is not null or undefined
             if (userId === null || userId === undefined) {
                 throw new RequiredError('userId','Required parameter userId was null or undefined when calling updateUser.');
             }
-            // verify required parameter 'user' is not null or undefined
-            if (user === null || user === undefined) {
-                throw new RequiredError('user','Required parameter user was null or undefined when calling updateUser.');
+            // verify required parameter 'userRequestBody' is not null or undefined
+            if (userRequestBody === null || userRequestBody === undefined) {
+                throw new RequiredError('userRequestBody','Required parameter userRequestBody was null or undefined when calling updateUser.');
             }
             const localVarPath = `/user/{userId}`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
@@ -1994,8 +2116,8 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-            const needsSerialization = (<any>"User" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(user !== undefined ? user : {}) : (user || "");
+            const needsSerialization = (<any>"UserRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(userRequestBody !== undefined ? userRequestBody : {}) : (userRequestBody || "");
 
             return {
                 url: url.format(localVarUrlObj),
@@ -2014,12 +2136,12 @@ export const UserApiFp = function(configuration?: Configuration) {
         /**
          * This can only be done by the logged in user.
          * @summary Create user
-         * @param {User} user Created user object
+         * @param {UserRequestBody} userRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(user: User, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
-            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).createUser(user, options);
+        createUser(userRequestBody: UserRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).createUser(userRequestBody, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -2085,12 +2207,12 @@ export const UserApiFp = function(configuration?: Configuration) {
          * This can only be done by the logged in user.
          * @summary Updated user
          * @param {string} userId ID of the user ame that need to be updated
-         * @param {User} user Updated user object
+         * @param {UserRequestBody} userRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(userId: string, user: User, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
-            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).updateUser(userId, user, options);
+        updateUser(userId: string, userRequestBody: UserRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).updateUser(userId, userRequestBody, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -2108,12 +2230,12 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
         /**
          * This can only be done by the logged in user.
          * @summary Create user
-         * @param {User} user Created user object
+         * @param {UserRequestBody} userRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(user: User, options?: any) {
-            return UserApiFp(configuration).createUser(user, options)(axios, basePath);
+        createUser(userRequestBody: UserRequestBody, options?: any) {
+            return UserApiFp(configuration).createUser(userRequestBody, options)(axios, basePath);
         },
         /**
          * This can only be done by the logged in user.
@@ -2159,12 +2281,12 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * This can only be done by the logged in user.
          * @summary Updated user
          * @param {string} userId ID of the user ame that need to be updated
-         * @param {User} user Updated user object
+         * @param {UserRequestBody} userRequestBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(userId: string, user: User, options?: any) {
-            return UserApiFp(configuration).updateUser(userId, user, options)(axios, basePath);
+        updateUser(userId: string, userRequestBody: UserRequestBody, options?: any) {
+            return UserApiFp(configuration).updateUser(userId, userRequestBody, options)(axios, basePath);
         },
     };
 };
@@ -2179,13 +2301,13 @@ export class UserApi extends BaseAPI {
     /**
      * This can only be done by the logged in user.
      * @summary Create user
-     * @param {User} user Created user object
+     * @param {UserRequestBody} userRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    public createUser(user: User, options?: any) {
-        return UserApiFp(this.configuration).createUser(user, options)(this.axios, this.basePath);
+    public createUser(userRequestBody: UserRequestBody, options?: any) {
+        return UserApiFp(this.configuration).createUser(userRequestBody, options)(this.axios, this.basePath);
     }
 
     /**
@@ -2240,13 +2362,13 @@ export class UserApi extends BaseAPI {
      * This can only be done by the logged in user.
      * @summary Updated user
      * @param {string} userId ID of the user ame that need to be updated
-     * @param {User} user Updated user object
+     * @param {UserRequestBody} userRequestBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    public updateUser(userId: string, user: User, options?: any) {
-        return UserApiFp(this.configuration).updateUser(userId, user, options)(this.axios, this.basePath);
+    public updateUser(userId: string, userRequestBody: UserRequestBody, options?: any) {
+        return UserApiFp(this.configuration).updateUser(userId, userRequestBody, options)(this.axios, this.basePath);
     }
 
 }

@@ -15,9 +15,13 @@ export default [
     view: 'UserProfile'
   },
   {
-    path: '/table-list',
-    name: 'Table List',
-    view: 'TableList'
+    path: '/events-templates',
+    name: 'Events & Templates',
+    view: 'EventsTemplates'
+  },
+  {
+    path: '/logs',
+    view: 'Logs'
   },
   {
     path: '/typography',

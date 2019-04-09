@@ -121,7 +121,6 @@ Sweep.raise("signup", {"username":"bill@gates.com", firstName:"Bill", lastName:"
         <material-card
           color="tertiary"
           title="Events & Templates"
-          @click="foo"
         >
         <v-flex
             xs12
@@ -207,7 +206,7 @@ import 'jodit/build/jodit.min.css'
 import AceEditorOnVue from 'ace-editor-on-vue';
 import JoditVue from 'jodit-vue'
 import Jodit from 'jodit';
-import { TemplateApiFactory, ListenerApiFactory } from '../lib';
+import { TemplateApiFactory, ListenerApiFactory } from '../../lib';
 
 export default {
    data: () => ({
@@ -276,32 +275,22 @@ export default {
       tabs:0
   }),
   mounted() {
-    console.log(this.$store.state.app.snackbar);
-    console.log(this.$store.state.app.drawer);
-    //this.setSnackbar(true);
     var vm = this;
     ListenerApiFactory().listListeners({withCredentials:true}).then((resp) => {
       vm.listeners = resp.data;
     });
   },
   methods: {
-      ...mapMutations('app', ['setSnackbar']),
-      foo () {
-        console.log(this.$store.state.app.snackbar);
-        console.log(this.$store.state.app.drawer);
-        this.setSnackbar(true);
-      },
-      addEvent(e) {
-        var vm = this;
-        ListenerApiFactory().addListener({eventName:this.newListener, templateId:null, organizationId:null}, {withCredentials:true}).then((resp) => {
-          this.listeners.push({
-            eventName:vm.newListener
-          });
-          vm.newListener = null;
+    ...mapMutations('app', ['setSnackbar']),
+    addEvent(e) {
+      var vm = this;
+      ListenerApiFactory().addListener({eventName:this.newListener, templateId:null, organizationId:null}, {withCredentials:true}).then((resp) => {
+        this.listeners.push({
+          eventName:vm.newListener
         });
-        
-        
-      },
+        vm.newListener = null;
+      });
+    },
       editorInit: function () {
           require('brace/ext/language_tools') //language extension prerequsite...
           require('brace/mode/html')                

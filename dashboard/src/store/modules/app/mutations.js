@@ -4,5 +4,7 @@ export default {
   setDrawer: set('drawer'),
   setImage: set('image'),
   setColor: set('color'),
-  toggleDrawer: toggle('drawer')
+  toggleDrawer: toggle('drawer'),
+  setSnackbar: set('snackbar'),
+  setSnackbarMessage: set('snackbarMessage')
 }

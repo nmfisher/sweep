@@ -12,10 +12,10 @@
           >
             mdi-bell-plus
           </v-icon>
-          <div>Welcome to <b>Vue Material Dashboard</b> - a beautiful freebie for every web developer.</div>
+          <div>{{snackbar}}</div>
           <v-icon
             size="16"
-            @click="snackbar = false"
+            @click="$store.state.app.snackbar = null"
           >
             mdi-close-circle
           </v-icon>
@@ -30,10 +30,10 @@ import {
 
 export default {
   data: () => ({
-    ...mapState('app', ['snackbarContent']),
+    
   }),
   computed: {
-    ...mapState('app', ['snackbar']),
+    ...mapState('app', ['snackbar']), 
   },
 }
 </script>
