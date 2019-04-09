@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `ListenerAction` (
   `eventId` CHAR(36) NOT NULL,
   `listenerId` CHAR(36) NOT NULL,
   `organizationId` CHAR(36) NOT NULL,
-  `completed` TINYINT(1) NOT NULL,
+  `completed` TINYINT(1) NOT NULL DEFAULT false,
   `error` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

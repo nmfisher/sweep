@@ -28,13 +28,15 @@ module TestHelper =
     |> (fun x -> new MemoryStream(x))
     |> (fun x -> new StreamContent(x))
 
+  let orgId = Guid.NewGuid().ToString()    
+
   type AuthMiddleware (next: RequestDelegate) =
 
     member __.Invoke (ctx : HttpContext) =
         task {
             let claims = [new Claim(ClaimTypes.Email, "user");
                           new Claim(ClaimTypes.NameIdentifier, "userId");
-                          new Claim(ClaimTypes.GroupSid, "orgId");]
+                          new Claim(ClaimTypes.GroupSid, orgId);]
             let claimsIdentity = ClaimsIdentity(claims, "Cookies")
             let principal = ClaimsPrincipal()
             ctx.User <- principal

@@ -29,6 +29,8 @@ module MessageApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+      initialize()
+
       let id = (Guid.NewGuid().ToString())
       sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s')" 
         id
@@ -37,7 +39,7 @@ module MessageApiHandlerTests =
         "[\"user@foo.com\"]"
         "me@you.com"
         "Me"
-        "orgId"
+        TestHelper.orgId
         |> TestHelper.execute 
       
       "/1.0.0/messages/" + id
@@ -51,6 +53,8 @@ module MessageApiHandlerTests =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
+
+      initialize()
 
       let path = "/1.0.0/messages/{messageId}".Replace("messageId", "ADDME")
 
@@ -74,7 +78,7 @@ module MessageApiHandlerTests =
         "[\"user@foo.com\"]"
         "me@you.com"
         "Me"
-        "orgId"
+        TestHelper.orgId
         |> TestHelper.execute 
 
       let path = "/1.0.0/messages"

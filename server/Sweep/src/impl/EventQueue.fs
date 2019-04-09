@@ -32,14 +32,13 @@ module EventQueue =
   let findEvent (events:seq<Event>) eventId = 
     events |> Seq.where (fun x -> x.Id = eventId) |> Seq.head
   
-
-  let fetchTemplates mailer listenerAction  =
+  let fetchTemplates (mailer:seq<Template> -> Event -> unit) listenerAction  =
     let templates = CompositionRoot.listTemplatesForListener listenerAction.ListenerId listenerAction.OrganizationId
     mailer templates, listenerAction
 
-  let fetchInvokingEvent events (mailer, listenerAction) =
+  let fetchInvokingEvent events (mailer:Event -> unit, listenerAction) =
     let invokingEvent = findEvent events listenerAction.EventId
-    mailer, listenerAction, invokingEvent
+    (fun () -> mailer invokingEvent), listenerAction, invokingEvent
 
   let sendUnconditional mailer success failure = 
     try 
@@ -70,28 +69,18 @@ module EventQueue =
   let onFailure (listenerAction:ListenerAction) e =
       ListenerAction.markAsComplete listenerAction.Id (Some(e.ToString()))
 
-  let initialize delay apiKey defaultFromAddress defaultFromName defaultSubject = 
-    let timer = new Timers.Timer(60000.)
-    printfn "%A" DateTime.Now
-    timer.Start()
-    printfn "%A" "A-OK"
-    let client = SendGridClient(apiKey)
-    let defaults = 
-      { 
-        FromAddress=defaultFromAddress;
-        FromName=defaultFromName;
-        Subject=defaultSubject;
-      } : MailHandler.MailDefaults
-    let saver = Sweep.Data.Message.save
-    let mailer = MailHandler.handle client defaults saver
-    
-    while true do
-      Async.AwaitEvent (timer.Elapsed) |> ignore
-      // dequeue all events and create ListenerActions for all listeners that match
-      Event.listAllUnprocessed() |> Seq.map ListenerAction.createFromEvent |> Seq.map Event.markAsProcessed |> ignore
+  let dequeue mailer = 
+    // dequeue all events and create ListenerActions for all listeners that match
+    let events = Event.listAllUnprocessed() |> Seq.toList
+    events |> Seq.map ListenerAction.createFromEvent |> Seq.toList 
+    events |> Seq.map Event.markAsProcessed |> Seq.toList |> ignore
 
-      // dequeue all incomplete listenerActions
-      let incomplete = ListenerAction.listIncomplete() 
+    // dequeue all incomplete listenerActions
+    let incomplete = ListenerAction.listIncomplete() 
+    match Seq.isEmpty incomplete with 
+    | true ->
+      ()
+    | false ->    
       // get all events since the first action
       let events = incomplete |> Seq.head |> (fun x -> Event.listAllAfter x.EventId) 
 
@@ -104,6 +93,25 @@ module EventQueue =
                     // get a sender function that depends on whether the ListenerCondition needs checking 
                     let sender = getSender listenerAction (isMetBy events event) (noLongerApplies event)
                     // invoke the sender function, with success/error handlers to update the status of the ListenerAction
-                    sender (fun () -> onSuccess listenerAction) (onFailure listenerAction)))
-       |> ignore
+                    sender mailer (fun () -> onSuccess listenerAction) (onFailure listenerAction)))
+      |> Seq.toList                
+      |> ignore
+
+  let initialize delay apiKey defaultFromAddress defaultFromName defaultSubject = 
+    let timer = new Timers.Timer(60000.)
+    printfn "%A" DateTime.Now
+    timer.Start()
+    printfn "%A" "A-OK"
+    let client = SendGridClient(apiKey)
+    let defaults = 
+      { 
+        FromAddress=defaultFromAddress;
+        FromName=defaultFromName;
+        Subject=defaultSubject;
+      } : MailHandler.MailDefaults
+    let mailer = MailHandler.handle client defaults (Sweep.Data.Message.save)
+    
+    while true do
+      Async.AwaitEvent (timer.Elapsed) |> ignore
+      dequeue mailer
       printfn "%A" DateTime.Now

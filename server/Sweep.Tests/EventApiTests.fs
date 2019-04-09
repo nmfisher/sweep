@@ -78,7 +78,7 @@ module EventApiHandlerTests =
       // add your setup code here
       { 
         EventRequestBody.EventName="some_event";
-        Params=None
+        Params=Some(dict ["key1","value1" :>obj])
       } 
       |> encode
       |> HttpPost client "/1.0.0/events"
@@ -162,3 +162,18 @@ module EventApiHandlerTests =
 
     }
 
+
+  [<Fact>]
+  let ``ListIncomplete lists events where ProcessedOn is null`` () =
+    task {
+      
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      // add your setup code here
+      initialize() |> ignore
+
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")) "some_org")
+
+      Sweep.Data.Event.listAllUnprocessed() |> Seq.toArray |> shouldBeLength 1 |> ignore
+    }

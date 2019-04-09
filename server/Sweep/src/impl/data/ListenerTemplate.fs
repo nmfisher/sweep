@@ -75,5 +75,5 @@ module ListenerTemplate =
       for listenerTemplate in ctx.SweepDevelopment.Listenertemplate do
       join template in ctx.SweepDevelopment.Template on (listenerTemplate.TemplateId = template.Id)
       where (listenerTemplate.ListenerId = listenerId && listenerTemplate.OrganizationId = orgId)
-      select listenerTemplate
+      select template
     } |> Seq.map(fun x -> x.MapTo<Template>(Template.deserializeTemplate))

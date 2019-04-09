@@ -19,6 +19,7 @@ open Sweep.Model.Listener
 open Newtonsoft.Json
 open Sweep
 open Sweep.Model.Template
+open Sweep.Model.Event
 open Sweep.Model.ListenerTemplate
 
 module ListenerApiHandlerTests =
@@ -175,67 +176,31 @@ module ListenerApiHandlerTests =
         |> ignore
       }
 
+ 
+
   [<Fact>]
-  let ``AddListenerTemplate - Associates a Template to a Listener returns 200 where Successfully associated`` () =
+  let ``createFromEvent successfully creates ListenerAction where a Listener exists for an event name and an organization id`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      initialize() |> ignore
+      initialize()
+      let orgId = Guid.NewGuid().ToString()
 
-      // create a listener
-      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
-      
-      let listener = 
-        "/1.0.0/listeners" 
-        |> HttpGet client
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> JsonConvert.DeserializeObject<Listener[]>
-        |> Seq.head
-      
-      // create a template
-      {
-          Content="Hello";
-          SendTo=[|"foo@bar"|];
-          Subject="Some subject";
-          FromAddress="baz@qux";
-          FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=Some(false);
-      } 
-      |> encode
-      |> HttpPost client "/1.0.0/templates"
-      |> isStatus (enum<HttpStatusCode>(200))
-      |> ignore
+      let event = 
+        {
+          Event.Id=Guid.NewGuid().ToString();
+          EventName="foo";
+          Params=None;
+          OrganizationId=orgId;
+          ReceivedOn=DateTime.Now
+          ProcessedOn=None;
+          Error=None
+        }
 
-      let template = 
-        "/1.0.0/templates" 
-        |> HttpGet client
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> JsonConvert.DeserializeObject<Template[]>
-        |> Seq.head
-       
-      let path = "/1.0.0/listeners/" + listener.Id + "/templates/" + template.Id
+      Sweep.Data.Listener.add "foo" None "some_user_id" orgId
 
-      HttpPost client path null
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> ignore
+      Sweep.Data.ListenerAction.createFromEvent event |> ignore
 
-      }
-
-  [<Fact>]
-  let ``AddListenerTemplate - Associates a Template to a Listener returns 404 where Listener or Template not found`` () =
-    task {
-      use server = new TestServer(createHost())
-      use client = server.CreateClient()
-
-      let path = "/1.0.0/listeners/{listenerId}/templates/{templateId}"
-
-      HttpPost client path null
-        |> isStatus (enum<HttpStatusCode>(404))
-        |> ignore
+      Sweep.Data.ListenerAction.list orgId |> Seq.toArray |> shouldBeLength 1
     }

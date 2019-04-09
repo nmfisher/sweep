@@ -35,23 +35,22 @@ module ListenerAction =
 
   let createFromEvent (event:Sweep.Model.Event.Event) = 
     let ctx = Sweep.Data.Sql.Sql.GetDataContext()
-    let listeners = 
-      query { 
-        for listener in ctx.SweepDevelopment.Listener do
-        where (listener.EventName = event.EventName && listener.OrganizationId = event.OrganizationId)
-        select listener
-      } 
-      |> Seq.map (fun x -> 
-        let listener = x.MapTo<Listener>(Listener.deserializeListener)
-        let listenerAction = ctx.SweepDevelopment.Listeneraction.Create()
-        listenerAction.Id <- Guid.NewGuid().ToString()
-        listenerAction.ListenerId <- listener.Id
-        listenerAction.EventId <- event.Id
-        listenerAction.OrganizationId <- event.OrganizationId
-        listenerAction.Error <- None
-        ctx.SubmitUpdates())
-      |> Seq.toList
-    event       
+    query { 
+      for listener in ctx.SweepDevelopment.Listener do
+      where (listener.EventName = event.EventName && listener.OrganizationId = event.OrganizationId)
+      select listener
+    } 
+    |> Seq.map (fun x -> 
+      let listener = x.MapTo<Listener>(Listener.deserializeListener)
+      let listenerAction = ctx.SweepDevelopment.Listeneraction.Create()
+      listenerAction.Id <- Guid.NewGuid().ToString()
+      listenerAction.ListenerId <- listener.Id
+      listenerAction.EventId <- event.Id
+      listenerAction.OrganizationId <- event.OrganizationId
+      listenerAction.Error <- None
+      listenerAction.Completed <- sbyte(0)
+      ctx.SubmitUpdates())
+    |> Seq.toList
 
   let listIncomplete () = 
     let ctx = Sweep.Data.Sql.Sql.GetDataContext()

@@ -12,6 +12,11 @@ module Event =
 
   let deserializeEvent (prop,value) =
      match prop with
+     | "ProcessedOn" ->
+      if (isNull value) then
+        None |> box
+      else
+        Some(DateTime.Parse(value.ToString())) |> box
      | "Params" -> 
         if isNull value then
           None |> box

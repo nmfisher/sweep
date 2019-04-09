@@ -19,6 +19,7 @@ open Sweep.EventQueue
 open Sweep.Model.Template
 open Sweep.Model.TemplateRequestBody
 open Sweep.Model.Listener
+open Sweep.Model.ListenerRequestBody
 open Sweep.Model.Event
 open Sweep.Model.EventRequestBody
 open Sweep.Data.Listener
@@ -194,7 +195,7 @@ module EventQueueTests =
     }
 
   [<Fact>]
-  let ``Dequeue and inspect generated SQL``() =
+  let ``Dequeue and send mail for an event with no trigger``() =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
@@ -202,7 +203,7 @@ module EventQueueTests =
       
       // create a template
       {
-        Sweep.Model.TemplateRequestBody.TemplateRequestBody.Content="Hello";
+        TemplateRequestBody.Content="Hello";
         SendTo=[|"foo@bar"|];
         Subject="Some subject";
         FromAddress="baz@qux";
@@ -223,9 +224,7 @@ module EventQueueTests =
 
       // create a listener
       {
-          EventName="some_event";
-          OrganizationId="";
-          Id="";
+          ListenerRequestBody.EventName="some_event";
           Trigger=None;
       } 
         |> encode
@@ -240,6 +239,11 @@ module EventQueueTests =
         |> JsonConvert.DeserializeObject<Listener[]>
         |> Seq.head
 
+      // attach the tempalte to the listener      
+      // TODO - what if no templates?
+      let path = "/1.0.0/listeners/" + listener.Id + "/templates/" + template.Id
+      HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
+
       // create an event
       { EventName = "some_event"; Params=None; } : EventRequestBody
       |> encode
@@ -247,9 +251,14 @@ module EventQueueTests =
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore 
 
-      let dequeued = Sweep.Data.Event.listAllUnprocessed() |> Seq.toArray
-      dequeued 
-      |> shouldBeLength 1
-      |> Seq.head 
-      |> (fun x -> x.EventName |> shouldEqual "some_event" |> ignore)
+      let mutable mailed = false
+
+      let mailer (templates:seq<Template>) (event:Event) = 
+        templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
+        event.EventName |> shouldEqual "some_event" |> ignore
+        mailed <- true
+        ()
+
+      dequeue mailer
+      mailed |> shouldEqual true |> ignore
     }
