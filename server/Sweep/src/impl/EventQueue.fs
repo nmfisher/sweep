@@ -21,8 +21,9 @@ module EventQueue =
 
   let isMetBy (events: seq<Event>) (parent:Event) (condition:ListenerCondition)  =
     events 
-    |> Seq.map (fun x ->
-      let matching = x.ReceivedOn.Subtract(condition.Duration) >= parent.ReceivedOn && x.EventName = condition.EventName
+    |> Seq.where (fun x ->
+      let matchDuration = x.ReceivedOn.Subtract(parent.ReceivedOn) <= condition.Duration
+      let matching =  matchDuration && (x.EventName = condition.EventName)
       match condition.Key with
         | None -> matching
         | Some key -> matching && (x.Params.Value.[key].Equals(parent.Params.Value.[key])))

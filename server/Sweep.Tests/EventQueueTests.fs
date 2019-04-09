@@ -262,3 +262,157 @@ module EventQueueTests =
       dequeue mailer
       mailed |> shouldEqual true |> ignore
     }
+
+  [<Fact>]
+  let ``Dequeue and send mail for an event with a matched trigger``() =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      TestHelper.initialize() |> ignore
+      
+      // create a template
+      {
+        TemplateRequestBody.Content="Hello";
+        SendTo=[|"foo@bar"|];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
+      }
+      |> encode
+      |> HttpPost client "/1.0.0/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        "/1.0.0/templates" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+
+      // create a listener
+      {
+          ListenerRequestBody.EventName="some_event";
+          Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+      } 
+        |> encode
+        |> HttpPost client "/1.0.0/listeners"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+      
+      let listener = 
+        HttpGet client "/1.0.0/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      // attach the tempalte to the listener      
+      let path = "/1.0.0/listeners/" + listener.Id + "/templates/" + template.Id
+      HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
+
+      // create the first event
+      { EventName = "some_event"; Params=None; } : EventRequestBody
+      |> encode
+      |> HttpPost client "/1.0.0/events"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore 
+
+      let mutable mailed = false
+
+      let mailer (templates:seq<Template>) (event:Event) = 
+        templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
+        event.EventName |> shouldEqual "some_event" |> ignore
+        mailed <- true
+        ()
+
+      dequeue mailer
+      mailed |> shouldEqual false |> ignore
+      
+      // create the second event
+      { 
+        EventRequestBody.EventName = "some_other_event"; 
+        Params=None; 
+      }
+        |> encode
+        |> HttpPost client "/1.0.0/events"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore 
+      
+      dequeue mailer
+
+      mailed |> shouldEqual true |> ignore
+    }
+
+  [<Fact>]
+  let ``Dequeue and mark event as completed with an expired trigger``() =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      TestHelper.initialize() |> ignore
+      
+      // create a template
+      {
+        TemplateRequestBody.Content="Hello";
+        SendTo=[|"foo@bar"|];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
+      }
+      |> encode
+      |> HttpPost client "/1.0.0/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        "/1.0.0/templates" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+
+      // create a listener
+      {
+          ListenerRequestBody.EventName="some_event";
+          Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+      } 
+        |> encode
+        |> HttpPost client "/1.0.0/listeners"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+      
+      let listener = 
+        HttpGet client "/1.0.0/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      // attach the tempalte to the listener      
+      let path = "/1.0.0/listeners/" + listener.Id + "/templates/" + template.Id
+      HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
+
+      // create the first event
+      { EventName = "some_event"; Params=None; } : EventRequestBody
+      |> encode
+      |> HttpPost client "/1.0.0/events"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore 
+      // manually set receivedOn to 14 days prior
+      TestHelper.execute (sprintf "UPDATE event SET receivedOn='%s'" (DateTime.Now.AddDays(float (-14)).ToString("yyyy-MM-dd H:mm:ss")))
+
+      let mutable mailed = false
+
+      let mailer (templates:seq<Template>) (event:Event) = 
+        mailed <- true
+        ()
+
+      dequeue mailer
+      mailed |> shouldEqual false |> ignore
+
+      Sweep.Data.ListenerAction.listIncomplete() |> Seq.length |> shouldEqual 0 |> ignore
+      
+    }
+

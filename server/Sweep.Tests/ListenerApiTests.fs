@@ -16,9 +16,11 @@ open ListenerApiHandlerTestsHelper
 open Sweep.ListenerApiHandler
 open Sweep.ListenerApiHandlerParams
 open Sweep.Model.Listener
+open Sweep.Model.ListenerRequestBody
 open Newtonsoft.Json
 open Sweep
 open Sweep.Model.Template
+open Sweep.Model.TemplateRequestBody
 open Sweep.Model.Event
 open Sweep.Model.ListenerTemplate
 
@@ -37,15 +39,11 @@ module ListenerApiHandlerTests =
 
       // create a template
       {
-          Content="Hello";
+          TemplateRequestBody.Content="Hello";
           SendTo=[|"foo@bar"|];
           Subject="Some subject";
           FromAddress="baz@qux";
           FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=Some(false);
       } 
       |> encode
       |> HttpPost client "/1.0.0/templates"
@@ -62,11 +60,9 @@ module ListenerApiHandlerTests =
        
        // create a listener
       {
-          Trigger=None;
+          ListenerRequestBody.Trigger=None;
           EventName="some_event";
-          OrganizationId="";
-          Id="";
-      } : Listener
+      }
         |> encode
         |> HttpPost client "/1.0.0/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
@@ -174,7 +170,29 @@ module ListenerApiHandlerTests =
         |> (fun x ->
             x.EventName |> shouldEqual ("some_event"))
         |> ignore
+
+         
+       // create anothoer listener
+      {
+          ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          EventName="some_event";
       }
+        |> encode
+        |> HttpPost client "/1.0.0/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> shouldBeLength 2
+        |> Seq.last
+        |> (fun x ->
+            x.EventName |> shouldEqual ("some_event") |> ignore
+            x.Trigger.IsSome)
+        |> ignore
+    }
 
  
 

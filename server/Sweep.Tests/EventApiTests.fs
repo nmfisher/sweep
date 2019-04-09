@@ -162,7 +162,6 @@ module EventApiHandlerTests =
 
     }
 
-
   [<Fact>]
   let ``ListIncomplete lists events where ProcessedOn is null`` () =
     task {
@@ -176,4 +175,17 @@ module EventApiHandlerTests =
       TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")) "some_org")
 
       Sweep.Data.Event.listAllUnprocessed() |> Seq.toArray |> shouldBeLength 1 |> ignore
+    }
+
+  [<Fact>]
+  let ``List all events after the ReceivedOn date of the provided event`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize() |> ignore
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
+      let event = Sweep.Data.Event.list TestHelper.orgId |> Seq.head
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.AddDays(float 1).ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.AddDays(float 1).ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
+      Sweep.Data.Event.listAllAfter event.Id |> Seq.toArray |> shouldBeLength 3 |> ignore
     }

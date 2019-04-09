@@ -14,6 +14,11 @@ module Listener =
      match prop with
      | "Id" ->
         value.ToString() :> obj
+     | "Trigger" ->
+        if isNull value then
+          None |> box
+        else 
+          Some(value.ToString()) |> box
      | _ -> 
         value
 

@@ -75,7 +75,7 @@ module Event =
         |> Seq.head
     query {      
       for event in ctx.SweepDevelopment.Event do
-      where (baseEvent.ReceivedOn >= event.ReceivedOn)
+      where (baseEvent.ReceivedOn <= event.ReceivedOn)
       select event
     } 
     |> Seq.map (fun x-> x.MapTo<Event>(deserializeEvent))  
