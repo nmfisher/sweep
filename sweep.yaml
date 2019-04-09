@@ -576,6 +576,7 @@ components:
           maxLength: 36
         completed:
           type: boolean
+          default: 0
         error:
           type: string
     ListenerTemplate:
