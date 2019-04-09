@@ -76,6 +76,124 @@ module EventQueueTests =
     }
 
   [<Fact>]
+  let ``Listener condition is met by events matching event name with no key within duration ``() =
+    task {
+
+      let parent = 
+        {
+          Id="1";
+          EventName="some_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=None;
+          Error=None;
+          OrganizationId="some_id"
+        }
+
+      let events = 
+        [{
+          Id="1";
+          EventName="some_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=None;
+          Error=None;
+          OrganizationId="some_id"
+        };
+        {
+          Id="2";
+          EventName="some_other_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=None;
+          Error=None;
+          OrganizationId="some_id"
+        };]
+
+      let condition = 
+        {
+          EventName="some_other_event";
+          Key=None;
+          Duration=TimeSpan(7,0,0,0)
+        } : ListenerCondition
+      Assert.True(isMetBy events parent condition)
+    }
+
+  [<Fact>]
+  let ``Listener condition is met by events matching event name and key within duration ``() =
+    task {
+
+      let parent = 
+        {
+          Id="1";
+          EventName="some_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=Some(dict ["key1","val1" :> obj]);
+          Error=None;
+          OrganizationId="some_id"
+        }
+
+      let events = 
+        [{
+          Id="1";
+          EventName="some_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=None;
+          Error=None;
+          OrganizationId="some_id"
+        };
+        {
+          Id="2";
+          EventName="some_other_event";
+          ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
+          ProcessedOn=None;
+          Params=Some(dict ["key1","val1" :> obj]);
+          Error=None;
+          OrganizationId="some_id"
+        };]
+
+      let condition = 
+        {
+          EventName="some_other_event";
+          Key=Some("key1");
+          Duration=TimeSpan(7,0,0,0)
+        } : ListenerCondition
+      Assert.True(isMetBy events parent condition)
+    }
+ 
+
+  [<Fact>]
+  let ``sendConditional only invokes mailer if trigger is matched``() =
+    task {
+      let mutable mailFlag = false
+      let mutable successFlag = false
+
+      sendConditional (fun () -> true) (fun () -> true) () (fun () -> mailFlag <- true) (fun () -> successFlag <- true) (fun () -> raise (Exception()))
+
+      Assert.True(mailFlag)
+      Assert.True(successFlag)
+
+      mailFlag <- false
+      successFlag <- false
+
+      sendConditional (fun () -> false) (fun () -> true) () (fun () -> mailFlag <- true) (fun () -> successFlag <- true) (fun () -> raise (Exception()))
+
+      Assert.False(mailFlag)
+      Assert.True(successFlag)
+
+      mailFlag <- false
+      successFlag <- false
+
+      sendConditional (fun () -> false) (fun () -> false) () (fun () -> mailFlag <- true) (fun () -> successFlag <- true) (fun () -> raise (Exception()))
+
+      Assert.False(mailFlag)
+      Assert.False(successFlag)
+
+    }
+
+  [<Fact>]
   let ``Dequeue and inspect generated SQL``() =
     task {
       use server = new TestServer(createHost())

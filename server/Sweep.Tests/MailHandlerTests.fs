@@ -100,7 +100,7 @@ module MailHandlerTests =
       }
       let mutable success = false
       let saver = (fun x -> success <- true)
-      MailHandler.handle client defaults saver event templates 
+      MailHandler.handle client defaults saver templates event 
       Assert.True(success)
       
     }

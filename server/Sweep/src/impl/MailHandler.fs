@@ -59,7 +59,7 @@ module MailHandler =
       } : Sweep.Model.Message.Message
     
     
-  let handle client mailDefaults saver event templates = 
+  let handle client mailDefaults saver templates event = 
     let messages = templates |> Seq.map (toMessage mailDefaults event)
     
     for message in messages do
