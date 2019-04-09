@@ -20,6 +20,8 @@ import store from '@/store'
 // Sync store with router
 sync(store, router)
 
+console.log(store);
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

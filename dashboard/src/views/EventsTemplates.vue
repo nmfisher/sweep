@@ -121,6 +121,7 @@ Sweep.raise("signup", {"username":"bill@gates.com", firstName:"Bill", lastName:"
         <material-card
           color="tertiary"
           title="Events & Templates"
+          @click="foo"
         >
         <v-flex
             xs12
@@ -189,6 +190,11 @@ Sweep.raise("signup", {"username":"bill@gates.com", firstName:"Bill", lastName:"
 </template>
 
 <script lang="ts">
+import {
+  mapMutations,
+  mapState
+} from 'vuex'
+
 import Vue from 'vue'
 import VuePrism from 'vue-prism'
 Vue.use(VuePrism);
@@ -270,12 +276,21 @@ export default {
       tabs:0
   }),
   mounted() {
+    console.log(this.$store.state.app.snackbar);
+    console.log(this.$store.state.app.drawer);
+    //this.setSnackbar(true);
     var vm = this;
     ListenerApiFactory().listListeners({withCredentials:true}).then((resp) => {
       vm.listeners = resp.data;
     });
   },
   methods: {
+      ...mapMutations('app', ['setSnackbar']),
+      foo () {
+        console.log(this.$store.state.app.snackbar);
+        console.log(this.$store.state.app.drawer);
+        this.setSnackbar(true);
+      },
       addEvent(e) {
         var vm = this;
         ListenerApiFactory().addListener({eventName:this.newListener, templateId:null, organizationId:null}, {withCredentials:true}).then((resp) => {

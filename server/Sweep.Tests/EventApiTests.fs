@@ -101,7 +101,7 @@ module EventApiHandlerTests =
         |> (fun x -> 
             x.EventName |> shouldEqual "some_event" |> ignore
             x.Params.Value.Keys.Count |> shouldEqual 1 |> ignore
-            x.Params.Value.["param1"] |> shouldEqual "value1" |> ignore)
+            x.Params.Value.["key1"] |> shouldEqual "value1" |> ignore)
       }
 
   [<Fact>]

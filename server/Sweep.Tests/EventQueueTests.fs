@@ -343,6 +343,23 @@ module EventQueueTests =
       dequeue mailer
 
       mailed |> shouldEqual true |> ignore
+
+      // reset the flag
+      mailed <- false
+
+      // create the third event, just to make sure
+      { 
+        EventRequestBody.EventName = "some_other_event"; 
+        Params=None; 
+      }
+        |> encode
+        |> HttpPost client "/1.0.0/events"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore 
+      
+      dequeue mailer
+
+      mailed |> shouldEqual true |> ignore
     }
 
   [<Fact>]
