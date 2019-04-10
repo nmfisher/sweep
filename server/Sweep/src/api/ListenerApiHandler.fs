@@ -27,7 +27,10 @@ module ListenerApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<AddListenerBodyParams>()
-          let serviceArgs = {     bodyParams=bodyParams } : AddListenerArgs
+          let headerParams = {
+              AddListenerHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;    bodyParams=bodyParams } : AddListenerArgs
           let result = ListenerApiService.AddListener ctx serviceArgs
           return! (match result with 
                       | AddListenerDefaultStatusCode resolved ->

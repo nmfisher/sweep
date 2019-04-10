@@ -107,6 +107,14 @@ paths:
       - listener
     post:
       operationId: addListener
+      parameters:
+      - explode: false
+        in: header
+        name: api_key
+        required: false
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:

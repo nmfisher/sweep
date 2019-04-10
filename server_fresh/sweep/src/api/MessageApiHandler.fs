@@ -23,7 +23,10 @@ module MessageApiHandler =
     let GetMessageById (pathParams:GetMessageByIdPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {   pathParams=pathParams;  } : GetMessageByIdArgs
+          let headerParams = {
+              GetMessageByIdHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams;  } : GetMessageByIdArgs
           let result = MessageApiService.GetMessageById ctx serviceArgs
           return! (match result with 
                       | GetMessageByIdDefaultStatusCode resolved ->
@@ -42,7 +45,10 @@ module MessageApiHandler =
     let ListMessages  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {     } : ListMessagesArgs
+          let headerParams = {
+              ListMessagesHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;     } : ListMessagesArgs
           let result = MessageApiService.ListMessages ctx serviceArgs
           return! (match result with 
                       | ListMessagesDefaultStatusCode resolved ->

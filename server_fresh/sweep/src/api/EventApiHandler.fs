@@ -26,7 +26,10 @@ module EventApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<AddEventBodyParams>()
-          let serviceArgs = {    bodyParams=bodyParams } : AddEventArgs
+          let headerParams = {
+              AddEventHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;    bodyParams=bodyParams } : AddEventArgs
           let result = EventApiService.AddEvent ctx serviceArgs
           return! (match result with 
                       | AddEventDefaultStatusCode resolved ->
@@ -45,7 +48,10 @@ module EventApiHandler =
     let GetEventById (pathParams:GetEventByIdPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {   pathParams=pathParams;  } : GetEventByIdArgs
+          let headerParams = {
+              GetEventByIdHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams;  } : GetEventByIdArgs
           let result = EventApiService.GetEventById ctx serviceArgs
           return! (match result with 
                       | GetEventByIdDefaultStatusCode resolved ->
@@ -64,7 +70,10 @@ module EventApiHandler =
     let ListEvents  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {     } : ListEventsArgs
+          let headerParams = {
+              ListEventsHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;     } : ListEventsArgs
           let result = EventApiService.ListEvents ctx serviceArgs
           return! (match result with 
                       | ListEventsDefaultStatusCode resolved ->

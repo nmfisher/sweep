@@ -26,7 +26,7 @@ module UserApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<CreateUserBodyParams>()
-          let serviceArgs = {    bodyParams=bodyParams } : CreateUserArgs
+          let serviceArgs = {     bodyParams=bodyParams } : CreateUserArgs
           let result = UserApiService.CreateUser ctx serviceArgs
           return! (match result with 
                       | CreateUserDefaultStatusCode resolved ->
@@ -43,7 +43,7 @@ module UserApiHandler =
     let DeleteUser (pathParams:DeleteUserPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {   pathParams=pathParams;  } : DeleteUserArgs
+          let serviceArgs = {    pathParams=pathParams;  } : DeleteUserArgs
           let result = UserApiService.DeleteUser ctx serviceArgs
           return! (match result with 
                       | DeleteUserStatusCode400 resolved ->
@@ -62,7 +62,7 @@ module UserApiHandler =
     let GetUserByName (pathParams:GetUserByNamePathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {   pathParams=pathParams;  } : GetUserByNameArgs
+          let serviceArgs = {    pathParams=pathParams;  } : GetUserByNameArgs
           let result = UserApiService.GetUserByName ctx serviceArgs
           return! (match result with 
                       | GetUserByNameDefaultStatusCode resolved ->
@@ -84,7 +84,7 @@ module UserApiHandler =
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
           let queryParams = ctx.TryBindQueryString<LoginUserQueryParams>()
-          let serviceArgs = { queryParams=queryParams;    } : LoginUserArgs
+          let serviceArgs = {  queryParams=queryParams;    } : LoginUserArgs
           let result = UserApiService.LoginUser ctx serviceArgs
           return! (match result with 
                       | LoginUserDefaultStatusCode resolved ->
@@ -121,7 +121,7 @@ module UserApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<UpdateUserBodyParams>()
-          let serviceArgs = {   pathParams=pathParams; bodyParams=bodyParams } : UpdateUserArgs
+          let serviceArgs = {    pathParams=pathParams; bodyParams=bodyParams } : UpdateUserArgs
           let result = UserApiService.UpdateUser ctx serviceArgs
           return! (match result with 
                       | UpdateUserStatusCode400 resolved ->

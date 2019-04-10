@@ -13,6 +13,13 @@ module ListenerApiHandlerParams =
     type AddListenerBodyParams = ListenerRequestBody
     //#endregion
 
+    //#region Header parameters
+    [<CLIMutable>]
+    type AddListenerHeaderParams = {
+      apiKey : string option;
+    }
+    //#endregion
+
     
     type AddListenerDefaultStatusCodeResponse = {
       content:Listener;
@@ -26,6 +33,7 @@ module ListenerApiHandlerParams =
     type AddListenerResult = AddListenerDefaultStatusCode of AddListenerDefaultStatusCodeResponse|AddListenerStatusCode422 of AddListenerStatusCode422Response
 
     type AddListenerArgs = {
+      headerParams:AddListenerHeaderParams;
       bodyParams:AddListenerBodyParams
     }
     //#region Path parameters

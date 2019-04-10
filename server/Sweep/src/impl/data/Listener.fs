@@ -19,14 +19,9 @@ module Listener =
         value.ToString() :> obj
      | "EventParams" -> 
         if isNull value then
-          None |> box
+          [||] :> obj
         else 
-          let optional = JsonConvert.DeserializeObject<string[] option>(value.ToString())
-          match optional with
-            | Some p ->
-              Some(p) |> box
-            | None ->
-              None |> box
+          JsonConvert.DeserializeObject<string[]>(value.ToString()) :> obj
      | "Trigger" ->
         if isNull value then
           None |> box
@@ -75,11 +70,8 @@ module Listener =
     let ctx = Sql.GetDataContext()
     let listener = ctx.SweepDevelopment.Listener.Create()
     listener.Id <- Guid.NewGuid().ToString()
-    match eventParams with
-    | Some d ->
-        listener.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
-    | None ->
-        listener.EventParams <- None
+    if not(isNull eventParams) then
+      listener.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
     listener.EventName <- eventName
     listener.OrganizationId <- orgId
     listener.Trigger <- trigger
@@ -104,11 +96,10 @@ module Listener =
     | true -> 
       raise (NotFoundException("Not found"))
     | false ->
-      match eventParams with
-      | Some d ->
+      if not (isNull eventParams) then
           row.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
-      | None ->
-          row.EventParams <- None
+      else
+        row.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject([||]))
       row.EventName <- eventName
       row.Trigger <- trigger
       ctx.SubmitUpdates()

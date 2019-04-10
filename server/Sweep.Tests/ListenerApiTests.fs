@@ -62,7 +62,7 @@ module ListenerApiHandlerTests =
       {
           ListenerRequestBody.Trigger=None;
           EventName="some_event";
-          EventParams=None;
+          EventParams=[||];
       }
         |> encode
         |> HttpPost client "/1.0.0/listeners" 
@@ -73,14 +73,14 @@ module ListenerApiHandlerTests =
       {
           ListenerRequestBody.Trigger=None;
           EventName="some_event";
-          EventParams=Some([|"key1"|])
+          EventParams=[|"key1"|]
       }
         |> encode
         |> HttpPost client "/1.0.0/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener>
-        |> (fun x -> x.EventParams.Value |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
+        |> (fun x -> x.EventParams |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
         |> ignore
     }
 
@@ -96,7 +96,7 @@ module ListenerApiHandlerTests =
       {
           Trigger=None;
           EventName="";
-          EventParams=None;
+          EventParams=[||];
       } 
       |> encode
       |> HttpPost client path
@@ -107,7 +107,7 @@ module ListenerApiHandlerTests =
       {
           Trigger=Some("INVALID CONDITION");
           EventName="some_event";
-          EventParams=None;
+          EventParams=[||];
       } 
       |> encode
       |> HttpPost client path
@@ -188,7 +188,7 @@ module ListenerApiHandlerTests =
 
       {
         ListenerRequestBody.EventName="some_updated_event"
-        EventParams=Some([|"updated1";"updated2"|])
+        EventParams=[|"updated1";"updated2"|]
         Trigger=None
       }
         |> encode
@@ -203,8 +203,8 @@ module ListenerApiHandlerTests =
         |> JsonConvert.DeserializeObject<Listener>
         |> (fun x -> 
             x.EventName |> shouldEqual "some_updated_event" |> ignore
-            x.EventParams.Value |> Seq.head |> shouldEqual "updated1"  |> ignore
-            x.EventParams.Value |> Seq.last |> shouldEqual "updated2" |> ignore
+            x.EventParams |> Seq.head |> shouldEqual "updated1"  |> ignore
+            x.EventParams |> Seq.last |> shouldEqual "updated2" |> ignore
             x.Trigger.IsNone |> shouldEqual true |> ignore)
         |> ignore
       }
@@ -221,7 +221,7 @@ module ListenerApiHandlerTests =
       let path = "/1.0.0/listeners/{listenerId}"
       {
         ListenerRequestBody.EventName="some_updated_event"
-        EventParams=Some([|"updated1";"updated2"|])
+        EventParams=[|"updated1";"updated2"|]
         Trigger=None
       } 
       |> encode
@@ -256,14 +256,14 @@ module ListenerApiHandlerTests =
       {
           ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
           EventName="some_event";
-          EventParams=Some([|"key1"|])
+          EventParams=[|"key1"|]
       }
         |> encode
         |> HttpPost client "/1.0.0/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener>
-        |> (fun x -> x.EventParams.Value |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
+        |> (fun x -> x.EventParams |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
         |> ignore
 
       HttpGet client path
@@ -300,7 +300,7 @@ module ListenerApiHandlerTests =
           Error=None
         }
 
-      Sweep.Data.Listener.add "foo" None None "some_user_id" orgId
+      Sweep.Data.Listener.add "foo" [||] None "some_user_id" orgId
 
       Sweep.Data.ListenerAction.createFromEvent event |> ignore
 

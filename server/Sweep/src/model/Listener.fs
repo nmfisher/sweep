@@ -11,7 +11,7 @@ module Listener =
   type Listener = {
     Id : string;
     EventName : string;
-    EventParams : string[] option;
+    EventParams : string[];
     OrganizationId : string;
     Trigger : string option;
   }
