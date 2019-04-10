@@ -15,33 +15,12 @@ export default [
     view: 'UserProfile'
   },
   {
-    path: '/events-templates',
-    name: 'Events & Templates',
-    view: 'EventsTemplates'
+    path: '/listeners',
+    name: 'Listeners',
+    view: 'Listeners'
   },
   {
     path: '/logs',
     view: 'Logs'
   },
-  {
-    path: '/typography',
-    view: 'Typography'
-  },
-  {
-    path: '/icons',
-    view: 'Icons'
-  },
-  {
-    path: '/maps',
-    view: 'Maps'
-  },
-  {
-    path: '/notifications',
-    view: 'Notifications'
-  },
-  {
-    path: '/upgrade',
-    name: 'Upgrade to PRO',
-    view: 'Upgrade'
-  }
 ]

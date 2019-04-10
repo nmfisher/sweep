@@ -33,8 +33,20 @@ export default {
     
   }),
   computed: {
-    ...mapState('app', ['snackbar']), 
+    snackbar:{
+     get () {
+        return this.$store.state.app.snackbar;
+      },
+      set (val) {
+        //this.$store.state.app.snackbar = val;
+      }
+    }
   },
+  methods:{
+    setSnackbar (snackbar) {
+      this.$store.state.app.snackbar = snackbar
+    }
+  }
 }
 </script>
 

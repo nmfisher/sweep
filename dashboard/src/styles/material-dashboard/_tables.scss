@@ -11,6 +11,15 @@ table.v-table thead tr {
   background: $table-hover-color !important;
 }
 
+.theme--light.v-table .v-list {
+  background: none !important;
+}
+
+.theme--light.v-table .v-expansion-panel, .theme--light.v-expansion-panel .v-expansion-panel__container {
+  box-shadow:none !important;
+  background: none !important;
+}
+
 table.v-table tbody td {
   font-size: $font-size-general;
   font-weight: $font-weight-lighter;

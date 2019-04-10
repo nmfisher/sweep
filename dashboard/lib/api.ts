@@ -158,6 +158,12 @@ export interface Listener {
     eventName: string;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof Listener
+     */
+    eventParams?: Array<string>;
+    /**
+     * 
      * @type {string}
      * @memberof Listener
      */
@@ -232,6 +238,12 @@ export interface ListenerRequestBody {
      * @memberof ListenerRequestBody
      */
     trigger?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ListenerRequestBody
+     */
+    eventParams?: Array<string>;
 }
 
 /**
@@ -1030,7 +1042,7 @@ export const ListenerApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+        addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener> {
             const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListener(listenerRequestBody, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};

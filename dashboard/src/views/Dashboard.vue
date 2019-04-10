@@ -211,6 +211,7 @@ export default {
       EventApiFactory().listEvents({withCredentials:true}).then((resp) => {
         vm.items = resp;
       }).catch((err) => {
+        console.error(err);
         vm.$store.state.app.snackbar = err;
       });
   }

@@ -154,6 +154,12 @@ export interface Listener {
     eventName: string;
     /**
      *
+     * @type {Array<string>}
+     * @memberof Listener
+     */
+    eventParams?: Array<string>;
+    /**
+     *
      * @type {string}
      * @memberof Listener
      */
@@ -226,6 +232,12 @@ export interface ListenerRequestBody {
      * @memberof ListenerRequestBody
      */
     trigger?: string;
+    /**
+     *
+     * @type {Array<string>}
+     * @memberof ListenerRequestBody
+     */
+    eventParams?: Array<string>;
 }
 /**
  *
@@ -653,7 +665,7 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -711,7 +723,7 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Response>;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Listener>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -772,7 +784,7 @@ export declare class ListenerApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Response>;
+    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Listener>;
     /**
      *
      * @summary Associates a Template to a Listener

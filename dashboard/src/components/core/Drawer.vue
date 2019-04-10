@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <v-navigation-drawer
     id="app-drawer"
@@ -24,6 +25,7 @@
           v-for="(link, i) in links"
           :key="i"
           :to="link.to"
+          :href="link.href"
           :active-class="color"
           avatar
           class="v-list-item"
@@ -56,9 +58,9 @@ export default {
         text: 'Dashboard'
       },
       {
-        to: '/events-templates',
+        to: '/listeners',
         icon: 'mdi-clipboard-outline',
-        text: 'Events & Templates'
+        text: 'Listeners'
       },
       {
         to: '/logs',
@@ -71,8 +73,8 @@ export default {
         text: 'Account',
       },
       {
-        to: '/logout',
         icon: 'mdi-logout',
+        href:'/logout',
         text: 'Logout',
       },
     ],
