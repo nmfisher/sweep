@@ -7,7 +7,7 @@
   >
     <v-expand-x-transition hide-on-leave>
       <v-navigation-drawer v-show="editing" absolute right width="800" style="overflow:visible">
-        <template-editor :listener="selected" @close="editing=null"></template-editor>
+        <template-editor :listener="selected" @close="editing=null;selected=null"></template-editor>
       </v-navigation-drawer>
     </v-expand-x-transition>
     <v-layout
@@ -89,10 +89,10 @@
                               <v-text-field
                                 label="Parameter"
                                   class="purple-input" 
-                                  @keyup.enter="addParameter"
-                                  v-model="newParameter"></v-text-field>
+                                  @keyup.enter="addParameter(item)"
+                                  v-model="item.newParameter"></v-text-field>
                             </v-list-tile>
-                            <v-list-tile v-for="parameter in item.params" :key="parameter">
+                            <v-list-tile v-for="parameter in item.eventParams" :key="parameter">
                               <v-list-tile-title>
                                   <span style="margin-left:5%">{{parameter}}</span>
                               </v-list-tile-title>
@@ -109,7 +109,7 @@
                         </v-icon>
                       </v-tooltip>
                       <v-tooltip>
-                        <v-icon @click="editing = item" slot="activator" size="36" class="hoverable">
+                        <v-icon @click="editing = true; selected=item" slot="activator" size="36" class="hoverable">
                             mdi-arrow-right-bold-hexagon-outline
                         </v-icon> 
                         Open template
@@ -150,7 +150,7 @@ export default {
   }),
   mounted() {
     var vm = this;
-    ListenerApiFactory().listListeners({withCredentials:true}).then((resp) => {
+    ListenerApiFactory().listListeners(null,{withCredentials:true}).then((resp) => {
       vm.listeners = resp.data;
     }).catch((err) => {
       vm.$store.state.app.snackbar = err;
@@ -162,7 +162,7 @@ export default {
       var vm = this;
       this.saving = true;
       var req = {eventName:this.newListener}
-      ListenerApiFactory().addListener(req, {withCredentials:true}).then((resp) => {
+      new ListenerApi().addListener(req, null, {withCredentials:true}).then((resp) => {
         this.listeners.splice(0,0,resp.data);
         vm.newListener = null;
       }).catch((err) => {
@@ -170,6 +170,18 @@ export default {
         vm.$store.state.app.snackbar = err;
       }).finally(() => {
         vm.saving = false;
+      });
+    },
+    addParameter(item) {
+      var vm = this;
+      if(item.eventParams == null)
+        item.eventParams = [];
+      item.eventParams.push(item.newParameter);
+      new ListenerApi().updateListener(item.id, item, null, {withCredentials:true}).then((resp) => {
+        item.newParameter = "";
+      }).catch((err) => {
+        console.error(err);
+        vm.$store.state.app.snackbar = err;
       });
     },
     deleteListener(listener) {

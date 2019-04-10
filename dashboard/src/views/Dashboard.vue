@@ -208,7 +208,7 @@ export default {
   },
   mounted() {
     var vm = this;
-      EventApiFactory().listEvents({withCredentials:true}).then((resp) => {
+      EventApiFactory().listEvents(null, {withCredentials:true}).then((resp) => {
         vm.items = resp;
       }).catch((err) => {
         console.error(err);

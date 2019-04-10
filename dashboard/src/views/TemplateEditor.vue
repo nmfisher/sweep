@@ -12,28 +12,22 @@
      <v-dialog v-model="preview">
         <iframe :srcdoc="content" height="100%" width="100%" style="border: 1px solid #ccc;border-radius: 3px;flex-grow:1"></iframe>
      </v-dialog>
-        <!-- <div slot="header">
-          <v-layout row @click="$emit('close')" style="cursor:pointer">
-            <v-icon size="24">mdi-arrow-left-bold-hexagon-outline</v-icon>
-            <h4 class="title font-weight-light ml-2 mt-2 mb-2">E-mail template</h4>
-          </v-layout>
-        </div> -->
         <v-container fill-height>
           <v-layout column>
             <v-form>
               <v-layout wrap>
                 <v-flex xs6>
-                    <v-combobox
+                    <v-text-field
                         label="From (display name)"
                         v-model="fromName"
                         class="white-input"/>
-                    <v-combobox
+                    <v-text-field
                         v-model="fromAddress"
                         label="From (address)"
                         class="white-input"/>
                 </v-flex>
                 <v-flex xs6>
-                    <v-combobox
+                    <v-text-field
                         label="To (address)"
                         v-model="to"
                         class="white-input"/>
@@ -43,9 +37,9 @@
                 </v-flex>
             </v-layout>
           </v-form>
-          <v-layout row wrap xs8>
+          <v-layout row wrap xs8 fill-height>
             <v-flex xs11>
-               <jodit-vue v-model="content" :config="joditConfig" :buttons="joditConfig.buttons"/>
+                <jodit-vue v-model="content" :config="joditConfig" :buttons="joditConfig.buttons"/>
             </v-flex>
             <v-flex xs1>
               <v-btn outline color="green" icon @click="preview = true"><v-icon>mdi-arrow-expand</v-icon></v-btn>
@@ -57,11 +51,13 @@
   </v-layout>
 </template>
 <script>
-import 'jodit/build/jodit.min.css'
 import Vue from 'vue'
 import JoditVue from 'jodit-vue'
- 
+import Jodit from 'jodit'
+import Tribute from 'tributejs'
 Vue.use(JoditVue)
+import 'jodit/build/jodit.min.css'
+import 'tributejs/dist/tribute.css'
 
 export default {
   props:{
@@ -70,6 +66,7 @@ export default {
    data: () => ({
       joditConfig:{
         defaultMode: JoditVue.MODE_SOURCE,
+        inline:true,
         buttons: [
           'source',
           '|',
@@ -108,11 +105,50 @@ export default {
       preview:false,
       loading:false,
   }),
+  created() {
+    var vm = this;
+    Jodit.plugins.tributejs = function (editor) {
+        editor.events
+            .on('beforeEnter', function (event) {
+                if (vm.tribute.isActive) {
+                    return true;
+                }
+            })
+            .on('afterInit', function () {
+                var options = {
+                    trigger: '{',
+                    replaceTextSuffix:"}}",
+                    menuContainer:document.getElementById("editor"),
+                    values:[]
+                };
+                vm.tribute = new Tribute(options);
+                vm.tribute.attach(editor.editor);
+            });
+    };
+  },
   components: { 
     JoditVue
   },
+  watch:{
+    listener(newVal) {
+        if(typeof(this.tribute) !== "undefined" && typeof(newVal) != "undefined" && newVal != null && typeof(newVal.eventParams) != "undefined" && newVal.eventParams != null && newVal.eventParams.length > 0) {
+          this.tribute.collection[0].values=newVal.eventParams.map((x) => { return {key:x,value:"{" + x} });
+          console.log(newVal.eventParams);
+        } else {
+          this.tribute.collection[0].values=[];
+        }
+    }
+  }
 }
 </script>
 <style lang="scss">
-
+.jodit_source {
+    height:90%;
+}
+.jodit_workplace {
+  height:90% !important;
+}
+.jodit_container {
+  height:90% !important;
+}
 </style>
