@@ -12,6 +12,13 @@ module MessageApiHandlerParams =
     }
     //#endregion
 
+    //#region Header parameters
+    [<CLIMutable>]
+    type GetMessageByIdHeaderParams = {
+      apiKey : string option;
+    }
+    //#endregion
+
     
     type GetMessageByIdDefaultStatusCodeResponse = {
       content:Message;
@@ -25,8 +32,16 @@ module MessageApiHandlerParams =
     type GetMessageByIdResult = GetMessageByIdDefaultStatusCode of GetMessageByIdDefaultStatusCodeResponse|GetMessageByIdStatusCode404 of GetMessageByIdStatusCode404Response
 
     type GetMessageByIdArgs = {
+      headerParams:GetMessageByIdHeaderParams;
       pathParams:GetMessageByIdPathParams;
     }
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type ListMessagesHeaderParams = {
+      apiKey : string option;
+    }
+    //#endregion
 
     
     type ListMessagesDefaultStatusCodeResponse = {
@@ -35,4 +50,7 @@ module MessageApiHandlerParams =
     }
     type ListMessagesResult = ListMessagesDefaultStatusCode of ListMessagesDefaultStatusCodeResponse
 
+    type ListMessagesArgs = {
+      headerParams:ListMessagesHeaderParams;
+    }
     

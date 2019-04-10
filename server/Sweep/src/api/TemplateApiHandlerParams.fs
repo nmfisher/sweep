@@ -12,6 +12,13 @@ module TemplateApiHandlerParams =
     type AddTemplateBodyParams = TemplateRequestBody
     //#endregion
 
+    //#region Header parameters
+    [<CLIMutable>]
+    type AddTemplateHeaderParams = {
+      apiKey : string option;
+    }
+    //#endregion
+
     
     type AddTemplateDefaultStatusCodeResponse = {
       content:string;
@@ -25,6 +32,7 @@ module TemplateApiHandlerParams =
     type AddTemplateResult = AddTemplateDefaultStatusCode of AddTemplateDefaultStatusCodeResponse|AddTemplateStatusCode422 of AddTemplateStatusCode422Response
 
     type AddTemplateArgs = {
+      headerParams:AddTemplateHeaderParams;
       bodyParams:AddTemplateBodyParams
     }
     //#region Path parameters
@@ -37,7 +45,7 @@ module TemplateApiHandlerParams =
     //#region Header parameters
     [<CLIMutable>]
     type DeleteTemplateHeaderParams = {
-      apiKey : Option<string>;
+      apiKey : string option;
     }
     //#endregion
 
@@ -54,12 +62,20 @@ module TemplateApiHandlerParams =
     type DeleteTemplateResult = DeleteTemplateDefaultStatusCode of DeleteTemplateDefaultStatusCodeResponse|DeleteTemplateStatusCode404 of DeleteTemplateStatusCode404Response
 
     type DeleteTemplateArgs = {
+      headerParams:DeleteTemplateHeaderParams;
       pathParams:DeleteTemplatePathParams;
     }
     //#region Path parameters
     [<CLIMutable>]
     type GetTemplateByIdPathParams = {
       templateId : string;
+    }
+    //#endregion
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type GetTemplateByIdHeaderParams = {
+      apiKey : string option;
     }
     //#endregion
 
@@ -76,8 +92,16 @@ module TemplateApiHandlerParams =
     type GetTemplateByIdResult = GetTemplateByIdDefaultStatusCode of GetTemplateByIdDefaultStatusCodeResponse|GetTemplateByIdStatusCode404 of GetTemplateByIdStatusCode404Response
 
     type GetTemplateByIdArgs = {
+      headerParams:GetTemplateByIdHeaderParams;
       pathParams:GetTemplateByIdPathParams;
     }
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type ListTemplateHeaderParams = {
+      apiKey : string option;
+    }
+    //#endregion
 
     
     type ListTemplateDefaultStatusCodeResponse = {
@@ -86,6 +110,9 @@ module TemplateApiHandlerParams =
     }
     type ListTemplateResult = ListTemplateDefaultStatusCode of ListTemplateDefaultStatusCodeResponse
 
+    type ListTemplateArgs = {
+      headerParams:ListTemplateHeaderParams;
+    }
     //#region Path parameters
     [<CLIMutable>]
     type UpdateTemplatePathParams = {
@@ -96,6 +123,13 @@ module TemplateApiHandlerParams =
     //#region Body parameters
     [<CLIMutable>]
     type UpdateTemplateBodyParams = TemplateRequestBody
+    //#endregion
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type UpdateTemplateHeaderParams = {
+      apiKey : string option;
+    }
     //#endregion
 
     
@@ -116,6 +150,7 @@ module TemplateApiHandlerParams =
     type UpdateTemplateResult = UpdateTemplateDefaultStatusCode of UpdateTemplateDefaultStatusCodeResponse|UpdateTemplateStatusCode404 of UpdateTemplateStatusCode404Response|UpdateTemplateStatusCode422 of UpdateTemplateStatusCode422Response
 
     type UpdateTemplateArgs = {
+      headerParams:UpdateTemplateHeaderParams;
       pathParams:UpdateTemplatePathParams;
       bodyParams:UpdateTemplateBodyParams
     }

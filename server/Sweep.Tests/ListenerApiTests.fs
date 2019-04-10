@@ -169,6 +169,68 @@ module ListenerApiHandlerTests =
     }
 
   [<Fact>]
+  let ``UpdateListener - Updates a Listener returns 200 where Successfully updated`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      initialize() |> ignore
+
+      ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
+
+      let listener = 
+        "/1.0.0/listeners" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      {
+        ListenerRequestBody.EventName="some_updated_event"
+        EventParams=Some([|"updated1";"updated2"|])
+        Trigger=None
+      }
+        |> encode
+        |> HttpPut client ("/1.0.0/listeners/" + listener.Id)
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      "/1.0.0/listeners/" + listener.Id
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener>
+        |> (fun x -> 
+            x.EventName |> shouldEqual "some_updated_event" |> ignore
+            x.EventParams.Value |> Seq.head |> shouldEqual "updated1"  |> ignore
+            x.EventParams.Value |> Seq.last |> shouldEqual "updated2" |> ignore
+            x.Trigger.IsNone |> shouldEqual true |> ignore)
+        |> ignore
+      }
+
+
+  [<Fact>]
+  let ``UpdateListener - Updates a Listener returns 404 where Listener not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      initialize() |> ignore
+
+      let path = "/1.0.0/listeners/{listenerId}"
+      {
+        ListenerRequestBody.EventName="some_updated_event"
+        EventParams=Some([|"updated1";"updated2"|])
+        Trigger=None
+      } 
+      |> encode
+      |> HttpPut client path
+      |> isStatus (enum<HttpStatusCode>(404))
+      |> ignore
+    }
+
+  [<Fact>]
   let ``ListListeners - List all Listeners returns 200 where successful operation`` () =
     task {
       use server = new TestServer(createHost())

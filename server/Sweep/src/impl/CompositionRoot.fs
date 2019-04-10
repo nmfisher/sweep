@@ -65,6 +65,7 @@ module CompositionRoot =
   let deleteListener = Sweep.Data.Listener.delete
   let listListeners = Sweep.Data.Listener.list
   let getListener = Sweep.Data.Listener.get
+  let updateListener = Sweep.Data.Listener.update
       
   // Messages
   let getMessage = Sweep.Data.Message.get

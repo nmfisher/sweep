@@ -9,23 +9,26 @@ open Giraffe
 open UserContext
 open CompositionRoot
 open Exceptions
+open Sweep.Model.ListenerRequestBody
 
 module ListenerApiServiceImplementation =
     
     //#region Service implementation
     type ListenerApiServiceImpl() = 
+
+      let validate (bodyParams:ListenerRequestBody) = 
+        Sweep.Data.Listener.parse bodyParams.Trigger |> ignore // just to validate the condition string
+        if (String.IsNullOrEmpty(bodyParams.EventName)) then
+          raise (Exception("Event name must not be empty"))
       interface IListenerApiService with
       
         member this.AddListener ctx args =
           try
-            Sweep.Data.Listener.parse args.bodyParams.Trigger |> ignore // just to validate the condition string
-            if String.IsNullOrEmpty(args.bodyParams.EventName) then
-              AddListenerStatusCode422 { content = "Event name must not be empty"  }
-            else             
-              let userId = getUserId ctx.User.Claims
-              let orgId = getOrgId ctx.User.Claims
-              let listener = addListener args.bodyParams.EventName args.bodyParams.EventParams args.bodyParams.Trigger userId orgId
-              AddListenerDefaultStatusCode { content = listener }
+            validate args.bodyParams
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            let listener = addListener args.bodyParams.EventName args.bodyParams.EventParams args.bodyParams.Trigger userId orgId
+            AddListenerDefaultStatusCode { content = listener }
           with
           | e ->           
             AddListenerStatusCode422 { content = e.ToString()  }
@@ -40,7 +43,17 @@ module ListenerApiServiceImplementation =
           | NotFoundException(msg) ->
             DeleteListenerStatusCode404 { content = "Not Found" }
 
-        member this.ListListeners ctx  =
+        member this.GetListener ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            let listener = CompositionRoot.getListener args.pathParams.listenerId orgId
+            GetListenerDefaultStatusCode { content = listener }
+          with
+          | NotFoundException(msg) ->
+            GetListenerStatusCode404 { content = msg }
+
+        member this.ListListeners ctx args  =
           let userId = getUserId ctx.User.Claims
           let orgId = getOrgId ctx.User.Claims
           let listeners = listListeners orgId
@@ -78,6 +91,19 @@ module ListenerApiServiceImplementation =
           with
           | NotFoundException(msg) ->
               ListListenerTemplatesStatusCode404 { content = msg }
+
+        member this.UpdateListener ctx (args:UpdateListenerArgs) =
+          try
+            validate args.bodyParams
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            let listener = CompositionRoot.updateListener args.pathParams.listenerId args.bodyParams.EventName args.bodyParams.EventParams args.bodyParams.Trigger userId orgId 
+            UpdateListenerDefaultStatusCode { content = listener }
+          with
+          | NotFoundException(msg) ->
+              UpdateListenerStatusCode404 { content = msg }
+          | e ->
+              UpdateListenerStatusCode422 { content = e.ToString() }            
 
       //#endregion
 

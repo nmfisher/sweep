@@ -92,6 +92,34 @@ module Listener =
       OrganizationId=orgId
     }
 
+  let update listenerId eventName eventParams trigger userId orgId =
+    let ctx = Sql.GetDataContext()
+    let row = query {
+      for listener in ctx.SweepDevelopment.Listener do
+      where (listener.Id = listenerId && listener.OrganizationId = orgId)
+      select listener
+      exactlyOneOrDefault
+    }
+    match isNull row with
+    | true -> 
+      raise (NotFoundException("Not found"))
+    | false ->
+      match eventParams with
+      | Some d ->
+          row.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
+      | None ->
+          row.EventParams <- None
+      row.EventName <- eventName
+      row.Trigger <- trigger
+      ctx.SubmitUpdates()
+      {
+        Listener.Id=listenerId;
+        EventName=eventName
+        EventParams=eventParams;
+        Trigger=trigger;
+        OrganizationId=orgId
+      } 
+
   let get id orgId =
     let ctx = Sql.GetDataContext();
     let row = query {
