@@ -112,6 +112,12 @@ paths:
         - listener
       summary: Create a new Listener
       operationId: addListener
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: successful operation
