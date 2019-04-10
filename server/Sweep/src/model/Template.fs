@@ -10,15 +10,15 @@ module Template =
 
 
   type Template = {
-    Id : string ;
-    Content : string ;
-    Subject : string ;
-    FromAddress : string ;
-    FromName : string ;
-    SendTo : string[] ;
-    OrganizationId : string ;
+    Id : string;
+    Content : string;
+    Subject : string;
+    FromAddress : string;
+    FromName : string;
+    SendTo : string[];
+    OrganizationId : string;
     Deleted : bool option;
-    UserId : string ;
+    UserId : string;
   }
   //#endregion
   

@@ -9,7 +9,7 @@ module UserRequestBody =
 
 
   type UserRequestBody = {
-    Username : string ;
+    Username : string;
   }
   //#endregion
   

@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `EventRequestBody` (
 CREATE TABLE IF NOT EXISTS `Listener` (
   `id` CHAR(36) NOT NULL,
   `eventName` TEXT NOT NULL,
+  `eventParams` JSON DEFAULT NULL,
   `organizationId` TEXT NOT NULL,
   `trigger` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -62,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `ListenerAction` (
   `eventId` CHAR(36) NOT NULL,
   `listenerId` CHAR(36) NOT NULL,
   `organizationId` CHAR(36) NOT NULL,
-  `completed` TINYINT(1) NOT NULL DEFAULT false,
+  `completed` TINYINT(1) NOT NULL,
   `error` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -72,7 +73,8 @@ CREATE TABLE IF NOT EXISTS `ListenerAction` (
 
 CREATE TABLE IF NOT EXISTS `ListenerRequestBody` (
   `eventName` TEXT NOT NULL,
-  `trigger` TEXT DEFAULT NULL
+  `trigger` TEXT DEFAULT NULL,
+  `eventParams` JSON DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

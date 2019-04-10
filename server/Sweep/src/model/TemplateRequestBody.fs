@@ -9,11 +9,11 @@ module TemplateRequestBody =
 
 
   type TemplateRequestBody = {
-    Content : string ;
-    Subject : string ;
-    FromAddress : string ;
-    FromName : string ;
-    SendTo : string[] ;
+    Content : string;
+    Subject : string;
+    FromAddress : string;
+    FromName : string;
+    SendTo : string[];
   }
   //#endregion
   

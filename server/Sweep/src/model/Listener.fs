@@ -9,9 +9,10 @@ module Listener =
 
 
   type Listener = {
-    Id : string ;
-    EventName : string ;
-    OrganizationId : string ;
+    Id : string;
+    EventName : string;
+    EventParams : string[] option;
+    OrganizationId : string;
     Trigger : string option;
   }
   //#endregion

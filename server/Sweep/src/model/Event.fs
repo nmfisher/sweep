@@ -10,13 +10,13 @@ module Event =
 
 
   type Event = {
-    Id : string ;
-    EventName : string ;
+    Id : string;
+    EventName : string;
     Params : IDictionary<string, obj> option;
-    ReceivedOn : DateTime ;
+    ReceivedOn : DateTime;
     ProcessedOn : DateTime option;
     Error : string option;
-    OrganizationId : string ;
+    OrganizationId : string;
   }
   //#endregion
   

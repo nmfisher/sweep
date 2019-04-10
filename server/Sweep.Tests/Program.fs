@@ -13,7 +13,7 @@ module Program =
                 // EventApiHandlerTests.``GetEventById - Find raised event by ID returns 200 where successful operation``() :> Task;
                 // EventApiHandlerTests.``AddEvent - Raise an event returns 422 where Invalid input``() :> Task;
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
-                //ListenerApiHandlerTests.``AddListener - Create a new Listener returns 200 where successful operation``() :> Task;
+                ListenerApiHandlerTests.``AddListener - Create a new Listener returns 200 where successful operation``() :> Task;
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
                 //ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 200 where successful operation``() :> Task;
@@ -39,7 +39,7 @@ module Program =
                 // EventQueueTests.``Render default subject``() :> Task;
                 // EventQueueTests.``Dequeue and send mail for an event with no trigger``() :> Task
                 // EventQueueTests.``Dequeue and send mail for an event with a matched trigger``() :> Task
-                EventQueueTests.``Dequeue and mark event as completed with an expired trigger``() :> Task
+                // EventQueueTests.``Dequeue and mark event as completed with an expired trigger``() :> Task
                 //  ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task
                 //EventApiHandlerTests.``ListIncomplete lists events where ProcessedOn is null``() :> Task
                 // ListenerApiHandlerTests.``createFromEvent successfully creates ListenerAction where a Listener exists for an event name and an organization id``() :> Task

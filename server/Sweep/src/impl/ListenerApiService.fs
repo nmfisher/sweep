@@ -24,8 +24,8 @@ module ListenerApiServiceImplementation =
             else             
               let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims
-              addListener args.bodyParams.EventName args.bodyParams.Trigger userId orgId
-              AddListenerDefaultStatusCode { content = "OK" }
+              let listener = addListener args.bodyParams.EventName args.bodyParams.EventParams args.bodyParams.Trigger userId orgId
+              AddListenerDefaultStatusCode { content = listener }
           with
           | e ->           
             AddListenerStatusCode422 { content = e.ToString()  }

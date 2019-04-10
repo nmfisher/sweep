@@ -91,6 +91,10 @@ paths:
         required: true
       responses:
         200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listener'
           description: successful operation
         422:
           description: Invalid input
@@ -555,6 +559,9 @@ components:
     Listener:
       example:
         organizationId: organizationId
+        eventParams:
+        - eventParams
+        - eventParams
         eventName: eventName
         id: id
         trigger: trigger
@@ -565,6 +572,10 @@ components:
           type: string
         eventName:
           type: string
+        eventParams:
+          items:
+            type: string
+          type: array
         organizationId:
           type: string
         trigger:
@@ -576,6 +587,9 @@ components:
       type: object
     ListenerRequestBody:
       example:
+        eventParams:
+        - eventParams
+        - eventParams
         eventName: eventName
         trigger: trigger
       properties:
@@ -583,6 +597,10 @@ components:
           type: string
         trigger:
           type: string
+        eventParams:
+          items:
+            type: string
+          type: array
       required:
       - eventName
       type: object
@@ -605,6 +623,7 @@ components:
           minLength: 36
           type: string
         completed:
+          default: false
           type: boolean
         error:
           type: string

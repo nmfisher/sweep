@@ -31,7 +31,7 @@ module ListenerApiHandler =
           let result = ListenerApiService.AddListener ctx serviceArgs
           return! (match result with 
                       | AddListenerDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> text resolved.content 
+                            setStatusCode 200 >=> json resolved.content 
                       | AddListenerStatusCode422 resolved ->
                             setStatusCode 422 >=> text resolved.content 
           ) next ctx

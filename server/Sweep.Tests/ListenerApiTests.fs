@@ -62,10 +62,25 @@ module ListenerApiHandlerTests =
       {
           ListenerRequestBody.Trigger=None;
           EventName="some_event";
+          EventParams=None;
       }
         |> encode
         |> HttpPost client "/1.0.0/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+
+      // create a listener with some params
+      {
+          ListenerRequestBody.Trigger=None;
+          EventName="some_event";
+          EventParams=Some([|"key1"|])
+      }
+        |> encode
+        |> HttpPost client "/1.0.0/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener>
+        |> (fun x -> x.EventParams.Value |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
         |> ignore
     }
 
@@ -81,8 +96,7 @@ module ListenerApiHandlerTests =
       {
           Trigger=None;
           EventName="";
-          OrganizationId="";
-          Id="";
+          EventParams=None;
       } 
       |> encode
       |> HttpPost client path
@@ -93,8 +107,7 @@ module ListenerApiHandlerTests =
       {
           Trigger=Some("INVALID CONDITION");
           EventName="some_event";
-          OrganizationId="";
-          Id="";
+          EventParams=None;
       } 
       |> encode
       |> HttpPost client path
@@ -113,19 +126,22 @@ module ListenerApiHandlerTests =
 
       ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
 
-      let listener = 
+      let listeners = 
         "/1.0.0/listeners" 
         |> HttpGet client
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener[]>
-        |> Seq.head
 
-      "/1.0.0/listeners/" + listener.Id
-        |> HttpDelete client
-        |> isStatus (enum<HttpStatusCode>(200))
-        |> readText
-        |> ignore
+      listeners
+      |> Seq.map (fun listener -> 
+        "/1.0.0/listeners/" + listener.Id
+          |> HttpDelete client
+          |> isStatus (enum<HttpStatusCode>(200))
+          |> readText
+          |> ignore)
+      |> Seq.toList        
+      |> ignore
 
       "/1.0.0/listeners" 
         |> HttpGet client
@@ -158,6 +174,8 @@ module ListenerApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
+      initialize()
+
       ``AddListener - Create a new Listener returns 200 where successful operation``() |> Async.AwaitTask |> Async.RunSynchronously
 
       let path = "/1.0.0/listeners"
@@ -176,17 +194,21 @@ module ListenerApiHandlerTests =
       {
           ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
           EventName="some_event";
+          EventParams=Some([|"key1"|])
       }
         |> encode
         |> HttpPost client "/1.0.0/listeners" 
         |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener>
+        |> (fun x -> x.EventParams.Value |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
         |> ignore
 
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener[]>
-        |> shouldBeLength 2
+        |> shouldBeLength 3
         |> Seq.last
         |> (fun x ->
             x.EventName |> shouldEqual ("some_event") |> ignore
@@ -216,9 +238,9 @@ module ListenerApiHandlerTests =
           Error=None
         }
 
-      Sweep.Data.Listener.add "foo" None "some_user_id" orgId
+      Sweep.Data.Listener.add "foo" None None "some_user_id" orgId
 
       Sweep.Data.ListenerAction.createFromEvent event |> ignore
 
-      Sweep.Data.ListenerAction.list orgId |> Seq.toArray |> shouldBeLength 1
+      Sweep.Data.ListenerAction.list orgId |> Seq.toArray |> shouldBeLength 1 |> ignore
     }

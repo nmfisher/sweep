@@ -97,6 +97,10 @@ paths:
       responses:
         '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listener' 
         '422':
           description: Invalid input
       security:
@@ -536,6 +540,10 @@ components:
           maxLength: 36
         eventName:
           type: string
+        eventParams:
+          type: array
+          items:
+            type: string
         organizationId:
           type: string
         trigger:
@@ -549,6 +557,10 @@ components:
           type: string
         trigger:
           type: string
+        eventParams:
+          type: array
+          items:
+            type: string
     ListenerAction:
       type: object
       required:

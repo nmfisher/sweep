@@ -9,11 +9,11 @@ module ListenerAction =
 
 
   type ListenerAction = {
-    Id : string ;
-    EventId : string ;
-    ListenerId : string ;
-    OrganizationId : string ;
-    Completed : bool ;
+    Id : string;
+    EventId : string;
+    ListenerId : string;
+    OrganizationId : string;
+    Completed : bool;
     Error : string option;
   }
   //#endregion

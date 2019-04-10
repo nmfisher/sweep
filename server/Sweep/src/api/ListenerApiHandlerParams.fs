@@ -15,7 +15,7 @@ module ListenerApiHandlerParams =
 
     
     type AddListenerDefaultStatusCodeResponse = {
-      content:string;
+      content:Listener;
       
     }
     

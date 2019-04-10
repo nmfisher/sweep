@@ -10,7 +10,7 @@ module EventRequestBody =
 
 
   type EventRequestBody = {
-    EventName : string ;
+    EventName : string;
     Params : IDictionary<string, obj> option;
   }
   //#endregion

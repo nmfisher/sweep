@@ -226,6 +226,7 @@ module EventQueueTests =
       {
           ListenerRequestBody.EventName="some_event";
           Trigger=None;
+          EventParams=None;
       } 
         |> encode
         |> HttpPost client "/1.0.0/listeners"
@@ -295,6 +296,7 @@ module EventQueueTests =
       {
           ListenerRequestBody.EventName="some_event";
           Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          EventParams=None;
       } 
         |> encode
         |> HttpPost client "/1.0.0/listeners"
@@ -394,6 +396,7 @@ module EventQueueTests =
       {
           ListenerRequestBody.EventName="some_event";
           Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          EventParams=None;
       } 
         |> encode
         |> HttpPost client "/1.0.0/listeners"

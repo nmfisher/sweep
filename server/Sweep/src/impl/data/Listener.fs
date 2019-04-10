@@ -7,6 +7,7 @@ open Sweep.Exceptions
 open Newtonsoft.Json
 open System.Text.RegularExpressions
 open System
+open System.Collections.Generic
 
 module Listener = 
 
@@ -14,6 +15,18 @@ module Listener =
      match prop with
      | "Id" ->
         value.ToString() :> obj
+     | "OrganizationId" ->
+        value.ToString() :> obj
+     | "EventParams" -> 
+        if isNull value then
+          None |> box
+        else 
+          let optional = JsonConvert.DeserializeObject<string[] option>(value.ToString())
+          match optional with
+            | Some p ->
+              Some(p) |> box
+            | None ->
+              None |> box
      | "Trigger" ->
         if isNull value then
           None |> box
@@ -58,14 +71,26 @@ module Listener =
         raise (Exception("Condition could not be correctly parsed."))
 
 
-  let add eventName trigger userId orgId = 
+  let add eventName eventParams trigger userId orgId = 
     let ctx = Sql.GetDataContext()
     let listener = ctx.SweepDevelopment.Listener.Create()
     listener.Id <- Guid.NewGuid().ToString()
+    match eventParams with
+    | Some d ->
+        listener.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
+    | None ->
+        listener.EventParams <- None
     listener.EventName <- eventName
     listener.OrganizationId <- orgId
     listener.Trigger <- trigger
     ctx.SubmitUpdates()
+    {
+      Listener.Id=listener.Id;
+      EventName=eventName
+      EventParams=eventParams;
+      Trigger=trigger;
+      OrganizationId=orgId
+    }
 
   let get id orgId =
     let ctx = Sql.GetDataContext();
