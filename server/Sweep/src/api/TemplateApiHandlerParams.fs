@@ -21,7 +21,7 @@ module TemplateApiHandlerParams =
 
     
     type AddTemplateDefaultStatusCodeResponse = {
-      content:string;
+      content:Template;
       
     }
     

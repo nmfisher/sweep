@@ -17,18 +17,21 @@ module TemplateApiServiceImplementation =
     type TemplateApiServiceImpl() = 
 
       let validateEmails (emails:string[]) (content:string) = 
-        match emails.Length with 
-        | 0 -> false
-        | _ ->
-          emails |> 
-            Seq.forall
-              (fun x -> 
-                try 
-                  MailAddress(x) |> ignore
-                  true
-                with                 
-                | e ->
-                  x.StartsWith "{{" && x.EndsWith "}}" && content.Contains(x))
+        if isNull emails then
+          false
+        else 
+          match emails.Length with 
+          | 0 -> false
+          | _ ->
+            emails |> 
+              Seq.forall
+                (fun x -> 
+                  try 
+                    MailAddress(x) |> ignore
+                    true
+                  with                 
+                  | e ->
+                    x.StartsWith "{{" && x.EndsWith "}}" && content.Contains(x))
 
       let validateTemplate content sendTo = 
         if String.IsNullOrWhiteSpace(content) then 
@@ -48,8 +51,8 @@ module TemplateApiServiceImplementation =
               AddTemplateStatusCode422 { content = err  }  
             | None ->            
               
-              CompositionRoot.addTemplate args.bodyParams.Content args.bodyParams.Subject args.bodyParams.FromName args.bodyParams.FromAddress args.bodyParams.SendTo orgId userId |> ignore
-              AddTemplateDefaultStatusCode { content = "OK" }
+              let template = CompositionRoot.addTemplate args.bodyParams.Content args.bodyParams.Subject args.bodyParams.FromName args.bodyParams.FromAddress args.bodyParams.SendTo orgId userId 
+              AddTemplateDefaultStatusCode { content = template }
 
         member this.DeleteTemplate ctx args =
           try 

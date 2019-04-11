@@ -17,10 +17,10 @@ module Template =
     | _ -> 
       value
 
-
-  let add content subject fromName fromAddress sendTo  organizationId userId =
+  let add content subject fromName fromAddress sendTo organizationId userId : Template =
     let ctx = Sql.GetDataContext()
     let template = ctx.SweepDevelopment.Template.Create()
+    let id = Guid.NewGuid().ToString()
     template.Content <- content
     template.Subject <- subject
     template.FromName <- fromName
@@ -28,8 +28,19 @@ module Template =
     template.SendTo <- JsonConvert.SerializeObject sendTo
     template.OrganizationId <- organizationId
     template.UserId <- userId
-    template.Id <- Guid.NewGuid().ToString()
+    template.Id <- id
     ctx.SubmitUpdates()
+    {
+      Template.Id = id;
+      Content = content;
+      Subject = content;
+      FromName = fromName;
+      FromAddress = fromAddress;
+      SendTo = sendTo;
+      OrganizationId = organizationId;
+      UserId = userId;
+      Deleted = None
+    }
 
   let delete id orgId userId =
     let ctx = Sql.GetDataContext()
