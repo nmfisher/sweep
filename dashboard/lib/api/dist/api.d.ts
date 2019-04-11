@@ -483,25 +483,28 @@ export declare const EventApiAxiosParamCreator: (configuration?: Configuration) 
      *
      * @summary Raise an event
      * @param {EventRequestBody} eventRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addEvent(eventRequestBody: EventRequestBody, options?: any): RequestArgs;
+    addEvent(eventRequestBody: EventRequestBody, apiKey?: string, options?: any): RequestArgs;
     /**
      *
      * @summary Find raised event by ID
      * @param {string} eventId ID of event that needs to be fetched
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEventById(eventId: string, options?: any): RequestArgs;
+    getEventById(eventId: string, apiKey?: string, options?: any): RequestArgs;
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(options?: any): RequestArgs;
+    listEvents(apiKey?: string, options?: any): RequestArgs;
 };
 /**
  * EventApi - functional programming interface
@@ -512,25 +515,28 @@ export declare const EventApiFp: (configuration?: Configuration) => {
      *
      * @summary Raise an event
      * @param {EventRequestBody} eventRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addEvent(eventRequestBody: EventRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    addEvent(eventRequestBody: EventRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
      *
      * @summary Find raised event by ID
      * @param {string} eventId ID of event that needs to be fetched
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEventById(eventId: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event>;
+    getEventById(eventId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event>;
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event[]>;
+    listEvents(apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event[]>;
 };
 /**
  * EventApi - factory interface
@@ -541,25 +547,28 @@ export declare const EventApiFactory: (configuration?: Configuration, basePath?:
      *
      * @summary Raise an event
      * @param {EventRequestBody} eventRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addEvent(eventRequestBody: EventRequestBody, options?: any): AxiosPromise<Response>;
+    addEvent(eventRequestBody: EventRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Find raised event by ID
      * @param {string} eventId ID of event that needs to be fetched
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEventById(eventId: string, options?: any): AxiosPromise<Event>;
+    getEventById(eventId: string, apiKey?: string, options?: any): AxiosPromise<Event>;
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(options?: any): AxiosPromise<Event[]>;
+    listEvents(apiKey?: string, options?: any): AxiosPromise<Event[]>;
 };
 /**
  * EventApi - object-oriented interface
@@ -572,28 +581,31 @@ export declare class EventApi extends BaseAPI {
      *
      * @summary Raise an event
      * @param {EventRequestBody} eventRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    addEvent(eventRequestBody: EventRequestBody, options?: any): AxiosPromise<Response>;
+    addEvent(eventRequestBody: EventRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Find raised event by ID
      * @param {string} eventId ID of event that needs to be fetched
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    getEventById(eventId: string, options?: any): AxiosPromise<Event>;
+    getEventById(eventId: string, apiKey?: string, options?: any): AxiosPromise<Event>;
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    listEvents(options?: any): AxiosPromise<Event[]>;
+    listEvents(apiKey?: string, options?: any): AxiosPromise<Event[]>;
 }
 /**
  * ListenerApi - axios parameter creator
@@ -604,10 +616,11 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
      *
      * @summary Create a new Listener
      * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): RequestArgs;
+    addListener(listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): RequestArgs;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -638,6 +651,15 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
      */
     deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): RequestArgs;
     /**
+     * Returns a listener
+     * @summary Get a listener by ID
+     * @param {string} listenerId ID of listener to update
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getListener(listenerId: string, apiKey?: string, options?: any): RequestArgs;
+    /**
      * Returns a list of templates associated with this listener
      * @summary List Templates for Listener
      * @param {string} listenerId ID of listener
@@ -648,10 +670,21 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listListeners(options?: any): RequestArgs;
+    listListeners(apiKey?: string, options?: any): RequestArgs;
+    /**
+     *
+     * @summary Updates a Listener
+     * @param {string} listenerId ID of listener to update
+     * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    updateListener(listenerId: string, listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): RequestArgs;
 };
 /**
  * ListenerApi - functional programming interface
@@ -662,10 +695,11 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
      *
      * @summary Create a new Listener
      * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener>;
+    addListener(listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -696,6 +730,15 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
      */
     deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
+     * Returns a listener
+     * @summary Get a listener by ID
+     * @param {string} listenerId ID of listener to update
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getListener(listenerId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener>;
+    /**
      * Returns a list of templates associated with this listener
      * @summary List Templates for Listener
      * @param {string} listenerId ID of listener
@@ -706,10 +749,21 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listListeners(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener[]>;
+    listListeners(apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener[]>;
+    /**
+     *
+     * @summary Updates a Listener
+     * @param {string} listenerId ID of listener to update
+     * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    updateListener(listenerId: string, listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener>;
 };
 /**
  * ListenerApi - factory interface
@@ -720,10 +774,11 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
      *
      * @summary Create a new Listener
      * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Listener>;
+    addListener(listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): AxiosPromise<Listener>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -754,6 +809,15 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
      */
     deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
     /**
+     * Returns a listener
+     * @summary Get a listener by ID
+     * @param {string} listenerId ID of listener to update
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getListener(listenerId: string, apiKey?: string, options?: any): AxiosPromise<Listener>;
+    /**
      * Returns a list of templates associated with this listener
      * @summary List Templates for Listener
      * @param {string} listenerId ID of listener
@@ -764,10 +828,21 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listListeners(options?: any): AxiosPromise<Listener[]>;
+    listListeners(apiKey?: string, options?: any): AxiosPromise<Listener[]>;
+    /**
+     *
+     * @summary Updates a Listener
+     * @param {string} listenerId ID of listener to update
+     * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    updateListener(listenerId: string, listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): AxiosPromise<Listener>;
 };
 /**
  * ListenerApi - object-oriented interface
@@ -780,11 +855,12 @@ export declare class ListenerApi extends BaseAPI {
      *
      * @summary Create a new Listener
      * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    addListener(listenerRequestBody: ListenerRequestBody, options?: any): AxiosPromise<Listener>;
+    addListener(listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): AxiosPromise<Listener>;
     /**
      *
      * @summary Associates a Template to a Listener
@@ -818,6 +894,16 @@ export declare class ListenerApi extends BaseAPI {
      */
     deleteListenerTemplate(listenerId: string, templateId: string, apiKey?: string, options?: any): AxiosPromise<Response>;
     /**
+     * Returns a listener
+     * @summary Get a listener by ID
+     * @param {string} listenerId ID of listener to update
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    getListener(listenerId: string, apiKey?: string, options?: any): AxiosPromise<Listener>;
+    /**
      * Returns a list of templates associated with this listener
      * @summary List Templates for Listener
      * @param {string} listenerId ID of listener
@@ -829,11 +915,23 @@ export declare class ListenerApi extends BaseAPI {
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    listListeners(options?: any): AxiosPromise<Listener[]>;
+    listListeners(apiKey?: string, options?: any): AxiosPromise<Listener[]>;
+    /**
+     *
+     * @summary Updates a Listener
+     * @param {string} listenerId ID of listener to update
+     * @param {ListenerRequestBody} listenerRequestBody
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    updateListener(listenerId: string, listenerRequestBody: ListenerRequestBody, apiKey?: string, options?: any): AxiosPromise<Listener>;
 }
 /**
  * MessageApi - axios parameter creator
@@ -844,17 +942,19 @@ export declare const MessageApiAxiosParamCreator: (configuration?: Configuration
      * Returns a single message
      * @summary Find message by ID
      * @param {string} messageId ID of message to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getMessageById(messageId: string, options?: any): RequestArgs;
+    getMessageById(messageId: string, apiKey?: string, options?: any): RequestArgs;
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listMessages(options?: any): RequestArgs;
+    listMessages(apiKey?: string, options?: any): RequestArgs;
 };
 /**
  * MessageApi - functional programming interface
@@ -865,17 +965,19 @@ export declare const MessageApiFp: (configuration?: Configuration) => {
      * Returns a single message
      * @summary Find message by ID
      * @param {string} messageId ID of message to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getMessageById(messageId: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message>;
+    getMessageById(messageId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message>;
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listMessages(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message[]>;
+    listMessages(apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message[]>;
 };
 /**
  * MessageApi - factory interface
@@ -886,17 +988,19 @@ export declare const MessageApiFactory: (configuration?: Configuration, basePath
      * Returns a single message
      * @summary Find message by ID
      * @param {string} messageId ID of message to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getMessageById(messageId: string, options?: any): AxiosPromise<Message>;
+    getMessageById(messageId: string, apiKey?: string, options?: any): AxiosPromise<Message>;
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listMessages(options?: any): AxiosPromise<Message[]>;
+    listMessages(apiKey?: string, options?: any): AxiosPromise<Message[]>;
 };
 /**
  * MessageApi - object-oriented interface
@@ -909,19 +1013,21 @@ export declare class MessageApi extends BaseAPI {
      * Returns a single message
      * @summary Find message by ID
      * @param {string} messageId ID of message to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    getMessageById(messageId: string, options?: any): AxiosPromise<Message>;
+    getMessageById(messageId: string, apiKey?: string, options?: any): AxiosPromise<Message>;
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    listMessages(options?: any): AxiosPromise<Message[]>;
+    listMessages(apiKey?: string, options?: any): AxiosPromise<Message[]>;
 }
 /**
  * TemplateApi - axios parameter creator
@@ -932,10 +1038,11 @@ export declare const TemplateApiAxiosParamCreator: (configuration?: Configuratio
      *
      * @summary Create a new Template
      * @param {TemplateRequestBody} templateRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): RequestArgs;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): RequestArgs;
     /**
      *
      * @summary Deletes a Template
@@ -949,26 +1056,29 @@ export declare const TemplateApiAxiosParamCreator: (configuration?: Configuratio
      * Returns a single template
      * @summary Find Template by ID
      * @param {string} templateId ID of template to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTemplateById(templateId: string, options?: any): RequestArgs;
+    getTemplateById(templateId: string, apiKey?: string, options?: any): RequestArgs;
     /**
      * Returns a list of templates
      * @summary List all Templates
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTemplate(options?: any): RequestArgs;
+    listTemplate(apiKey?: string, options?: any): RequestArgs;
     /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
      * @param {TemplateRequestBody} templateRequestBody successful operation
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): RequestArgs;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): RequestArgs;
 };
 /**
  * TemplateApi - functional programming interface
@@ -979,10 +1089,11 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
      *
      * @summary Create a new Template
      * @param {TemplateRequestBody} templateRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
     /**
      *
      * @summary Deletes a Template
@@ -996,26 +1107,29 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
      * Returns a single template
      * @summary Find Template by ID
      * @param {string} templateId ID of template to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTemplateById(templateId: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template>;
+    getTemplateById(templateId: string, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template>;
     /**
      * Returns a list of templates
      * @summary List all Templates
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTemplate(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template[]>;
+    listTemplate(apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template[]>;
     /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
      * @param {TemplateRequestBody} templateRequestBody successful operation
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
 };
 /**
  * TemplateApi - factory interface
@@ -1026,10 +1140,11 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
      *
      * @summary Create a new Template
      * @param {TemplateRequestBody} templateRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Deletes a Template
@@ -1043,26 +1158,29 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
      * Returns a single template
      * @summary Find Template by ID
      * @param {string} templateId ID of template to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTemplateById(templateId: string, options?: any): AxiosPromise<Template>;
+    getTemplateById(templateId: string, apiKey?: string, options?: any): AxiosPromise<Template>;
     /**
      * Returns a list of templates
      * @summary List all Templates
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTemplate(options?: any): AxiosPromise<Template[]>;
+    listTemplate(apiKey?: string, options?: any): AxiosPromise<Template[]>;
     /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
      * @param {TemplateRequestBody} templateRequestBody successful operation
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
 };
 /**
  * TemplateApi - object-oriented interface
@@ -1075,11 +1193,12 @@ export declare class TemplateApi extends BaseAPI {
      *
      * @summary Create a new Template
      * @param {TemplateRequestBody} templateRequestBody
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
     /**
      *
      * @summary Deletes a Template
@@ -1094,29 +1213,32 @@ export declare class TemplateApi extends BaseAPI {
      * Returns a single template
      * @summary Find Template by ID
      * @param {string} templateId ID of template to return
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    getTemplateById(templateId: string, options?: any): AxiosPromise<Template>;
+    getTemplateById(templateId: string, apiKey?: string, options?: any): AxiosPromise<Template>;
     /**
      * Returns a list of templates
      * @summary List all Templates
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    listTemplate(options?: any): AxiosPromise<Template[]>;
+    listTemplate(apiKey?: string, options?: any): AxiosPromise<Template[]>;
     /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
      * @param {TemplateRequestBody} templateRequestBody successful operation
+     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, options?: any): AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
 }
 /**
  * UserApi - axios parameter creator
