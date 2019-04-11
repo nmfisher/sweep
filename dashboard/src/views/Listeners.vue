@@ -37,7 +37,7 @@
                     :disabled="saving"
                     label="Event Name"
                     color="white"
-                    @keyup.enter="addEvent"
+                    @keyup.enter="addListener"
                     v-model="newListener"/>
                 </v-slide-x-transition>
               </v-flex>
@@ -106,6 +106,10 @@
                                   :class="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'white--text' : ''"
                                 >
                                     {{ paramName }}
+                                <v-icon
+                                      small
+                                      @click="listener.eventParams.splice(listener.eventParams.indexOf(paramName), 1)"
+                                    >mdi-close</v-icon>
                                 </v-chip>
                               </template>
                             </v-combobox>
@@ -167,11 +171,12 @@ export default {
   },
   methods: {
     ...mapMutations('app', ['setSnackbar']),
-    addEvent(e) {
+    addListener(e) {
       var vm = this;
       this.saving = true;
       var req = {eventName:this.newListener}
       new ListenerApi().addListener(req, null, {withCredentials:true}).then((resp) => {
+        resp.data.eventParams = [];
         this.listeners.splice(0,0,resp.data);
         vm.newListener = null;
       }).catch((err) => {
