@@ -55,8 +55,8 @@
 <script lang="ts">
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-import { EventApiFp, EventApiFactory } from '../../lib/dist/api.js';
-import { Configuration, ConfigurationParameters } from '../../lib/dist/configuration.js';
+import { EventApiFp, EventApiFactory } from '../../lib/api/dist/api.js';
+import { Configuration, ConfigurationParameters } from '../../lib/api/dist/configuration.js';
 
 export default {
   data () {

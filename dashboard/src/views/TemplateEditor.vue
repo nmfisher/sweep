@@ -12,26 +12,30 @@
      <v-dialog v-model="preview">
         <iframe :srcdoc="content" height="100%" width="100%" style="border: 1px solid #ccc;border-radius: 3px;flex-grow:1"></iframe>
      </v-dialog>
-        <v-container fill-height>
+        <v-container fill-height id="tribute-wrapper">
           <v-layout column>
             <v-form>
               <v-layout wrap>
                 <v-flex xs6>
                     <v-text-field
                         label="From (display name)"
+                        ref="fromName"
                         v-model="fromName"
                         class="white-input"/>
                     <v-text-field
                         v-model="fromAddress"
+                        ref="fromAddress"
                         label="From (address)"
                         class="white-input"/>
                 </v-flex>
                 <v-flex xs6>
                     <v-text-field
                         label="To (address)"
+                        ref="to"
                         v-model="to"
                         class="white-input"/>
                     <v-text-field
+                        ref="subject"
                         label="Subject"
                         class="white-input"/>
                 </v-flex>
@@ -54,7 +58,7 @@
 import Vue from 'vue'
 import JoditVue from 'jodit-vue'
 import Jodit from 'jodit'
-import Tribute from 'tributejs'
+import Tribute from '../../lib/tribute/src'
 Vue.use(JoditVue)
 import 'jodit/build/jodit.min.css'
 import 'tributejs/dist/tribute.css'
@@ -105,6 +109,8 @@ export default {
       preview:false,
       loading:false,
   }),
+  methods:{
+  },
   created() {
     var vm = this;
     Jodit.plugins.tributejs = function (editor) {
@@ -116,13 +122,21 @@ export default {
             })
             .on('afterInit', function () {
                 var options = {
-                    trigger: '{',
+                    trigger: '{{',
                     replaceTextSuffix:"}}",
-                    menuContainer:document.getElementById("editor"),
+                    requireLeadingSpace: false,
+                    menuContainer:document.getElementById("tribute-container"),
                     values:[]
                 };
                 vm.tribute = new Tribute(options);
-                vm.tribute.attach(editor.editor);
+                vm.tribute.attach(editor.editor)  ;
+                vm.tribute.attach(vm.$refs.fromName.$el.getElementsByTagName("input")[0]);
+                vm.$refs.fromName.$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
+                  vm.fromName = vm.$refs.fromName.$el.getElementsByTagName("input")[0].value;
+                });
+                vm.tribute.attach(vm.$refs.fromAddress.$el.getElementsByTagName("input")[0]);
+                vm.tribute.attach(vm.$refs.to.$el.getElementsByTagName("input")[0]);
+                vm.tribute.attach(vm.$refs.subject.$el.getElementsByTagName("input")[0]);
             });
     };
   },
@@ -132,8 +146,7 @@ export default {
   watch:{
     listener(newVal) {
         if(typeof(this.tribute) !== "undefined" && typeof(newVal) != "undefined" && newVal != null && typeof(newVal.eventParams) != "undefined" && newVal.eventParams != null && newVal.eventParams.length > 0) {
-          this.tribute.collection[0].values=newVal.eventParams.map((x) => { return {key:x,value:"{" + x} });
-          console.log(newVal.eventParams);
+          this.tribute.collection[0].values=newVal.eventParams.map((x) => { return {key:x,value:x} });
         } else {
           this.tribute.collection[0].values=[];
         }

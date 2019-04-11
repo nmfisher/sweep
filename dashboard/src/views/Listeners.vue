@@ -7,7 +7,7 @@
   >
     <v-expand-x-transition hide-on-leave>
       <v-navigation-drawer v-show="editing" absolute right width="800" style="overflow:visible">
-        <template-editor :listener="selected" @close="editing=null;selected=null"></template-editor>
+        <template-editor :listener="selected" @close="editing=null;selected=null;"></template-editor>
       </v-navigation-drawer>
     </v-expand-x-transition>
     <v-layout
@@ -70,51 +70,60 @@
           <v-data-table
             :items="listeners"
             no-data-text="Looks like you haven't configured any listeners. Click the add icon above to listen for an event."
+            style="overflow:visible"
             hide-actions
           >
             <template
               slot="items"
-              slot-scope="{ item }"
+              slot-scope="{ item:listener }"
             >
-              <td>
-                <v-layout row align-center class="event">
-                  <v-flex lg6 xs10>
-                    <v-expansion-panel>
-                      <v-expansion-panel-content>
-                        <template v-slot:header>
-                          <h3 slot="activator">{{ item.eventName }} </h3>
-                        </template>
-                        <v-list>
-                            <v-list-tile key="newParam">
-                              <v-text-field
-                                label="Parameter"
-                                  class="purple-input" 
-                                  @keyup.enter="addParameter(item)"
-                                  v-model="item.newParameter"></v-text-field>
-                            </v-list-tile>
-                            <v-list-tile v-for="parameter in item.eventParams" :key="parameter">
-                              <v-list-tile-title>
-                                  <span style="margin-left:5%">{{parameter}}</span>
-                              </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-flex>
-                  <v-flex lg4 justify-center style="display:flex">
-                    <v-layout row justify-end>
-                      <v-tooltip>
-                        <v-icon @click="deleteListener(item)" size="36" class="hoverable" slot="activator">
-                            mdi-delete
-                        </v-icon>
-                      </v-tooltip>
-                      <v-tooltip>
-                        <v-icon @click="editing = true; selected=item" slot="activator" size="36" class="hoverable">
-                            mdi-arrow-right-bold-hexagon-outline
-                        </v-icon> 
-                        Open template
-                      </v-tooltip>
+              <td style="position:relative">
+                <v-layout row align-center class="event" wrap @click="selected=listener;" style="cursor:pointer">
+                  <v-flex xs9>
+                      <v-layout row wrap>
+                        <v-flex xs12>
+                          <h3 class="mt-0 mb-0">{{ listener.eventName }} </h3>
+                        </v-flex>
+                        <v-flex lg4 xs12>
+                          <v-slide-x-transition>
+                            <v-combobox
+                                v-show="selected == listener"
+                                :error="listener.paramErrors && listener.paramErrors.length > 0"
+                                :error-messages="listener.errorMessages"
+                                v-model="listener.eventParams"
+                                :items="listener.eventParams"
+                                @change="update(listener)"
+                                hide-selected
+                                hint="May contain a-zA-Z0-9_"
+                                label="Type an event parameter and press enter"
+                                multiple
+                                persistent-hint
+                                small-chips
+                              >
+                              <template v-slot:selection="{ item : paramName, parent, selected }">
+                                <v-chip
+                                  :color="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'red' : ''"
+                                  :class="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'white--text' : ''"
+                                >
+                                    {{ paramName }}
+                                </v-chip>
+                              </template>
+                            </v-combobox>
+                          </v-slide-x-transition>
+                        </v-flex>
                     </v-layout>
+                  </v-flex>
+                  <v-flex xs3>
+                    <v-slide-x-transition>
+                      <v-layout row v-show="selected == listener">
+                        <v-icon @click="deleteListener(listener)" outline color="red" class="white--text" style="position:absolute;right:-10px;top:-10px">
+                            mdi-close-box
+                        </v-icon>
+                        <v-btn @click="editing = true; selected=listener" outline color="indigo" class="white--text">
+                            Edit template
+                        </v-btn> 
+                      </v-layout>
+                    </v-slide-x-transition>
                   </v-flex>
                 </v-layout>
               </td>
@@ -131,11 +140,12 @@ import {
   mapMutations,
   mapState
 } from 'vuex'
+import Vue from 'vue'
 
 import TemplateEditor from './TemplateEditor.vue';
 // import CodePreview from './TemplateEditor.vue';
 
-import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib';
+import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
 
 export default {
    data: () => ({
@@ -146,7 +156,6 @@ export default {
       showingNewEventField:false,
       listeners: [],
       newListener:"",
-      newParameter:"",
   }),
   mounted() {
     var vm = this;
@@ -172,18 +181,6 @@ export default {
         vm.saving = false;
       });
     },
-    addParameter(item) {
-      var vm = this;
-      if(item.eventParams == null)
-        item.eventParams = [];
-      item.eventParams.push(item.newParameter);
-      new ListenerApi().updateListener(item.id, item, null, {withCredentials:true}).then((resp) => {
-        item.newParameter = "";
-      }).catch((err) => {
-        console.error(err);
-        vm.$store.state.app.snackbar = err;
-      });
-    },
     deleteListener(listener) {
       var vm = this;
       new ListenerApi().deleteListener(listener.id, null, {withCredentials:true}).then((resp) => {
@@ -193,6 +190,27 @@ export default {
         vm.$store.state.app.snackbar = err;
       });
     },
+    update(item) {
+      var vm = this;
+      item.paramErrors = [];
+
+      for(var i = 0; i < item.eventParams.length; i++) {
+        if(/[^a-zA-Z0-9_]/.test(item.eventParams[i])) {
+          item.paramErrors.push(item.eventParams[i]);
+        };
+      }
+      if(item.paramErrors.length > 0) {
+        item.errorMessages = ["Invalid parameter - keys can only contain a-zA-Z0-9_"];
+        return;
+      }
+            
+      new ListenerApi().updateListener(item.id, item, null, {withCredentials:true}).then((resp) => {
+
+      }).catch((err) => {
+        console.error(err);
+        vm.$store.state.app.snackbar = err;
+      });
+    }
   },
   components: { 
     TemplateEditor//, CodePreview
@@ -207,5 +225,9 @@ export default {
 
 .event:hover .hoverable {
   visibility:visible;
+}
+
+.v-table__overflow {
+  overflow:visible !important;
 }
 </style>
