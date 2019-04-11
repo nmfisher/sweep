@@ -266,15 +266,26 @@ module ListenerApiHandlerTests =
         |> (fun x -> x.EventParams |> shouldBeLength 1 |> Seq.head |> shouldEqual "key1" |> ignore)
         |> ignore
 
+     // and another listener without any params
+      {
+          ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          EventName="some_event";
+          EventParams=[||]
+      }
+        |> encode
+        |> HttpPost client "/1.0.0/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener>
+        |> ignore
+
       HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener[]>
-        |> shouldBeLength 3
+        |> shouldBeLength 4
         |> Seq.last
-        |> (fun x ->
-            x.EventName |> shouldEqual ("some_event") |> ignore
-            x.Trigger.IsSome)
+        |> (fun x -> x.EventParams |> shouldBeLength 0 |> ignore)
         |> ignore
     }
 

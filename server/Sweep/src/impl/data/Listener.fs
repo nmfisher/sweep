@@ -19,7 +19,7 @@ module Listener =
         value.ToString() :> obj
      | "EventParams" -> 
         if isNull value then
-          [||] :> obj
+          [||] :> string[] |> box
         else 
           JsonConvert.DeserializeObject<string[]>(value.ToString()) :> obj
      | "Trigger" ->
