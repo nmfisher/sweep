@@ -103,8 +103,8 @@ module TemplateApiServiceImplementation =
             | Some err ->
               UpdateTemplateStatusCode422 { content = err }
             | None ->
-              CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams.Content args.bodyParams.Subject args.bodyParams.FromName args.bodyParams.FromAddress args.bodyParams.SendTo orgId
-              UpdateTemplateDefaultStatusCode { content = "OK" }
+              let template = CompositionRoot.updateTemplate args.pathParams.templateId args.bodyParams.Content args.bodyParams.Subject args.bodyParams.FromName args.bodyParams.FromAddress args.bodyParams.SendTo orgId
+              UpdateTemplateDefaultStatusCode { content = template }
           with
           | NotFoundException(msg) ->
             UpdateTemplateStatusCode404 { content = msg }

@@ -177,7 +177,7 @@ module TemplateApiHandlerParams =
 
     
     type UpdateTemplateDefaultStatusCodeResponse = {
-      content:string;
+      content:Template;
       
     }
     

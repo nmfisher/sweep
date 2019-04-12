@@ -110,6 +110,14 @@ CREATE TABLE IF NOT EXISTS `Organization` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Table structure for table `RenderTemplateRequestBody` generated from model 'RenderTemplateRequestBody'
+--
+
+CREATE TABLE IF NOT EXISTS `RenderTemplateRequestBody` (
+  `params` JSON DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Table structure for table `Template` generated from model 'Template'
 --
 

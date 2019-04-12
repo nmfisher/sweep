@@ -149,7 +149,7 @@ module TemplateApiHandler =
           let result = TemplateApiService.UpdateTemplate ctx serviceArgs
           return! (match result with 
                       | UpdateTemplateDefaultStatusCode resolved ->
-                            setStatusCode 200 >=> text resolved.content 
+                            setStatusCode 200 >=> json resolved.content 
                       | UpdateTemplateStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
                       | UpdateTemplateStatusCode422 resolved ->

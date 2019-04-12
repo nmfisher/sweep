@@ -87,6 +87,7 @@ module Template =
       row.FromAddress <- fromAddress
       row.FromName <- fromName
       ctx.SubmitUpdates()
+      row.MapTo<Template>(deserializeTemplate)
 
   let list organizationId =
     let ctx = Sql.GetDataContext()

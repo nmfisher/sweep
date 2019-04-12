@@ -286,6 +286,17 @@ module TemplateApiHandlerTests =
         |> encode
         |> HttpPut client ("/1.0.0/templates/" + template.Id)
         |> isStatus (enum<HttpStatusCode>(200))
+        |> readText 
+        |> JsonConvert.DeserializeObject<Template>
+        |> (fun x -> 
+              x.Content |> shouldEqual "Hello Again" |> ignore
+              x.SendTo |> shouldBeLength 2 |> ignore
+              x.SendTo |> Seq.head |> shouldEqual "foo@bar" |> ignore
+              x.SendTo |> Seq.last |> shouldEqual "baz@qux" |> ignore
+              x.Subject |> shouldEqual "Some other subject" |> ignore
+              x.FromAddress |> shouldEqual "me@you" |> ignore
+              x.FromName |> shouldEqual "Gaz" |> ignore
+              )
         |> ignore
 
       // refetch the template
