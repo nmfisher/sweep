@@ -67,7 +67,13 @@
               </v-flex>
               </v-layout>
           </div>
+          <v-layout row v-if="loading" justify-center>
+            <v-icon  class="rotate mt-5 mb-5">
+              mdi-reload
+            </v-icon>
+          </v-layout>
           <v-data-table
+            v-if="!loading"
             :items="listeners"
             no-data-text="Looks like you haven't configured any listeners. Click the add icon above to listen for an event."
             style="overflow:visible"
@@ -163,10 +169,13 @@ export default {
   }),
   mounted() {
     var vm = this;
+    vm.loading = true;
     ListenerApiFactory().listListeners(null,{withCredentials:true}).then((resp) => {
       vm.listeners = resp.data;
     }).catch((err) => {
       vm.$store.state.app.snackbar = err;
+    }).finally(() => {
+      vm.loading = false;
     });
   },
   methods: {

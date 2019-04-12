@@ -3,63 +3,74 @@
     <v-card style="position:absolute;left:-50px;z-index:9999" class="elevation-0">
       <v-card-text>
       <v-layout column>
-          <v-btn flat icon color="indigo" @click="save"><v-icon>mdi-content-save</v-icon></v-btn>
+          <v-btn flat icon color="indigo" @click="save" :disabled="!validated"><v-icon>mdi-content-save</v-icon></v-btn>
           <v-btn flat icon color="orange" @click="$emit('close')"><v-icon>mdi-arrow-left</v-icon></v-btn>
       </v-layout>
       </v-card-text>
     </v-card>
    <v-card color="none" :elevation="0" style="height:100%;width:100%">
-     <v-dialog v-model="preview">
-        <iframe :srcdoc="content" height="100%" width="100%" style="border: 1px solid #ccc;border-radius: 3px;flex-grow:1"></iframe>
+     <v-dialog v-model="showingPreview" width="600">
+       <message-preview :message="preview" :templateId="templateId" :params="listener ? listener.params : null" v-if="preview"/>
      </v-dialog>
         <v-container fill-height id="tribute-wrapper">
           <v-layout column>
-            <v-form>
-              <v-layout wrap>
-                <v-flex xs6>
-                    <v-text-field
-                        label="From (display name)"
-                        ref="fromName"
-                        v-model="fromName"
-                        :rules="[rules.template]"
-                        class="white-input"/>
-                    <v-text-field
-                        v-model="fromAddress"
-                        ref="fromAddress"
-                        label="From (address)"
-                        :rules="[rules.template]"
-                        class="white-input"/>
-                </v-flex>
-                <v-flex xs6>
-                    <v-text-field
-                        label="To (address)"
-                        ref="to"
-                        v-model="newRecipient"
-                        :rules="[rules.templateOrEmail, rules.required]"
-                        @keypress.enter="addRecipient"
-                        class="white-input"/>
-                    <v-text-field
-                        ref="subject"
-                        label="Subject"
-                        :rules="[rules.template]"
-                        class="white-input"/>
-                </v-flex>
-            </v-layout>
-          </v-form>
+            <v-layout row>
+            <v-flex xs6>
+              <v-form ref="form">
+                  <combobox2
+                    :search-input.sync="sendToInput"
+                    clearable
+                    :preventCapture="preventComboCapture"
+                      label="To (address)"
+                      ref="sendTo"
+                      :items="sendTo"
+                      :rules="[rules.recipients]"
+                      v-model="sendTo"
+                      hint="Type an e-mail address or a template variable and press enter"
+                      class="white-input"
+                      hide-selected
+                      multiple
+                      persistent-hint
+                      @keyup.native="onComboBoxInput"
+                      small-chips>
+                      <template v-slot:selection="{ item, parent, selected }">
+                        <helper-combobox-item :rules="[rules.required, rules.templateOrEmail]" :item="item" @remove="sendTo.splice(sendTo.indexOf(item), 1)"/>
+                      </template>
+                  </combobox2>
+                      <v-text-field
+                          ref="subject"
+                          v-model="subject"
+                          label="Subject"
+                          :rules="[rules.templateOrString]"
+                          class="white-input"/>
+                      <v-text-field
+                          label="From (display name)"
+                          ref="fromName"
+                          v-model="fromName"
+                          :rules="[rules.templateOrString]"
+                          class="white-input"/>
+                      <v-text-field
+                          v-model="fromAddress"
+                          ref="fromAddress"
+                          label="From (address)"
+                          :rules="[rules.templateOrEmailOrEmpty]"
+                          class="white-input"/>
+            </v-form>
+          </v-flex>
+          <v-flex xs6>
+              <!-- <p>Type a double brace "{{" to insert an event parameter as a <a href='https://mustache.github.io/'>Mustache variable</a>.</p> -->
+                  <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
+                  <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
+          </v-flex>
+          </v-layout>
           <v-layout column xs8 fill-height>
             <v-flex xs11>
                 <jodit-vue v-model="content" :config="joditConfig" :buttons="joditConfig.buttons"/>
+                <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
             </v-flex>
             <v-flex xs1>
-              <v-layout row>
-                <v-flex xs10>
-                  <!-- <p>Type a double brace "{{" to insert an event parameter as a <a href='https://mustache.github.io/'>Mustache variable</a>.</p> -->
-                  <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
-                  <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
-                </v-flex>
-                <v-flex xs2>
-                  <v-btn outline color="green" @click="preview = true" style="float:right">Preview</v-btn>
-                </v-flex>
+              <v-layout row justify-center>
+                  <v-btn outline color="green" @click="showPreview" :disabled="!validated" style="float:right">Preview</v-btn>
               </v-layout>
             </v-flex>
           </v-layout>
@@ -73,10 +84,12 @@ import Vue from 'vue'
 import JoditVue from 'jodit-vue'
 import Jodit from 'jodit'
 import Tribute from '../../lib/tribute/src'
+import Combobox2 from '../components/helper/Combobox2'
 Vue.use(JoditVue)
 import 'jodit/build/jodit.min.css'
 import 'tributejs/dist/tribute.css'
 import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';import { TemplateApi } from '../../lib/api';
+import MessagePreview from './MessagePreview.vue';
 
 export default {
   props:{
@@ -112,31 +125,65 @@ export default {
         toolbarButtonSize: "large"
       },
       content:"",
-      sendTo:"",
+      sendTo:[],
+      sendToInput:"",
       fromName:"",
       fromAddress:"",
+      preventComboCapture:false,
       subject:"",
-      preview:false,
+      showingPreview:false,
+      preview:null,
+      contentValidationError:false,
       loading:false,
-      templateId:null
+      newRecipient:null,
+      templateId:null,
+      validated:false,
   }),
   methods:{
-    addRecipient(item) {
-
+    onComboBoxInput() {
+      var vm = this;
+      Vue.nextTick(() => {
+        vm.preventComboCapture = vm.tribute.isActive;
+      });
+    },
+    showPreview() {
+      var vm = this;
+      this.save().then((resp) => {
+        vm.showingPreview = true;
+        vm.preview = resp.data;
+      }).catch((err) => {
+        vm.$store.state.app.snackbar = err;
+      });
+    },
+    validate() {
+      var vm = this;
+      if(typeof(this.$refs.form) !== "undefined") {
+        if(this.validationTimer != null) 
+          clearTimeout(this.validationTimer);
+        var vm = this;
+        this.validationTimer = setTimeout(() => {
+          vm.validated = this.$refs.form.validate() 
+        },900);
+      }
     },
     save() {
       var vm = this;
-      if(this.templateId == null) {
-        var requestBody = {
+      var requestBody = {
           content:this.content, 
           subject:this.subject, 
           fromAddress:this.fromAddress, 
           fromName:this.fromName,
           sendTo:this.sendTo,
-        }
-        new TemplateApi().addTemplate(requestBody, null, {withCredentials:true}).then((resp) => {
+      }
+      if(this.templateId == null) {
+        return new TemplateApi().addTemplate(requestBody, null, {withCredentials:true}).then((resp) => {
+            vm.templateId = resp.data.id;
             return new ListenerApi().addListenerTemplate(vm.listener.id, resp.data.id, null, {withCredentials:true});
         }).catch((err) => {
+            vm.$store.state.app.snackbar = err;
+        });
+      } else {
+        return new TemplateApi().updateTemplate(this.templateId, requestBody, null, {withCredentials:true}).catch((err) => {
             vm.$store.state.app.snackbar = err;
         });
       }
@@ -146,24 +193,55 @@ export default {
     rules() {
       var vm = this;
       return {
+        recipients(val) {
+          if(val.length == 0) 
+            return "At least one valid recipient must be specified";
+
+          for(var i = 0; i < val.length; i++) {
+            var v = val[i];
+            if(vm.rules.required(v) !== true || vm.rules.templateOrEmail(v) !== true)
+              return "At least one valid recipient must be specified";
+          };
+          return true;
+        },
         required(val) {
             if(val == null || val == "")
               return "Value must not be null";
             return true;
         },
-        template(val) {
-            if(val != null && val.startsWith("{{") && val.endsWith("}}") && !vm.listener.eventParams.includes(val))
-                return "This event parameter is not defined.";
+        template(val, allowNone) {
+          var expr = /{{([^{}]+?)(<\/span>)?}}/g;
+          var matches = expr.exec(val);
+
+          if(!allowNone && matches == null)
+            return "Event parameter must be specified";
+          while(matches != null) {
+            if(!vm.listener.eventParams.includes(matches[1])) {
+              return "The event parameter " + matches[1] + " is not defined.";
+            }
+            matches = expr.exec(val);
+          }
+                
+          return true;
+        },
+        templateOrString(val) {
+          return vm.rules.template(val, true);
+        },
+        templateOrEmailOrEmpty(val) {
+          if(val === null || val === '')
             return true;
+          
+          return vm.rules.templateOrEmail(val);
         },
         templateOrEmail(val) {
-          if(val != null) {
-            if(val.startsWith("{{") && val.endsWith("}}") && !vm.listener.eventParams.includes(val))
-              return "This event parameter is not defined.";
-            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            if(!re.test(val.toLowerCase()))
-              return "Must be a valid e-mail or a template parameter";
-          } 
+
+          var validTemplate = vm.rules.template(val, false);
+          var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          var isEmail = re.test(val.toLowerCase())
+          if(validTemplate === true || isEmail === true)
+            return true;
+          else 
+            return "Must be a valid e-mail or a template parameter";
         }
       }
     }
@@ -187,21 +265,34 @@ export default {
                 };
                 vm.tribute = new Tribute(options);
                 vm.tribute.attach(editor.editor)  ;
-                vm.tribute.attach(vm.$refs.fromName.$el.getElementsByTagName("input")[0]);
-                vm.$refs.fromName.$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
-                  vm.fromName = vm.$refs.fromName.$el.getElementsByTagName("input")[0].value;
+
+                ["fromName", "fromAddress","subject","sendTo"].forEach((k) => {
+                  vm.tribute.attach(vm.$refs[k].$el.getElementsByTagName("input")[0]);
                 });
-                vm.tribute.attach(vm.$refs.fromAddress.$el.getElementsByTagName("input")[0]);
-                vm.tribute.attach(vm.$refs.to.$el.getElementsByTagName("input")[0]);
-                vm.tribute.attach(vm.$refs.subject.$el.getElementsByTagName("input")[0]);
+
+                ["fromName", "fromAddress","subject"].forEach((k) => {
+                  vm.$refs[k].$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
+                    vm[k] = vm.$refs[k].$el.getElementsByTagName("input")[0].value;
+                  });
+                });
+                
+                vm.$refs.sendTo.$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
+                  //if(vm.sendTo == null)
+                  //  vm.sendTo = [];
+                  vm.sendTo.push(vm.$refs.sendTo.$el.getElementsByTagName("input")[0].value);
+                  console.log(vm.$refs.sendTo )
+                  vm.sendToInput = "";
+                  //vm.newRecipient = null;
+                });
             });
     };
   },
   components: { 
-    JoditVue
+    JoditVue, Combobox2, MessagePreview
   },
   watch:{
     listener(newVal) {
+        this.validate();
         var vm = this;
         if(typeof(this.tribute) !== "undefined" && typeof(newVal) != "undefined" && newVal != null && typeof(newVal.eventParams) != "undefined" && newVal.eventParams != null && newVal.eventParams.length > 0) {
           this.tribute.collection[0].values=newVal.eventParams.map((x) => { return {key:x,value:x} });
@@ -220,12 +311,27 @@ export default {
               vm.fromAddress = resp.data.fromAddress;
               vm.fromName = resp.data.fromName;
               vm.sendTo = resp.data.sendTo;
-              vm.subject = resp.data.sendTo;
+              vm.subject = resp.data.subject;
             }
           }).catch((err) => {
               vm.$store.state.app.snackbar = err;
           });
         }
+    },
+    content(newVal) {
+      this.validate();
+    },
+    sendTo(newVal) {
+      this.validate();
+    },
+    fromAddress(newVal) {
+      this.validate();
+    },
+    fromName(newVal) {
+      this.validate();
+    },
+    subject(newVal) {
+      this.validate();
     }
   }
 }
@@ -240,5 +346,11 @@ export default {
 }
 .jodit_container {
   height:90% !important;
+}
+.hide-input {
+    margin-top:25px;
+}
+.hide-input .v-input__slot {
+  display:none !important;
 }
 </style>
