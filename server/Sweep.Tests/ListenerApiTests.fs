@@ -269,7 +269,7 @@ module ListenerApiHandlerTests =
      // and another listener without any params
       {
           ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
-          EventName="some_event";
+          EventName="some_new_event";
           EventParams=[||]
       }
         |> encode
@@ -279,17 +279,18 @@ module ListenerApiHandlerTests =
         |> JsonConvert.DeserializeObject<Listener>
         |> ignore
 
-      HttpGet client path
+      let listeners = 
+        HttpGet client path
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Listener[]>
         |> shouldBeLength 4
-        |> Seq.last
+      
+      listeners
+        |> Seq.find (fun x -> x.EventName = "some_new_event")
         |> (fun x -> x.EventParams |> shouldBeLength 0 |> ignore)
         |> ignore
     }
-
- 
 
   [<Fact>]
   let ``createFromEvent successfully creates ListenerAction where a Listener exists for an event name and an organization id`` () =

@@ -37,7 +37,6 @@
   <ItemGroup>
     <Content Include="openapi.yaml" />
     <Content Include="appsettings.json" />
-
     <Compile Include="helpers/Helpers.fs" />
     <Compile Include="model/BaseMessage.fs" />
     <Compile Include="model/Event.fs" />
@@ -46,13 +45,15 @@
     <Compile Include="model/User.fs" />
     <Compile Include="model/Template.fs" />
     <Compile Include="model/TemplateRequestBody.fs" />
+    <Compile Include="model/RenderTemplateRequestBody.fs" />
     <Compile Include="model/Message.fs" />
     <Compile Include="model/Listener.fs" />
     <Compile Include="model/ListenerAction.fs" />
     <Compile Include="model/ListenerRequestBody.fs" />
     <Compile Include="model/ListenerTemplate.fs" />
-    <Compile Include="impl/UserContext.fs" />
     <Compile Include="impl/Exceptions.fs" />
+    <Compile Include="impl/TemplateRenderer.fs" />
+    <Compile Include="impl/UserContext.fs" />
     <Compile Include="impl/data/Sql.fs" />
     <Compile Include="impl/data/Message.fs" />
     <Compile Include="impl/data/Template.fs" />

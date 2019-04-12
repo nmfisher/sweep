@@ -18,6 +18,7 @@ open Newtonsoft.Json
 open Sweep.EventQueue
 open Sweep.Model.Template
 open Sweep.Model.Event
+open Sweep.TemplateRenderer
 open Sweep.MailHandler
 open SendGrid
 open System.Text
@@ -29,41 +30,6 @@ module MailHandlerTests =
   // ---------------------------------
   // Tests
   // ---------------------------------
-  [<Fact>]
-  let ``Render default subject``() =
-    task {
-      TestHelper.initialize() |> ignore
-      let template = {
-        Subject="";
-        Content = "";
-        FromAddress="foo@bar";
-        FromName="Foo";
-        SendTo=[|"baz@qux"|];
-        UserId="";
-        OrganizationId="";
-        Deleted=Some(false);
-        Id="";
-      }
-
-      let event = {
-         EventName="SOMEEVENT";
-         Params=None;
-         Id = "";
-         ReceivedOn = DateTime.Now;
-         ProcessedOn = Some(DateTime.Now);
-         OrganizationId = "123";
-         Error = None;
-      }
-      let defaults = 
-        {
-            FromAddress = "default@co";
-            FromName = "Default"; 
-            Subject ="";
-        } : MailDefaults
-
-      getSubject defaults event "foo" |> shouldEqual "foo" |> ignore
-    }
-  
   [<Fact>]
   let ``Send test email``() =
     task {
@@ -93,11 +59,12 @@ module MailHandlerTests =
         Deleted=Some(false);
       }]
 
-      let defaults = {
-          FromAddress = "default@co";
-          FromName = "Default"; 
-          Subject ="Default Subject!";
-      }
+      let defaults = 
+        {
+            MailDefaults.FromAddress = "default@co";
+            FromName = "Default"; 
+            Subject ="Default Subject!";
+        }
       let mutable success = false
       let saver = (fun x -> success <- true)
       MailHandler.handle client defaults saver templates event 

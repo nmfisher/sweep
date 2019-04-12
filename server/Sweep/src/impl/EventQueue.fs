@@ -98,18 +98,13 @@ module EventQueue =
       |> Seq.toList                
       |> ignore
 
-  let initialize delay apiKey defaultFromAddress defaultFromName defaultSubject = 
+  let initialize delay apiKey defaults = 
     let timer = new Timers.Timer(60000.)
     printfn "%A" DateTime.Now
     timer.Start()
     printfn "%A" "A-OK"
     let client = SendGridClient(apiKey)
-    let defaults = 
-      { 
-        FromAddress=defaultFromAddress;
-        FromName=defaultFromName;
-        Subject=defaultSubject;
-      } : MailHandler.MailDefaults
+   
     let mailer = MailHandler.handle client defaults (Sweep.Data.Message.save)
     
     while true do

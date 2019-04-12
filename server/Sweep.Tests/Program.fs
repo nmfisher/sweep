@@ -13,7 +13,7 @@ module Program =
                 // EventApiHandlerTests.``GetEventById - Find raised event by ID returns 200 where successful operation``() :> Task;
                 // EventApiHandlerTests.``AddEvent - Raise an event returns 422 where Invalid input``() :> Task;
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
-                ListenerApiHandlerTests.``AddListener - Create a new Listener returns 200 where successful operation``() :> Task;
+                // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 200 where successful operation``() :> Task;
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
                 //ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 200 where successful operation``() :> Task;
@@ -46,6 +46,11 @@ module Program =
                 // ListenerTemplateApiHandlerTests.``ListListenerTemplates - List Templates for Listener returns 200 where successful operation``() :> Task
                 // ListenerTemplateApiHandlerTests.``listTemplatesForListener returns list of templates`` () :> Task
                 // EventApiHandlerTests.``List all events after the ReceivedOn date of the provided event``() :> Task
+                //TemplateApiHandlerTests.``RenderTemplate - Renders a template using the provided event parameters returns 200 where successful operation``() :> Task
+                //TemplateApiHandlerTests.``GetTemplateById - Find Template by ID returns 404 where Listener not found``() :> Task
+                //TemplateApiHandlerTests.``RenderTemplate - Renders a template using the provided event parameters returns 422 where Template could not be rendered``() :> Task
+                //MailHandlerTests.``Send test email``() :> Task
+                ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation`` ()  :> Task
                 ]
                 |> List.toArray
     Task.WaitAll(tasks)

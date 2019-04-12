@@ -57,6 +57,8 @@ module EventApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
+      initialize()
+
       let path = "/1.0.0/events"
 
       { 
@@ -75,7 +77,8 @@ module EventApiHandlerTests =
       use server = new TestServer(createHost())
       use client = server.CreateClient()
 
-      // add your setup code here
+      initialize() |> ignore
+
       { 
         EventRequestBody.EventName="some_event";
         Params=Some(dict ["key1","value1" :>obj])

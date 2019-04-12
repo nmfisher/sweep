@@ -1,5 +1,7 @@
 namespace Sweep
+
 open Sweep.Model.Template
+open Sweep.TemplateRenderer
 open TemplateApiHandlerParams
 open TemplateApiServiceInterface
 open System.Collections.Generic
@@ -9,6 +11,7 @@ open UserContext
 open System.Net.Mail
 open CompositionRoot
 open Exceptions
+open Microsoft.AspNetCore.Http
 
 
 module TemplateApiServiceImplementation =
@@ -31,7 +34,7 @@ module TemplateApiServiceImplementation =
                     true
                   with                 
                   | e ->
-                    x.StartsWith "{{" && x.EndsWith "}}" && content.Contains(x))
+                    x.StartsWith "{{" && x.EndsWith "}}")
 
       let validateTemplate content sendTo = 
         if String.IsNullOrWhiteSpace(content) then 
@@ -78,6 +81,20 @@ module TemplateApiServiceImplementation =
           let orgId = getOrgId ctx.User.Claims
           let templates = CompositionRoot.listTemplates orgId
           ListTemplateDefaultStatusCode { content = templates }
+
+        member this.RenderTemplate (ctx:HttpContext) (args:RenderTemplateArgs) =
+          try
+            let orgId = getOrgId ctx.User.Claims
+            let userId = getUserId ctx.User.Claims
+            let template = CompositionRoot.getTemplate args.pathParams.templateId orgId
+            let mailDefaults = ctx.GetService<MailDefaults>()
+            let rendered = renderTemplate mailDefaults args.bodyParams.Params template
+            RenderTemplateDefaultStatusCode { content = rendered }
+          with
+          | NotFoundException(msg) ->
+            RenderTemplateStatusCode404 { content = msg }
+          | RenderException(msg) ->
+            RenderTemplateStatusCode422 { content = msg }
 
         member this.UpdateTemplate ctx args =
           try

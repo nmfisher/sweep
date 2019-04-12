@@ -7,6 +7,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open TemplateApiHandlerParams
 open TemplateApiServiceInterface
 open TemplateApiServiceImplementation
+open Sweep.Model.Message
+open Sweep.Model.RenderTemplateRequestBody
 open Sweep.Model.Template
 open Sweep.Model.TemplateRequestBody
 
@@ -100,6 +102,32 @@ module TemplateApiHandler =
           return! (match result with 
                       | ListTemplateDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
+          ) next ctx
+        }
+    //#endregion
+
+    //#region RenderTemplate
+    /// <summary>
+    /// Renders a template using the provided event parameters
+    /// </summary>
+
+    let RenderTemplate (pathParams:RenderTemplatePathParams) : HttpHandler = 
+      fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+          let! bodyParams = 
+            ctx.BindJsonAsync<RenderTemplateBodyParams>()
+          let headerParams = {
+              RenderTemplateHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
+          }
+          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams; bodyParams=bodyParams } : RenderTemplateArgs
+          let result = TemplateApiService.RenderTemplate ctx serviceArgs
+          return! (match result with 
+                      | RenderTemplateDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> json resolved.content 
+                      | RenderTemplateStatusCode422 resolved ->
+                            setStatusCode 422 >=> text resolved.content 
+                      | RenderTemplateStatusCode404 resolved ->
+                            setStatusCode 404 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

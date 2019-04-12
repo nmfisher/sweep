@@ -431,6 +431,10 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
         '422':
           description: Invalid input
       security:
@@ -527,6 +531,45 @@ paths:
           description: Template not found
       security:
         - Google: []
+  '/templates/{templateId}/render':
+    post:
+      tags:
+        - template
+      summary: Renders a template using the provided event parameters
+      description: Returns a string representing the HTML content of an email to be sent
+      operationId: renderTemplate
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: templateId
+          in: path
+          description: ID of template to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '422':
+          description: Template could not be rendered
+        '404':
+          description: Template not found
+      security:
+        - Google: []
+      requestBody:
+        description: The event parameters used to render
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenderTemplateRequestBody'
   /user:
     post:
       tags:
@@ -774,6 +817,13 @@ components:
           type: string
         organizationId:
           type: string
+    RenderTemplateRequestBody:
+      type: object
+      properties:
+        params:
+          type: object
+          additionalProperties:
+            type: object
     Organization:
       type: object
       required:

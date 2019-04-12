@@ -583,6 +583,49 @@ paths:
       summary: Update an existing Template
       tags:
       - template
+  /templates/{templateId}/render:
+    post:
+      description: Returns a string representing the HTML content of an email to be sent
+      operationId: renderTemplate
+      parameters:
+      - explode: false
+        in: header
+        name: api_key
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of template to return
+        explode: false
+        in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenderTemplateRequestBody'
+        description: The event parameters used to render
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: successful operation
+        422:
+          description: Template could not be rendered
+        404:
+          description: Template not found
+      security:
+      - Google: []
+      summary: Renders a template using the provided event parameters
+      tags:
+      - template
   /user:
     post:
       description: This can only be done by the logged in user.
@@ -867,6 +910,16 @@ components:
       - id
       - organizationId
       - receivedOn
+      type: object
+    RenderTemplateRequestBody:
+      example:
+        params:
+          key: '{}'
+      properties:
+        params:
+          additionalProperties:
+            type: object
+          type: object
       type: object
     Organization:
       properties:

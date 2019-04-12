@@ -16,6 +16,7 @@ open TemplateApiHandlerTestsHelper
 open Sweep.TemplateApiHandler
 open Sweep.TemplateApiHandlerParams
 open Sweep.Model.TemplateRequestBody
+open Sweep.Model.RenderTemplateRequestBody
 open Sweep.Model.Template
 open Newtonsoft.Json
 
@@ -102,27 +103,10 @@ module TemplateApiHandlerTests =
       // malformed sendTo
       {
           TemplateRequestBody.Content="Some content";
-          SendTo=[|"not an email"|];
+          SendTo=[|"not an email or a placeholder"|];
           Subject="Some subject";
           FromAddress="baz@qux";
           FromName="Baz";
-      } 
-      |> encode
-      |> HttpPost client path
-      |> isStatus (enum<HttpStatusCode>(422))
-      |> ignore
-
-      // malformed sendTo
-      {
-          Content="Some content";
-          SendTo=[|"{{missing}}"|];
-          Subject="Some subject";
-          FromAddress="baz@qux";
-          FromName="Baz";
-          Id="";
-          OrganizationId="";
-          UserId="";
-          Deleted=Some(false);
       } 
       |> encode
       |> HttpPost client path
@@ -379,4 +363,99 @@ module TemplateApiHandlerTests =
       |> isStatus (enum<HttpStatusCode>(422))
       |> ignore
     }
+
+  [<Fact>]
+  let ``RenderTemplate - Renders a template using the provided event parameters returns 200 where successful operation`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      initialize()
+
+      {
+        TemplateRequestBody.Content="Hello {{name}}";
+        SendTo=[|"{{email}}"|];
+        Subject="Some {{subject}}";
+        FromAddress="{{other_email}}";
+        FromName="{{my_name}}";
+      }        
+      |> encode
+      |> HttpPost client "/1.0.0/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        HttpGet client "/1.0.0/templates"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+
+      let path = "/1.0.0/templates/" + template.Id + "/render"
+
+      { 
+        RenderTemplateRequestBody.Params=Some(dict [|"name", "Bob" :> obj; "email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |]);
+      }
+        |> encode
+        |> HttpPost client path
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Sweep.Model.Message.Message>
+        |> (fun x -> 
+          x.Content |> shouldEqual "<html><body>Hello Bob</body></html>" |> ignore
+        ) |> ignore
+      }
+
+  [<Fact>]
+  let ``RenderTemplate - Renders a template using the provided event parameters returns 404 where Template not found`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      let path = "/templates/{templateId}/render"
+
+      { 
+        RenderTemplateRequestBody.Params=Some(dict [|"name", "Bob" :> obj; "email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |]);
+      }
+        |> encode
+        |> HttpPost client path
+        |> isStatus (enum<HttpStatusCode>(404))
+      }
+
+  [<Fact>]
+  let ``RenderTemplate - Renders a template using the provided event parameters returns 422 where Template could not be rendered`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      {
+        TemplateRequestBody.Content="Hello {{name}}";
+        SendTo=[|"{{email}}"|];
+        Subject="Some {{subject}}";
+        FromAddress="{{other_email}}";
+        FromName="{{my_name}}";
+      }        
+      |> encode
+      |> HttpPost client "/1.0.0/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        HttpGet client "/1.0.0/templates"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+
+      let path = "/1.0.0/templates/" + template.Id + "/render"
+
+      { 
+        RenderTemplateRequestBody.Params=Some(dict [|"email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |]);
+      }
+        |> encode
+        |> HttpPost client path
+        |> isStatus (enum<HttpStatusCode>(422))
+        |> readText
+        |> shouldEqual "Values for the following parameters were not provided: name"
+        |> ignore
+      }
 

@@ -1,5 +1,7 @@
 namespace Sweep
 
+open Sweep.Model.Message
+open Sweep.Model.RenderTemplateRequestBody
 open Sweep.Model.Template
 open Sweep.Model.TemplateRequestBody
 open System.Collections.Generic
@@ -112,6 +114,47 @@ module TemplateApiHandlerParams =
 
     type ListTemplateArgs = {
       headerParams:ListTemplateHeaderParams;
+    }
+    //#region Path parameters
+    [<CLIMutable>]
+    type RenderTemplatePathParams = {
+      templateId : string;
+    }
+    //#endregion
+
+    //#region Body parameters
+    [<CLIMutable>]
+    type RenderTemplateBodyParams = RenderTemplateRequestBody
+    //#endregion
+
+    //#region Header parameters
+    [<CLIMutable>]
+    type RenderTemplateHeaderParams = {
+      apiKey : string option;
+    }
+    //#endregion
+
+    
+    type RenderTemplateDefaultStatusCodeResponse = {
+      content:Message;
+      
+    }
+    
+    type RenderTemplateStatusCode422Response = {
+      content:string;
+      
+    }
+    
+    type RenderTemplateStatusCode404Response = {
+      content:string;
+      
+    }
+    type RenderTemplateResult = RenderTemplateDefaultStatusCode of RenderTemplateDefaultStatusCodeResponse|RenderTemplateStatusCode422 of RenderTemplateStatusCode422Response|RenderTemplateStatusCode404 of RenderTemplateStatusCode404Response
+
+    type RenderTemplateArgs = {
+      headerParams:RenderTemplateHeaderParams;
+      pathParams:RenderTemplatePathParams;
+      bodyParams:RenderTemplateBodyParams
     }
     //#region Path parameters
     [<CLIMutable>]

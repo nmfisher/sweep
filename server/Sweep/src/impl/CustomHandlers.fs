@@ -22,6 +22,7 @@ open System.Diagnostics
 open Microsoft.AspNetCore.Http
 open System.IO
 open Microsoft.AspNetCore.Cors.Infrastructure
+open TemplateRenderer
 
 module CustomHandlers = 
 
@@ -71,7 +72,6 @@ module CustomHandlers =
     | _ -> 
       ()
   
-  //let logout = signOut CookieAuthenticationDefaults.AuthenticationScheme >=> text "Logged out"
   let signOut (authScheme : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
@@ -124,6 +124,11 @@ module CustomHandlers =
   let configureServices (services:IServiceCollection) (authBuilder:AuthenticationBuilder) = 
     let serviceProvider = services.BuildServiceProvider()
     let settings = serviceProvider.GetService<IConfiguration>()
-    // let queue = EventQueue.EventQueue(settings)
-    // queue.Start() |> ignore
+    let mailDefaults = { 
+        FromAddress=settings.["DefaultFromAddress"];
+        FromName=settings.["DefaultFromName"];
+        Subject=settings.["DefaultSubject"];
+    }
+    services.AddSingleton<MailDefaults>(fun sp -> mailDefaults) |> ignore
+    EventQueue.initialize mailDefaults |> ignore
     services.AddCors()
