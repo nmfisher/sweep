@@ -329,6 +329,21 @@ export interface Organization {
 /**
  *
  * @export
+ * @interface RenderTemplateRequestBody
+ */
+export interface RenderTemplateRequestBody {
+    /**
+     *
+     * @type {{ [key: string]: any; }}
+     * @memberof RenderTemplateRequestBody
+     */
+    params?: {
+        [key: string]: any;
+    };
+}
+/**
+ *
+ * @export
  * @interface Template
  */
 export interface Template {
@@ -1070,6 +1085,16 @@ export declare const TemplateApiAxiosParamCreator: (configuration?: Configuratio
      */
     listTemplate(apiKey?: string, options?: any): RequestArgs;
     /**
+     * Returns a string representing the HTML content of an email to be sent
+     * @summary Renders a template using the provided event parameters
+     * @param {string} templateId ID of template to return
+     * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any): RequestArgs;
+    /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
@@ -1093,7 +1118,7 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template>;
     /**
      *
      * @summary Deletes a Template
@@ -1121,6 +1146,16 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
      */
     listTemplate(apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template[]>;
     /**
+     * Returns a string representing the HTML content of an email to be sent
+     * @summary Renders a template using the provided event parameters
+     * @param {string} templateId ID of template to return
+     * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message>;
+    /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
@@ -1129,7 +1164,7 @@ export declare const TemplateApiFp: (configuration?: Configuration) => {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template>;
 };
 /**
  * TemplateApi - factory interface
@@ -1144,7 +1179,7 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Template>;
     /**
      *
      * @summary Deletes a Template
@@ -1172,6 +1207,16 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
      */
     listTemplate(apiKey?: string, options?: any): AxiosPromise<Template[]>;
     /**
+     * Returns a string representing the HTML content of an email to be sent
+     * @summary Renders a template using the provided event parameters
+     * @param {string} templateId ID of template to return
+     * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Message>;
+    /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
@@ -1180,7 +1225,7 @@ export declare const TemplateApiFactory: (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Template>;
 };
 /**
  * TemplateApi - object-oriented interface
@@ -1198,7 +1243,7 @@ export declare class TemplateApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
+    addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Template>;
     /**
      *
      * @summary Deletes a Template
@@ -1229,6 +1274,17 @@ export declare class TemplateApi extends BaseAPI {
      */
     listTemplate(apiKey?: string, options?: any): AxiosPromise<Template[]>;
     /**
+     * Returns a string representing the HTML content of an email to be sent
+     * @summary Renders a template using the provided event parameters
+     * @param {string} templateId ID of template to return
+     * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+     * @param {string} [apiKey]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TemplateApi
+     */
+    renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Message>;
+    /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
@@ -1238,7 +1294,7 @@ export declare class TemplateApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Response>;
+    updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): AxiosPromise<Template>;
 }
 /**
  * UserApi - axios parameter creator

@@ -339,6 +339,20 @@ export interface Organization {
 /**
  * 
  * @export
+ * @interface RenderTemplateRequestBody
+ */
+export interface RenderTemplateRequestBody {
+    /**
+     * 
+     * @type {{ [key: string]: any; }}
+     * @memberof RenderTemplateRequestBody
+     */
+    params?: { [key: string]: any; };
+}
+
+/**
+ * 
+ * @export
  * @interface Template
  */
 export interface Template {
@@ -1900,6 +1914,63 @@ export const TemplateApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * Returns a string representing the HTML content of an email to be sent
+         * @summary Renders a template using the provided event parameters
+         * @param {string} templateId ID of template to return
+         * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+         * @param {string} [apiKey] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options: any = {}): RequestArgs {
+            // verify required parameter 'templateId' is not null or undefined
+            if (templateId === null || templateId === undefined) {
+                throw new RequiredError('templateId','Required parameter templateId was null or undefined when calling renderTemplate.');
+            }
+            // verify required parameter 'renderTemplateRequestBody' is not null or undefined
+            if (renderTemplateRequestBody === null || renderTemplateRequestBody === undefined) {
+                throw new RequiredError('renderTemplateRequestBody','Required parameter renderTemplateRequestBody was null or undefined when calling renderTemplate.');
+            }
+            const localVarPath = `/templates/{templateId}/render`
+                .replace(`{${"templateId"}}`, encodeURIComponent(String(templateId)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+
+            if (apiKey !== undefined && apiKey !== null) {
+                localVarHeaderParameter['api_key'] = String(apiKey);
+            }
+
+
+                localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+            const needsSerialization = (<any>"RenderTemplateRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(renderTemplateRequestBody !== undefined ? renderTemplateRequestBody : {}) : (renderTemplateRequestBody || "");
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
@@ -1973,7 +2044,7 @@ export const TemplateApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+        addTemplate(templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template> {
             const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).addTemplate(templateRequestBody, apiKey, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -2025,6 +2096,22 @@ export const TemplateApiFp = function(configuration?: Configuration) {
             };
         },
         /**
+         * Returns a string representing the HTML content of an email to be sent
+         * @summary Renders a template using the provided event parameters
+         * @param {string} templateId ID of template to return
+         * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+         * @param {string} [apiKey] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message> {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).renderTemplate(templateId, renderTemplateRequestBody, apiKey, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
          * 
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
@@ -2033,7 +2120,7 @@ export const TemplateApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Response> {
+        updateTemplate(templateId: string, templateRequestBody: TemplateRequestBody, apiKey?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template> {
             const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).updateTemplate(templateId, templateRequestBody, apiKey, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -2091,6 +2178,18 @@ export const TemplateApiFactory = function (configuration?: Configuration, baseP
          */
         listTemplate(apiKey?: string, options?: any) {
             return TemplateApiFp(configuration).listTemplate(apiKey, options)(axios, basePath);
+        },
+        /**
+         * Returns a string representing the HTML content of an email to be sent
+         * @summary Renders a template using the provided event parameters
+         * @param {string} templateId ID of template to return
+         * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+         * @param {string} [apiKey] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any) {
+            return TemplateApiFp(configuration).renderTemplate(templateId, renderTemplateRequestBody, apiKey, options)(axios, basePath);
         },
         /**
          * 
@@ -2163,6 +2262,20 @@ export class TemplateApi extends BaseAPI {
      */
     public listTemplate(apiKey?: string, options?: any) {
         return TemplateApiFp(this.configuration).listTemplate(apiKey, options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Returns a string representing the HTML content of an email to be sent
+     * @summary Renders a template using the provided event parameters
+     * @param {string} templateId ID of template to return
+     * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
+     * @param {string} [apiKey] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TemplateApi
+     */
+    public renderTemplate(templateId: string, renderTemplateRequestBody: RenderTemplateRequestBody, apiKey?: string, options?: any) {
+        return TemplateApiFp(this.configuration).renderTemplate(templateId, renderTemplateRequestBody, apiKey, options)(this.axios, this.basePath);
     }
 
     /**
