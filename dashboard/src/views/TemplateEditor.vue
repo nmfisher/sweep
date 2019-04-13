@@ -10,7 +10,7 @@
     </v-card>
    <v-card color="none" :elevation="0" style="height:100%;width:100%">
      <v-dialog v-model="showingPreview" width="600">
-       <message-preview :message="preview" :templateId="templateId" :params="listener ? listener.params : null" v-if="preview"/>
+       <message-preview ref="preview" :templateId="templateId" :params="listener ? listener.eventParams : null"/>
      </v-dialog>
         <v-container fill-height id="tribute-wrapper">
           <v-layout column>
@@ -88,7 +88,7 @@ import Combobox2 from '../components/helper/Combobox2'
 Vue.use(JoditVue)
 import 'jodit/build/jodit.min.css'
 import 'tributejs/dist/tribute.css'
-import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';import { TemplateApi } from '../../lib/api';
+import { TemplateApi, TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
 import MessagePreview from './MessagePreview.vue';
 
 export default {
@@ -132,7 +132,6 @@ export default {
       preventComboCapture:false,
       subject:"",
       showingPreview:false,
-      preview:null,
       contentValidationError:false,
       loading:false,
       newRecipient:null,
@@ -150,8 +149,8 @@ export default {
       var vm = this;
       this.save().then((resp) => {
         vm.showingPreview = true;
-        vm.preview = resp.data;
       }).catch((err) => {
+        console.error(err);
         vm.$store.state.app.snackbar = err;
       });
     },
@@ -180,11 +179,13 @@ export default {
             vm.templateId = resp.data.id;
             return new ListenerApi().addListenerTemplate(vm.listener.id, resp.data.id, null, {withCredentials:true});
         }).catch((err) => {
+            console.error(err);
             vm.$store.state.app.snackbar = err;
         });
       } else {
         return new TemplateApi().updateTemplate(this.templateId, requestBody, null, {withCredentials:true}).catch((err) => {
-            vm.$store.state.app.snackbar = err;
+          console.error(err);
+          vm.$store.state.app.snackbar = err;
         });
       }
     }
@@ -258,8 +259,10 @@ export default {
             .on('afterInit', function () {
                 var options = {
                     trigger: '{{',
-                    replaceTextSuffix:"}}",
                     requireLeadingSpace: false,
+                    selectTemplate: (item) => {
+                      return '{{' + item.original.value + '}}';
+                    },
                     menuContainer:document.getElementById("tribute-container"),
                     values:[]
                 };
@@ -291,7 +294,9 @@ export default {
     JoditVue, Combobox2, MessagePreview
   },
   watch:{
-    listener(newVal) {
+    listener:{
+      deep:true,
+      handler(newVal) {
         this.validate();
         var vm = this;
         if(typeof(this.tribute) !== "undefined" && typeof(newVal) != "undefined" && newVal != null && typeof(newVal.eventParams) != "undefined" && newVal.eventParams != null && newVal.eventParams.length > 0) {
@@ -314,9 +319,11 @@ export default {
               vm.subject = resp.data.subject;
             }
           }).catch((err) => {
+              console.error(err);
               vm.$store.state.app.snackbar = err;
           });
         }
+      }
     },
     content(newVal) {
       this.validate();
