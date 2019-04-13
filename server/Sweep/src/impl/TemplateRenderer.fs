@@ -34,6 +34,7 @@ module TemplateRenderer =
       |> Array.map (fun x -> Regex.Match(x, "{{(?<name>[a-zA-Z0-9_]+)}}").Groups.["name"].Value)
       |> Seq.where (String.IsNullOrEmpty >> not)
       |> Seq.where (paramDict.ContainsKey >> not)
+      |> Seq.distinct
     match Seq.isEmpty unresolved with
     | false ->
       raise (RenderException("Values for the following parameters were not provided: " + String.Join(",", unresolved)))
