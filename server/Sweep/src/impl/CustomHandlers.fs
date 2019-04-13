@@ -124,6 +124,11 @@ module CustomHandlers =
   let configureServices (services:IServiceCollection) (authBuilder:AuthenticationBuilder) = 
     let serviceProvider = services.BuildServiceProvider()
     let settings = serviceProvider.GetService<IConfiguration>()
+     
+    for k in [|"DefaultFromAddress";"DefaultFromName";"DefaultSubject"|] do
+      if (isNull settings.[k]) then
+        raise (Exception(k + " is not set."))
+
     let mailDefaults = { 
         FromAddress=settings.["DefaultFromAddress"];
         FromName=settings.["DefaultFromName"];
