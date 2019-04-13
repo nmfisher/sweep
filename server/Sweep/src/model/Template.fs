@@ -17,7 +17,7 @@ module Template =
     FromName : string;
     SendTo : string[];
     OrganizationId : string;
-    Deleted : bool option;
+    Deleted : bool;
     UserId : string;
   }
   //#endregion

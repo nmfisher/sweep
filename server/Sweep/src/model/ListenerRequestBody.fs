@@ -10,7 +10,7 @@ module ListenerRequestBody =
 
   type ListenerRequestBody = {
     EventName : string;
-    Trigger : string option;
+    Trigger : string;
     EventParams : string[];
   }
   //#endregion

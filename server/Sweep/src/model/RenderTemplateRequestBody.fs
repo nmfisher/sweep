@@ -10,7 +10,7 @@ module RenderTemplateRequestBody =
 
 
   type RenderTemplateRequestBody = {
-    Params : IDictionary<string, obj> option;
+    Params : IDictionary<string, obj>;
   }
   //#endregion
   

@@ -10,9 +10,9 @@ module User =
 
   type User = {
     Id : string;
-    Username : string option;
-    Password : string option;
-    ApiKey : string option;
+    Username : string;
+    Password : string;
+    ApiKey : string;
     OrganizationId : string;
   }
   //#endregion

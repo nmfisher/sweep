@@ -11,36 +11,29 @@ type Event = Sweep.Model.Event.Event
 module Event = 
 
   let deserializeEvent (prop,value) =
+    match isNull value with 
+    | true ->
+      null
+    | false ->    
      match prop with
      | "ProcessedOn" ->
-      if (isNull value) then
-        None |> box
-      else
-        Some(DateTime.Parse(value.ToString())) |> box
+        DateTime.Parse(value.ToString()) |> box
      | "Params" -> 
-        if isNull value then
-          None |> box
-        else 
-          let optional = JsonConvert.DeserializeObject<Dictionary<string,obj> option>(value.ToString())
-          match optional with
-            | Some p ->
-              Some(p :> IDictionary<string,obj>) |> box
-            | None ->
-              None |> box
+          JsonConvert.DeserializeObject<Dictionary<string,obj>>(value.ToString()) |> box
      | "Id" ->
         value.ToString() :> obj
      | _ -> 
         value
   
-  let add eventName (eventParams:IDictionary<string,obj> option) organizationId =
+  let add eventName (eventParams:IDictionary<string,obj>) organizationId =
     let ctx = Sql.GetDataContext()
     let event = ctx.SweepDevelopment.Event.Create()
     event.EventName <- eventName
-    match eventParams with
-    | Some d ->
-        event.Params <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
-    | None ->
-        event.Params <- None
+    match isNull(eventParams) with
+    | true -> 
+      event.Params <- None
+    | false ->
+      event.Params <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
     event.OrganizationId <- organizationId
     event.ReceivedOn <- DateTime.Now
     event.Id <- Guid.NewGuid().ToString()

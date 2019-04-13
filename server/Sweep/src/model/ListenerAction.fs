@@ -14,7 +14,7 @@ module ListenerAction =
     ListenerId : string;
     OrganizationId : string;
     Completed : bool;
-    Error : string option;
+    Error : string;
   }
   //#endregion
   

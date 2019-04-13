@@ -40,9 +40,9 @@ module EventQueueTests =
           Id="some_id";
           EventName="some_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(7,0,0,0))
-          ProcessedOn=  None;
-          Params=None;
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=null;
+          Error=""
           OrganizationId="some_id"
         }
       let condition = 
@@ -62,9 +62,9 @@ module EventQueueTests =
           Id="some_id";
           EventName="some_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=None;
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=null;
+          Error=""
           OrganizationId="some_id"
         } : Event
       let condition = 
@@ -85,9 +85,9 @@ module EventQueueTests =
           Id="1";
           EventName="some_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=None;
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=null;
+          Error=""
           OrganizationId="some_id"
         }
 
@@ -96,18 +96,18 @@ module EventQueueTests =
           Id="1";
           EventName="some_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=None;
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=null;
+          Error=""
           OrganizationId="some_id"
         };
         {
           Id="2";
           EventName="some_other_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=None;
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=null;
+          Error=""
           OrganizationId="some_id"
         };]
 
@@ -129,9 +129,9 @@ module EventQueueTests =
           Id="1";
           EventName="some_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=Some(dict ["key1","val1" :> obj]);
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=dict ["key1","val1" :> obj];
+          Error="";
           OrganizationId="some_id"
         }
 
@@ -140,18 +140,18 @@ module EventQueueTests =
           Id="1";
           EventName="some_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=None;
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=null;
+          Error="";
           OrganizationId="some_id"
         };
         {
           Id="2";
           EventName="some_other_event";
           ReceivedOn=DateTime.Now.Subtract(TimeSpan(5,0,0,0))
-          ProcessedOn=None;
-          Params=Some(dict ["key1","val1" :> obj]);
-          Error=None;
+          ProcessedOn=DateTime.Now;
+          Params=dict ["key1","val1" :> obj];
+          Error=""
           OrganizationId="some_id"
         };]
 
@@ -225,7 +225,7 @@ module EventQueueTests =
       // create a listener
       {
           ListenerRequestBody.EventName="some_event";
-          Trigger=None;
+          Trigger="";
           EventParams=[||] :> string[];
       } 
         |> encode
@@ -246,7 +246,7 @@ module EventQueueTests =
       HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
 
       // create an event
-      { EventName = "some_event"; Params=None; } : EventRequestBody
+      { EventName = "some_event"; Params=null; } : EventRequestBody
       |> encode
       |> HttpPost client "/1.0.0/events"
       |> isStatus (enum<HttpStatusCode>(200))
@@ -295,7 +295,7 @@ module EventQueueTests =
       // create a listener
       {
           ListenerRequestBody.EventName="some_event";
-          Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
           EventParams=[||];
       } 
         |> encode
@@ -315,7 +315,7 @@ module EventQueueTests =
       HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
 
       // create the first event
-      { EventName = "some_event"; Params=None; } : EventRequestBody
+      { EventName = "some_event"; Params=null; } : EventRequestBody
       |> encode
       |> HttpPost client "/1.0.0/events"
       |> isStatus (enum<HttpStatusCode>(200))
@@ -335,7 +335,7 @@ module EventQueueTests =
       // create the second event
       { 
         EventRequestBody.EventName = "some_other_event"; 
-        Params=None; 
+        Params=null; 
       }
         |> encode
         |> HttpPost client "/1.0.0/events"
@@ -352,7 +352,7 @@ module EventQueueTests =
       // create the third event, just to make sure
       { 
         EventRequestBody.EventName = "some_other_event"; 
-        Params=None; 
+        Params=null; 
       }
         |> encode
         |> HttpPost client "/1.0.0/events"
@@ -395,7 +395,7 @@ module EventQueueTests =
       // create a listener
       {
           ListenerRequestBody.EventName="some_event";
-          Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
           EventParams=[||];
       } 
         |> encode
@@ -415,7 +415,7 @@ module EventQueueTests =
       HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
 
       // create the first event
-      { EventName = "some_event"; Params=None; } : EventRequestBody
+      { EventName = "some_event"; Params=null; } : EventRequestBody
       |> encode
       |> HttpPost client "/1.0.0/events"
       |> isStatus (enum<HttpStatusCode>(200))

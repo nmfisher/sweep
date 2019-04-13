@@ -60,7 +60,7 @@ module ListenerApiHandlerTests =
        
        // create a listener
       {
-          ListenerRequestBody.Trigger=None;
+          ListenerRequestBody.Trigger="";
           EventName="some_event";
           EventParams=[||];
       }
@@ -71,7 +71,7 @@ module ListenerApiHandlerTests =
 
       // create a listener with some params
       {
-          ListenerRequestBody.Trigger=None;
+          ListenerRequestBody.Trigger="";
           EventName="some_event";
           EventParams=[|"key1"|]
       }
@@ -94,7 +94,7 @@ module ListenerApiHandlerTests =
 
       let path = "/1.0.0/listeners"
       {
-          Trigger=None;
+          Trigger="";
           EventName="";
           EventParams=[||];
       } 
@@ -105,7 +105,7 @@ module ListenerApiHandlerTests =
 
       let path = "/1.0.0/listeners"
       {
-          Trigger=Some("INVALID CONDITION");
+          Trigger="INVALID CONDITION";
           EventName="some_event";
           EventParams=[||];
       } 
@@ -189,7 +189,7 @@ module ListenerApiHandlerTests =
       {
         ListenerRequestBody.EventName="some_updated_event"
         EventParams=[|"updated1";"updated2"|]
-        Trigger=None
+        Trigger=""
       }
         |> encode
         |> HttpPut client ("/1.0.0/listeners/" + listener.Id)
@@ -205,7 +205,7 @@ module ListenerApiHandlerTests =
             x.EventName |> shouldEqual "some_updated_event" |> ignore
             x.EventParams |> Seq.head |> shouldEqual "updated1"  |> ignore
             x.EventParams |> Seq.last |> shouldEqual "updated2" |> ignore
-            x.Trigger.IsNone |> shouldEqual true |> ignore)
+            isNull x.Trigger |> shouldEqual true |> ignore)
         |> ignore
       }
 
@@ -222,7 +222,7 @@ module ListenerApiHandlerTests =
       {
         ListenerRequestBody.EventName="some_updated_event"
         EventParams=[|"updated1";"updated2"|]
-        Trigger=None
+        Trigger=""
       } 
       |> encode
       |> HttpPut client path
@@ -254,7 +254,7 @@ module ListenerApiHandlerTests =
          
        // create anothoer listener
       {
-          ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          ListenerRequestBody.Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
           EventName="some_event";
           EventParams=[|"key1"|]
       }
@@ -268,7 +268,7 @@ module ListenerApiHandlerTests =
 
      // and another listener without any params
       {
-          ListenerRequestBody.Trigger=Some("AND some_other_event WITHIN 7 DAYS MATCH ON NULL");
+          ListenerRequestBody.Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
           EventName="some_new_event";
           EventParams=[||]
       }
@@ -305,14 +305,14 @@ module ListenerApiHandlerTests =
         {
           Event.Id=Guid.NewGuid().ToString();
           EventName="foo";
-          Params=None;
+          Params=null;
           OrganizationId=orgId;
           ReceivedOn=DateTime.Now
-          ProcessedOn=None;
-          Error=None
+          ProcessedOn=DateTime.Now;
+          Error=""
         }
 
-      Sweep.Data.Listener.add "foo" [||] None "some_user_id" orgId
+      Sweep.Data.Listener.add "foo" [||] null "some_user_id" orgId
 
       Sweep.Data.ListenerAction.createFromEvent event |> ignore
 

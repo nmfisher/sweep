@@ -11,7 +11,7 @@ module EventRequestBody =
 
   type EventRequestBody = {
     EventName : string;
-    Params : IDictionary<string, obj> option;
+    Params : IDictionary<string, obj>;
   }
   //#endregion
   

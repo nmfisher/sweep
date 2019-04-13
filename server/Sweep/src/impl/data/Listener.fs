@@ -12,23 +12,21 @@ open System.Collections.Generic
 module Listener = 
 
   let deserializeListener (prop,value) =
-     match prop with
-     | "Id" ->
-        value.ToString() :> obj
-     | "OrganizationId" ->
-        value.ToString() :> obj
-     | "EventParams" -> 
-        if isNull value then
-          [||] :> string[] |> box
-        else 
+     match isNull value with 
+     | true ->
+      null 
+     | false ->
+       match prop with
+       | "Id" ->
+          value.ToString() :> obj
+       | "OrganizationId" ->
+          value.ToString() :> obj
+       | "EventParams" -> 
           JsonConvert.DeserializeObject<string[]>(value.ToString()) :> obj
-     | "Trigger" ->
-        if isNull value then
-          None |> box
-        else 
-          Some(value.ToString()) |> box
-     | _ -> 
-        value
+       | "Trigger" ->
+          value.ToString() :> obj
+       | _ -> 
+          value
 
   type ListenerCondition = {
     EventName:string;
@@ -37,11 +35,11 @@ module Listener =
   }
 
   let parse trigger = 
-    match trigger with 
-    | None ->
+    match String.IsNullOrEmpty(trigger) with 
+    | true ->
       None
-    | Some triggerString ->        
-      let rgx = Regex.Match(triggerString, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
+    | false ->        
+      let rgx = Regex.Match(trigger, "AND (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON|NULL))([a-zA-Z_0-9]+) WITHIN ([0-9]+) (DAYS|HOURS|MINUTES) MATCH ON (?!(WITHIN|AND|DAYS|HOURS|MINUTES|MATCH|ON))([a-zA-Z_0-9]+)")
       match rgx.Success with
       | true ->
         let num = Convert.ToInt32(rgx.Groups.[3].Value)
@@ -74,7 +72,11 @@ module Listener =
       listener.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
     listener.EventName <- eventName
     listener.OrganizationId <- orgId
-    listener.Trigger <- trigger
+    match String.IsNullOrEmpty(trigger) with 
+      | true ->
+        listener.Trigger <- None
+      | false ->
+        listener.Trigger <- Some(trigger)    
     ctx.SubmitUpdates()
     {
       Listener.Id=listener.Id;
@@ -101,7 +103,12 @@ module Listener =
       else
         row.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject([||]))
       row.EventName <- eventName
-      row.Trigger <- trigger
+      match String.IsNullOrEmpty(trigger) with 
+      | true ->
+        row.Trigger <- None
+      | false ->
+        row.Trigger <- Some(trigger)
+        
       ctx.SubmitUpdates()
       {
         Listener.Id=listenerId;

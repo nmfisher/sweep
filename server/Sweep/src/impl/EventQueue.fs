@@ -26,7 +26,7 @@ module EventQueue =
       let matching =  matchDuration && (x.EventName = condition.EventName)
       match condition.Key with
         | None -> matching
-        | Some key -> matching && (x.Params.Value.[key].Equals(parent.Params.Value.[key])))
+        | Some key -> matching && (x.Params.[key].Equals(parent.Params.[key])))
     |> Seq.isEmpty
     |> not
 
@@ -61,8 +61,8 @@ module EventQueue =
     match Listener.parse listener.Trigger with 
     | None ->
       sendUnconditional
-    | Some trigger ->
-      sendConditional triggerMatcher expiryMatcher trigger
+    | Some triggerString ->
+      sendConditional triggerMatcher expiryMatcher triggerString
 
   let onSuccess (listenerAction:ListenerAction) =
     ListenerAction.markAsComplete listenerAction.Id None

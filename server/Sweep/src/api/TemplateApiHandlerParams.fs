@@ -11,7 +11,7 @@ module TemplateApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddTemplateBodyParams = TemplateRequestBody
+    type AddTemplateBodyParams = TemplateRequestBody 
     //#endregion
 
     //#region Header parameters
@@ -40,7 +40,7 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteTemplatePathParams = {
-      templateId : string;
+      templateId : string ;
     }
     //#endregion
 
@@ -70,7 +70,7 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetTemplateByIdPathParams = {
-      templateId : string;
+      templateId : string ;
     }
     //#endregion
 
@@ -118,13 +118,13 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type RenderTemplatePathParams = {
-      templateId : string;
+      templateId : string ;
     }
     //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
-    type RenderTemplateBodyParams = RenderTemplateRequestBody
+    type RenderTemplateBodyParams = RenderTemplateRequestBody 
     //#endregion
 
     //#region Header parameters
@@ -159,13 +159,13 @@ module TemplateApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type UpdateTemplatePathParams = {
-      templateId : string;
+      templateId : string ;
     }
     //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateTemplateBodyParams = TemplateRequestBody
+    type UpdateTemplateBodyParams = TemplateRequestBody 
     //#endregion
 
     //#region Header parameters

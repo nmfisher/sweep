@@ -23,7 +23,7 @@ module TemplateRenderer =
       a
 
   let renderTemplate mailDefaults eventParams (template:Template) =
-    let paramDict = match eventParams with | None -> dict [||] | Some resolved -> resolved
+    let paramDict = match eventParams with | null -> dict [||] | _ -> eventParams
 
     let unresolved = 
       template.SendTo 

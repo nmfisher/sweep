@@ -10,7 +10,7 @@ module ListenerApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddListenerBodyParams = ListenerRequestBody
+    type AddListenerBodyParams = ListenerRequestBody 
     //#endregion
 
     //#region Header parameters
@@ -39,9 +39,9 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type AddListenerTemplatePathParams = {
-      listenerId : string;
+      listenerId : string ;
     //#endregion
-      templateId : string;
+      templateId : string ;
     }
     //#endregion
 
@@ -71,7 +71,7 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteListenerPathParams = {
-      listenerId : string;
+      listenerId : string ;
     }
     //#endregion
 
@@ -101,9 +101,9 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteListenerTemplatePathParams = {
-      listenerId : string;
+      listenerId : string ;
     //#endregion
-      templateId : string;
+      templateId : string ;
     }
     //#endregion
 
@@ -133,7 +133,7 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetListenerPathParams = {
-      listenerId : string;
+      listenerId : string ;
     }
     //#endregion
 
@@ -163,7 +163,7 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type ListListenerTemplatesPathParams = {
-      listenerId : string;
+      listenerId : string ;
     }
     //#endregion
 
@@ -203,13 +203,13 @@ module ListenerApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type UpdateListenerPathParams = {
-      listenerId : string;
+      listenerId : string ;
     }
     //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateListenerBodyParams = ListenerRequestBody
+    type UpdateListenerBodyParams = ListenerRequestBody 
     //#endregion
 
     //#region Header parameters

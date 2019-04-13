@@ -9,7 +9,7 @@ module UserApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type CreateUserBodyParams = UserRequestBody
+    type CreateUserBodyParams = UserRequestBody 
     //#endregion
 
     
@@ -25,7 +25,7 @@ module UserApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type DeleteUserPathParams = {
-      userId : string;
+      userId : string ;
     }
     //#endregion
 
@@ -47,7 +47,7 @@ module UserApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetUserByNamePathParams = {
-      userId : string;
+      userId : string ;
     }
     //#endregion
 
@@ -75,9 +75,11 @@ module UserApiHandlerParams =
     //#region Query parameters
     [<CLIMutable>]
     type LoginUserQueryParams = {
-      username : string;
+      username : string ;
+      
 
-      password : string;
+      password : string ;
+      
     }
     //#endregion
 
@@ -107,13 +109,13 @@ module UserApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type UpdateUserPathParams = {
-      userId : string;
+      userId : string ;
     }
     //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
-    type UpdateUserBodyParams = UserRequestBody
+    type UpdateUserBodyParams = UserRequestBody 
     //#endregion
 
     

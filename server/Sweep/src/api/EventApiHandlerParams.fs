@@ -9,7 +9,7 @@ module EventApiHandlerParams =
 
     //#region Body parameters
     [<CLIMutable>]
-    type AddEventBodyParams = EventRequestBody
+    type AddEventBodyParams = EventRequestBody 
     //#endregion
 
     //#region Header parameters
@@ -38,7 +38,7 @@ module EventApiHandlerParams =
     //#region Path parameters
     [<CLIMutable>]
     type GetEventByIdPathParams = {
-      eventId : string;
+      eventId : string ;
     }
     //#endregion
 

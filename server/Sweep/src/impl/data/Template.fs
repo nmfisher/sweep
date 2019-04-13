@@ -39,7 +39,7 @@ module Template =
       SendTo = sendTo;
       OrganizationId = organizationId;
       UserId = userId;
-      Deleted = None
+      Deleted = false
     }
 
   let delete id orgId userId =

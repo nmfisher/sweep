@@ -573,7 +573,11 @@ paths:
         required: true
       responses:
         200:
-          description: Successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+          description: successful operation
         404:
           description: Template not found
         422:

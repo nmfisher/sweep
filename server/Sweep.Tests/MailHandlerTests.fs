@@ -39,11 +39,11 @@ module MailHandlerTests =
 
       let event = { 
         EventName = "some_event"; 
-        Params=None;
+        Params=null;
         Id = ""; 
         ReceivedOn=DateTime.Now; 
-        ProcessedOn=Some(DateTime.Now); 
-        Error=None; 
+        ProcessedOn=DateTime.Now;
+        Error=""; 
         OrganizationId=""
       }
 
@@ -56,7 +56,7 @@ module MailHandlerTests =
         Id="";
         OrganizationId="";
         UserId="";
-        Deleted=Some(false);
+        Deleted=false;
       }]
 
       let defaults = 

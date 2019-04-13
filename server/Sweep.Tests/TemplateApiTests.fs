@@ -93,7 +93,7 @@ module TemplateApiHandlerTests =
           Id="";
           OrganizationId="";
           UserId="";
-          Deleted=Some(false);
+          Deleted=false
       } 
       |> encode
       |> HttpPost client path
@@ -404,7 +404,7 @@ module TemplateApiHandlerTests =
       let path = "/1.0.0/templates/" + template.Id + "/render"
 
       { 
-        RenderTemplateRequestBody.Params=Some(dict [|"name", "Bob" :> obj; "email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |]);
+        RenderTemplateRequestBody.Params=dict [|"name", "Bob" :> obj; "email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |];
       }
         |> encode
         |> HttpPost client path
@@ -425,7 +425,7 @@ module TemplateApiHandlerTests =
       let path = "/templates/{templateId}/render"
 
       { 
-        RenderTemplateRequestBody.Params=Some(dict [|"name", "Bob" :> obj; "email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |]);
+        RenderTemplateRequestBody.Params=dict [|"name", "Bob" :> obj; "email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |];
       }
         |> encode
         |> HttpPost client path
@@ -460,7 +460,7 @@ module TemplateApiHandlerTests =
       let path = "/1.0.0/templates/" + template.Id + "/render"
 
       { 
-        RenderTemplateRequestBody.Params=Some(dict [|"email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |]);
+        RenderTemplateRequestBody.Params=dict [|"email", "bob@bob.com" :> obj; "subject", "News" :> obj; "other_email", "dog@cat.com" :> obj; "my_name", "Sally" :> obj  |];
       }
         |> encode
         |> HttpPost client path
