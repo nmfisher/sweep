@@ -152,7 +152,7 @@ module CustomHandlers =
     let serviceProvider = services.BuildServiceProvider()
     let settings = serviceProvider.GetService<IConfiguration>()
      
-    for k in [|"DefaultFromAddress";"DefaultFromName";"DefaultSubject"|] do
+    for k in [|"DefaultFromAddress";"DefaultFromName";"DefaultSubject";"SendGridApiKey"|] do
       if (isNull settings.[k]) then
         raise (Exception(k + " is not set."))
 
@@ -162,5 +162,5 @@ module CustomHandlers =
         Subject=settings.["DefaultSubject"];
     }
     services.AddSingleton<MailDefaults>(fun sp -> mailDefaults) |> ignore
-    EventQueue.initialize mailDefaults |> ignore
+    EventQueue.initialize settings.["SendGridApiKey"] mailDefaults 
     services.AddCors()

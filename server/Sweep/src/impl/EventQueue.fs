@@ -98,16 +98,13 @@ module EventQueue =
       |> Seq.toList                
       |> ignore
 
-  let initialize delay apiKey defaults = 
-    let timer = new Timers.Timer(60000.)
-    printfn "%A" DateTime.Now
-    timer.Start()
-    printfn "%A" "A-OK"
-    let client = SendGridClient(apiKey)
-   
-    let mailer = MailHandler.handle client defaults (Sweep.Data.Message.save)
+  let initialize (apiKey:string) defaults = 
+      let timer = new Timers.Timer(10000.)
+      timer.AutoReset <- true
+      let client = SendGridClient(apiKey)
+      let mailer = MailHandler.handle client defaults (Sweep.Data.Message.save)
+      
+      timer.Elapsed.Add (fun _ -> dequeue mailer)
+      timer.Start()
+
     
-    while true do
-      Async.AwaitEvent (timer.Elapsed) |> ignore
-      dequeue mailer
-      printfn "%A" DateTime.Now
