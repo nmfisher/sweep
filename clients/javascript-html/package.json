@@ -1,0 +1,16 @@
+{
+  "name": "sweep-javascript-html",
+  "version": "1.0.0",
+  "description": "Javascript/HTML client for Sweep",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Avinium Pty Ltd",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.30.0"
+  }
+}
