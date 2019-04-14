@@ -14,7 +14,7 @@ module Event =
     EventName : string;
     Params : IDictionary<string, obj>;
     ReceivedOn : DateTime;
-    ProcessedOn : DateTime;
+    ProcessedOn : Nullable<DateTime>;
     Error : string;
     OrganizationId : string;
   }

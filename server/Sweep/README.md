@@ -6,20 +6,20 @@ A [Giraffe](https://github.com/giraffe-fsharp/Giraffe) server stub for the Sweep
 
 The following models have been auto-generated from the provided OpenAPI schema:
 
-model/BaseMessageModel.fs
-model/UserRequestBodyModel.fs
-model/UserModel.fs
-model/TemplateRequestBodyModel.fs
-model/TemplateModel.fs
-model/RenderTemplateRequestBodyModel.fs
-model/OrganizationModel.fs
-model/MessageModel.fs
-model/ListenerTemplateModel.fs
-model/ListenerRequestBodyModel.fs
-model/ListenerActionModel.fs
-model/ListenerModel.fs
-model/EventRequestBodyModel.fs
-model/EventModel.fs
+- model/BaseMessageModel.fs
+- model/UserRequestBodyModel.fs
+- model/UserModel.fs
+- model/TemplateRequestBodyModel.fs
+- model/TemplateModel.fs
+- model/RenderTemplateRequestBodyModel.fs
+- model/OrganizationModel.fs
+- model/MessageModel.fs
+- model/ListenerTemplateModel.fs
+- model/ListenerRequestBodyModel.fs
+- model/ListenerActionModel.fs
+- model/ListenerModel.fs
+- model/EventRequestBodyModel.fs
+- model/EventModel.fs
 
 ## Operations
 
@@ -30,21 +30,21 @@ Handlers have been auto-generated from the operations specified in the OpenAPI s
 
 Types have been generated for the URL, query, form, header and cookie parameters passed to each handler in the following files:
 
-api/EventApiHandlerParams.fs
-api/ListenerApiHandlerParams.fs
-api/MessageApiHandlerParams.fs
-api/TemplateApiHandlerParams.fs
-api/UserApiHandlerParams.fs
+- api/EventApiHandlerParams.fs
+- api/ListenerApiHandlerParams.fs
+- api/MessageApiHandlerParams.fs
+- api/TemplateApiHandlerParams.fs
+- api/UserApiHandlerParams.fs
 
 ## Service Interfaces
 
 Handlers will attempt to bind parameters to the applicable type and pass to a Service specific to that Handler. Service interfaces have been generated as follows:
 
-api/EventApiServiceInterface.fs
-api/ListenerApiServiceInterface.fs
-api/MessageApiServiceInterface.fs
-api/TemplateApiServiceInterface.fs
-api/UserApiServiceInterface.fs
+- api/EventApiServiceInterface.fs
+- api/ListenerApiServiceInterface.fs
+- api/MessageApiServiceInterface.fs
+- api/TemplateApiServiceInterface.fs
+- api/UserApiServiceInterface.fs
 
 Each Service contains functions for each [OperationId], each accepting a [OperationId]Params object that wraps the operation's parameters.
 
@@ -75,6 +75,22 @@ For example:
 type FindPetsByStatusStatusCode400Response = { content:string; }
 type FindPetsByStatusResult = FindPetsByStatusDefaultStatusCode of FindPetsByStatusDefaultStatusCodeResponse | FindPetsByStatusStatusCode400 of FindPetsByStatusStatusCode400Response`
 
+## Note on nullable/optional properties 
+
+Currently, handler parameters and models do not distinguish between required properties and optional (or nullable) properties***.
+
+If a request body is missing a property, the parameter will be bound as null (and likewise, missing model properties will be serialized as null).
+
+This is only a temporary measure, and does need to be fixed to conform to the OpenAPI spec.
+
+Ideally, Option types would be used for all parameters not marked as required (or marked as nullable).
+
+This won't be possible until Giraffe supports binding option types in request bodies.
+
+This may cause problems with certain parameter types (e.g. map types) - please file an issue if you come across one.
+
+*** Except for DateTime, where properties not marked required are bound as Nullable<DateTime>.
+
 ## Note on response codes for URL parameter binding
 
 Giraffe binds URL parameters by requiring compile-time format strings for routes  (e.g. "/foo/%s/%d) or known types (e.g. FooUrlParameters).
@@ -91,11 +107,11 @@ If you have any suggestions for customizing this, please file an issue.
 
 Stubbed service implementations of those interfaces have been generated as follows:
 
-impl/EventApiService.fs
-impl/ListenerApiService.fs
-impl/MessageApiService.fs
-impl/TemplateApiService.fs
-impl/UserApiService.fs
+- impl/EventApiService.fs
+- impl/ListenerApiService.fs
+- impl/MessageApiService.fs
+- impl/TemplateApiService.fs
+- impl/UserApiService.fs
 
 You should manually edit these files to implement your business logic.
 

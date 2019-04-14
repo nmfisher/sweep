@@ -300,7 +300,6 @@ module ListenerApiHandlerTests =
 
       initialize()
       let orgId = Guid.NewGuid().ToString()
-
       let event = 
         {
           Event.Id=Guid.NewGuid().ToString();
@@ -308,7 +307,7 @@ module ListenerApiHandlerTests =
           Params=null;
           OrganizationId=orgId;
           ReceivedOn=DateTime.Now
-          ProcessedOn=DateTime.Now;
+          ProcessedOn=Nullable<DateTime>();
           Error=""
         }
 

@@ -42,7 +42,7 @@ module MailHandlerTests =
         Params=null;
         Id = ""; 
         ReceivedOn=DateTime.Now; 
-        ProcessedOn=DateTime.Now;
+        ProcessedOn=Nullable<DateTime>();
         Error=""; 
         OrganizationId=""
       }
