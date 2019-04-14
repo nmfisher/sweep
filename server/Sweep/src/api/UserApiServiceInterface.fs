@@ -9,9 +9,8 @@ module UserApiServiceInterface =
     
     //#region Service interface
     type IUserApiService = 
-      abstract member CreateUser:HttpContext -> CreateUserArgs->CreateUserResult
-      abstract member DeleteUser:HttpContext -> DeleteUserArgs->DeleteUserResult
-      abstract member GetUserByName:HttpContext -> GetUserByNameArgs->GetUserByNameResult
+      abstract member DeleteUser:HttpContext ->DeleteUserResult
+      abstract member GetUserInfo:HttpContext ->GetUserInfoResult
       abstract member LoginUser:HttpContext -> LoginUserArgs->LoginUserResult
       abstract member LogoutUser:HttpContext ->LogoutUserResult
       abstract member UpdateUser:HttpContext -> UpdateUserArgs->UpdateUserResult

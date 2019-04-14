@@ -128,14 +128,21 @@ For any other ID (e.g. "Facebook"), a [generic ASP.NET Core oAuth provider](http
 
 See impl/AuthSchemes.fs for further details.
 
+NOTE - currently, authentication against ANY defined OAuth scheme will allow access to a handler (even if the scheme was not specified as a security scheme for the particular handler).
+This is on the TODO list.
+
 ### API key
 
-Where applicable, handlers for api_key authentication are also auto-generated. Your validation logic
+API key authentication is supported via the (AspNet.Security.ApiKey.Providers package)[https://github.com/jamesharling/AspNet.Security.ApiKey.Providers].
+
+You must implement your own validation logic for the key in CustomHandlers.setApiKeyEvents.
+
 
 ## TODO/currently unsupported
 
 - form request bodies (URL-encoded or multipart)
 - implicit oAuth
+- limit handler access to specified oAuth scheme when multiple oAuth schemes defined
 - XML content/response types
 - http authentication
 - testing header params

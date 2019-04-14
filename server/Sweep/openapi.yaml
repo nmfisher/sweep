@@ -31,14 +31,6 @@ paths:
     get:
       description: Returns a list of all events
       operationId: listEvents
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       responses:
         200:
           content:
@@ -83,14 +75,6 @@ paths:
     get:
       description: Returns a list of Listeners
       operationId: listListeners
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       responses:
         200:
           content:
@@ -107,14 +91,6 @@ paths:
       - listener
     post:
       operationId: addListener
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       requestBody:
         content:
           application/json:
@@ -139,13 +115,6 @@ paths:
     delete:
       operationId: deleteListener
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of listener to return
         explode: false
         in: path
@@ -168,13 +137,6 @@ paths:
       description: Returns a listener
       operationId: getListener
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of listener to update
         explode: false
         in: path
@@ -200,13 +162,6 @@ paths:
     put:
       operationId: updateListener
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of listener to update
         explode: false
         in: path
@@ -268,13 +223,6 @@ paths:
     delete:
       operationId: deleteListenerTemplate
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: Listener id to disassociate
         explode: false
         in: path
@@ -304,13 +252,6 @@ paths:
     post:
       operationId: addListenerTemplate
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: Listener id to disassociate
         explode: false
         in: path
@@ -341,14 +282,6 @@ paths:
     get:
       description: Returns a list of messages
       operationId: listMessages
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       responses:
         200:
           content:
@@ -368,13 +301,6 @@ paths:
       description: Returns a single message
       operationId: getMessageById
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of message to return
         explode: false
         in: path
@@ -401,13 +327,6 @@ paths:
     get:
       operationId: getEventById
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of event that needs to be fetched
         explode: false
         in: path
@@ -433,14 +352,6 @@ paths:
     get:
       description: Returns a list of templates
       operationId: listTemplate
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       responses:
         200:
           content:
@@ -457,14 +368,6 @@ paths:
       - template
     post:
       operationId: addTemplate
-      parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       requestBody:
         content:
           application/json:
@@ -489,13 +392,6 @@ paths:
     delete:
       operationId: deleteTemplate
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: Template id to delete
         explode: false
         in: path
@@ -519,13 +415,6 @@ paths:
       description: Returns a single template
       operationId: getTemplateById
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of template to return
         explode: false
         in: path
@@ -549,13 +438,6 @@ paths:
     put:
       operationId: updateTemplate
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of template to return
         explode: false
         in: path
@@ -592,13 +474,6 @@ paths:
       description: Returns a string representing the HTML content of an email to be sent
       operationId: renderTemplate
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
       - description: ID of template to return
         explode: false
         in: path
@@ -631,9 +506,41 @@ paths:
       tags:
       - template
   /user:
-    post:
+    delete:
       description: This can only be done by the logged in user.
-      operationId: createUser
+      operationId: deleteUser
+      responses:
+        400:
+          description: Invalid username supplied
+        404:
+          description: User not found
+      summary: Delete user
+      tags:
+      - user
+    get:
+      operationId: getUserInfo
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: successful operation
+        400:
+          description: Invalid username supplied
+        404:
+          description: User not found
+      security:
+      - Google: []
+      summary: Get user info for the currently authenticated user
+      tags:
+      - user
+    put:
+      description: This can only be done by the logged in user.
+      operationId: updateUser
       requestBody:
         content:
           application/json:
@@ -641,9 +548,11 @@ paths:
               $ref: '#/components/schemas/UserRequestBody'
         required: true
       responses:
-        default:
-          description: successful operation
-      summary: Create user
+        400:
+          description: Invalid user supplied
+        404:
+          description: User not found
+      summary: Updated user
       tags:
       - user
   /user/login:
@@ -685,81 +594,6 @@ paths:
         default:
           description: successful operation
       summary: Logs out current logged in user session
-      tags:
-      - user
-  /user/{userId}:
-    delete:
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-      - description: The ID of the user to be deleted
-        explode: false
-        in: path
-        name: userId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        400:
-          description: Invalid username supplied
-        404:
-          description: User not found
-      summary: Delete user
-      tags:
-      - user
-    get:
-      operationId: getUserByName
-      parameters:
-      - description: The user id.
-        explode: false
-        in: path
-        name: userId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-          description: successful operation
-        400:
-          description: Invalid username supplied
-        404:
-          description: User not found
-      summary: Get user by user name
-      tags:
-      - user
-    put:
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-      - description: ID of the user ame that need to be updated
-        explode: false
-        in: path
-        name: userId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequestBody'
-        required: true
-      responses:
-        400:
-          description: Invalid user supplied
-        404:
-          description: User not found
-      summary: Updated user
       tags:
       - user
 components:
@@ -955,6 +789,7 @@ components:
         organizationId:
           type: string
       required:
+      - apiKey
       - id
       - organizationId
       type: object

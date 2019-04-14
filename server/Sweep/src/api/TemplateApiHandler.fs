@@ -28,10 +28,7 @@ module TemplateApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<AddTemplateBodyParams>()
-          let headerParams = {
-              AddTemplateHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;    bodyParams=bodyParams } : AddTemplateArgs
+          let serviceArgs = {     bodyParams=bodyParams } : AddTemplateArgs
           let result = TemplateApiService.AddTemplate ctx serviceArgs
           return! (match result with 
                       | AddTemplateDefaultStatusCode resolved ->
@@ -50,10 +47,7 @@ module TemplateApiHandler =
     let DeleteTemplate (pathParams:DeleteTemplatePathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let headerParams = {
-              DeleteTemplateHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams;  } : DeleteTemplateArgs
+          let serviceArgs = {    pathParams=pathParams;  } : DeleteTemplateArgs
           let result = TemplateApiService.DeleteTemplate ctx serviceArgs
           return! (match result with 
                       | DeleteTemplateDefaultStatusCode resolved ->
@@ -72,10 +66,7 @@ module TemplateApiHandler =
     let GetTemplateById (pathParams:GetTemplateByIdPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let headerParams = {
-              GetTemplateByIdHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams;  } : GetTemplateByIdArgs
+          let serviceArgs = {    pathParams=pathParams;  } : GetTemplateByIdArgs
           let result = TemplateApiService.GetTemplateById ctx serviceArgs
           return! (match result with 
                       | GetTemplateByIdDefaultStatusCode resolved ->
@@ -94,11 +85,7 @@ module TemplateApiHandler =
     let ListTemplate  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let headerParams = {
-              ListTemplateHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;     } : ListTemplateArgs
-          let result = TemplateApiService.ListTemplate ctx serviceArgs
+          let result = TemplateApiService.ListTemplate ctx 
           return! (match result with 
                       | ListTemplateDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
@@ -116,10 +103,7 @@ module TemplateApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<RenderTemplateBodyParams>()
-          let headerParams = {
-              RenderTemplateHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams; bodyParams=bodyParams } : RenderTemplateArgs
+          let serviceArgs = {    pathParams=pathParams; bodyParams=bodyParams } : RenderTemplateArgs
           let result = TemplateApiService.RenderTemplate ctx serviceArgs
           return! (match result with 
                       | RenderTemplateDefaultStatusCode resolved ->
@@ -142,10 +126,7 @@ module TemplateApiHandler =
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<UpdateTemplateBodyParams>()
-          let headerParams = {
-              UpdateTemplateHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams; bodyParams=bodyParams } : UpdateTemplateArgs
+          let serviceArgs = {    pathParams=pathParams; bodyParams=bodyParams } : UpdateTemplateArgs
           let result = TemplateApiService.UpdateTemplate ctx serviceArgs
           return! (match result with 
                       | UpdateTemplateDefaultStatusCode resolved ->

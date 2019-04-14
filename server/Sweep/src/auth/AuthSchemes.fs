@@ -9,6 +9,9 @@ open System
 open Giraffe
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.Extensions.Configuration
+open AspNet.Security.ApiKey.Providers.Extensions
+open AspNet.Security.ApiKey.Providers.Events
+
 
 module AuthSchemes =
 
@@ -36,7 +39,7 @@ module AuthSchemes =
     else if (isNull settings.[name + "ClientSecret"]) then
       raise (Exception((name + "ClientSecret is not set.")))
 
-  let build settings name =  
+  let getOAuthBuilder settings name =  
     // check that "xxxClientId" and "xxxClientSecret" configuration variables have been set for all OAuth providers
     checkEnvironment settings name
     if OAuthBuilders.ContainsKey(name) then
@@ -45,8 +48,20 @@ module AuthSchemes =
       buildOAuth
 
   let configureOAuth (settings:IConfiguration) services =
-    (build settings "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings
-    (build settings "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings
+    (getOAuthBuilder settings "GitHub") services "GitHub" "https://github.com/login/oauth/authorize2" ["user:email";] settings
+    (getOAuthBuilder settings "Google") services "Google" "https://accounts.google.com/o/oauth2/v2/auth" ["https://www.googleapis.com/auth/userinfo.email";] settings
+
+  let buildApiKeyAuth name (services:AuthenticationBuilder) =
+    services.AddApiKey(fun options -> 
+      options.Header <- name
+      options.HeaderKey <- String.Empty
+      let events = ApiKeyEvents()
+      options.Events <- CustomHandlers.setApiKeyEvents name events
+    )
+
+  let configureApiKeyAuth (settings:IConfiguration) services =
+    buildApiKeyAuth "api_key" services
+
 
   let configureCookie (builder:AuthenticationBuilder) =
       builder.AddCookie(CustomHandlers.cookieAuth)
@@ -56,6 +71,7 @@ module AuthSchemes =
     let settings = serviceProvider.GetService<IConfiguration>()
     services.AddAuthentication(fun o -> o.DefaultScheme <- CookieAuthenticationDefaults.AuthenticationScheme)
     |> configureOAuth settings 
+    |> configureApiKeyAuth settings
     |> configureCookie
     
   let (|||) v1 v2 = 

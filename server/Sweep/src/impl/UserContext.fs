@@ -16,3 +16,9 @@ module UserContext =
     |> Seq.where (fun (c:Claim) -> c.Type = ClaimTypes.GroupSid)
     |> Seq.head
     |> (fun (c:Claim) -> c.Value)
+
+  let getApiKey (claims:IEnumerable<Claim>) =
+    claims
+    |> Seq.where (fun (c:Claim) -> c.Type = "apiKey")
+    |> Seq.head
+    |> (fun (c:Claim) -> c.Value)

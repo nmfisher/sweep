@@ -48,10 +48,7 @@ module EventApiHandler =
     let GetEventById (pathParams:GetEventByIdPathParams) : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let headerParams = {
-              GetEventByIdHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;   pathParams=pathParams;  } : GetEventByIdArgs
+          let serviceArgs = {    pathParams=pathParams;  } : GetEventByIdArgs
           let result = EventApiService.GetEventById ctx serviceArgs
           return! (match result with 
                       | GetEventByIdDefaultStatusCode resolved ->
@@ -70,11 +67,7 @@ module EventApiHandler =
     let ListEvents  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let headerParams = {
-              ListEventsHeaderParams.apiKey=ctx.TryGetRequestHeader "apiKey";
-          }
-          let serviceArgs = { headerParams=headerParams;     } : ListEventsArgs
-          let result = EventApiService.ListEvents ctx serviceArgs
+          let result = EventApiService.ListEvents ctx 
           return! (match result with 
                       | ListEventsDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 

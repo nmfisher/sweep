@@ -25,7 +25,7 @@ module MessageApiServiceImplementation =
           | NotFoundException(msg) ->
             GetMessageByIdStatusCode404 { content = msg }
 
-        member this.ListMessages ctx args =
+        member this.ListMessages ctx =
           let orgId = getOrgId ctx.User.Claims
           let messages = CompositionRoot.listMessages orgId 
           ListMessagesDefaultStatusCode { content = messages }

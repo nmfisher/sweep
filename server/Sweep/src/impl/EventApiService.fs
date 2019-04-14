@@ -38,7 +38,7 @@ module EventApiServiceImplementation =
           | None ->              
               GetEventByIdStatusCode404 { content = "Event not found" }
            
-        member this.ListEvents ctx args  =
+        member this.ListEvents ctx  =
           let userId = getUserId ctx.User.Claims
           let orgId = getOrgId ctx.User.Claims
           let events = CompositionRoot.listEvents orgId |> Seq.toArray

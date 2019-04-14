@@ -10,5 +10,5 @@ module MessageApiServiceInterface =
     //#region Service interface
     type IMessageApiService = 
       abstract member GetMessageById:HttpContext -> GetMessageByIdArgs->GetMessageByIdResult
-      abstract member ListMessages:HttpContext -> ListMessagesArgs->ListMessagesResult
+      abstract member ListMessages:HttpContext ->ListMessagesResult
     //#endregion

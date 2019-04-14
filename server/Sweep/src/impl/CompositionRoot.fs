@@ -35,22 +35,9 @@ module CompositionRoot =
 
   // Users
 
-  let saveUser id username apiKey orgId = 
-    let ctx = Sql.GetDataContext()
-    let user = ctx.SweepDevelopment.User.Create()
-    user.Id <- id
-    user.OrganizationId <- id // TODO - need to allow multi-user organizations
-    ctx.SubmitUpdates()
-
-  let getUser id : User option = 
-    let ctx = Sql.GetDataContext()
-    query {
-      for user in ctx.SweepDevelopment.User do
-      where (user.Id = id)
-      select user
-    } 
-    |> Seq.map (fun x -> x.MapTo<User>())
-    |> Seq.tryHead
+  let saveUser = Sweep.Data.User.save
+  let getUser = Sweep.Data.User.get
+  let findUserByApiKey = Sweep.Data.User.findByApiKey
 
   // Organizations
 

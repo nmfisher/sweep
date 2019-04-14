@@ -16,35 +16,15 @@ module UserApiHandler =
     /// 
     /// </summary>
 
-    //#region CreateUser
-    /// <summary>
-    /// Create user
-    /// </summary>
-
-    let CreateUser  : HttpHandler = 
-      fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-          let! bodyParams = 
-            ctx.BindJsonAsync<CreateUserBodyParams>()
-          let serviceArgs = {     bodyParams=bodyParams } : CreateUserArgs
-          let result = UserApiService.CreateUser ctx serviceArgs
-          return! (match result with 
-                      | CreateUserDefaultStatusCode resolved ->
-                            setStatusCode 0 >=> text resolved.content 
-          ) next ctx
-        }
-    //#endregion
-
     //#region DeleteUser
     /// <summary>
     /// Delete user
     /// </summary>
 
-    let DeleteUser (pathParams:DeleteUserPathParams) : HttpHandler = 
+    let DeleteUser  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {    pathParams=pathParams;  } : DeleteUserArgs
-          let result = UserApiService.DeleteUser ctx serviceArgs
+          let result = UserApiService.DeleteUser ctx 
           return! (match result with 
                       | DeleteUserStatusCode400 resolved ->
                             setStatusCode 400 >=> text resolved.content 
@@ -54,22 +34,21 @@ module UserApiHandler =
         }
     //#endregion
 
-    //#region GetUserByName
+    //#region GetUserInfo
     /// <summary>
-    /// Get user by user name
+    /// Get user info for the currently authenticated user
     /// </summary>
 
-    let GetUserByName (pathParams:GetUserByNamePathParams) : HttpHandler = 
+    let GetUserInfo  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let serviceArgs = {    pathParams=pathParams;  } : GetUserByNameArgs
-          let result = UserApiService.GetUserByName ctx serviceArgs
+          let result = UserApiService.GetUserInfo ctx 
           return! (match result with 
-                      | GetUserByNameDefaultStatusCode resolved ->
+                      | GetUserInfoDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetUserByNameStatusCode400 resolved ->
+                      | GetUserInfoStatusCode400 resolved ->
                             setStatusCode 400 >=> text resolved.content 
-                      | GetUserByNameStatusCode404 resolved ->
+                      | GetUserInfoStatusCode404 resolved ->
                             setStatusCode 404 >=> text resolved.content 
           ) next ctx
         }
@@ -116,12 +95,12 @@ module UserApiHandler =
     /// Updated user
     /// </summary>
 
-    let UpdateUser (pathParams:UpdateUserPathParams) : HttpHandler = 
+    let UpdateUser  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
           let! bodyParams = 
             ctx.BindJsonAsync<UpdateUserBodyParams>()
-          let serviceArgs = {    pathParams=pathParams; bodyParams=bodyParams } : UpdateUserArgs
+          let serviceArgs = {     bodyParams=bodyParams } : UpdateUserArgs
           let result = UserApiService.UpdateUser ctx serviceArgs
           return! (match result with 
                       | UpdateUserStatusCode400 resolved ->

@@ -5,6 +5,8 @@ open UserApiServiceInterface
 open System.Collections.Generic
 open System
 open Giraffe
+open UserContext
+
 
 module UserApiServiceImplementation =
     
@@ -12,11 +14,7 @@ module UserApiServiceImplementation =
     type UserApiServiceImpl() = 
       interface IUserApiService with
       
-        member this.CreateUser ctx args =
-            let content = "successful operation" 
-            CreateUserDefaultStatusCode { content = content }
-
-        member this.DeleteUser ctx args =
+        member this.DeleteUser ctx  =
           if true then 
             let content = "Invalid username supplied" 
             DeleteUserStatusCode400 { content = content }
@@ -24,16 +22,22 @@ module UserApiServiceImplementation =
             let content = "User not found" 
             DeleteUserStatusCode404 { content = content }
 
-        member this.GetUserByName ctx args =
-          if true then 
-            let content = "successful operation" :> obj :?> User // this cast is obviously wrong, and is only intended to allow generated project to compile   
-            GetUserByNameDefaultStatusCode { content = content }
-          else if true then 
-            let content = "Invalid username supplied" 
-            GetUserByNameStatusCode400 { content = content }
-          else
-            let content = "User not found" 
-            GetUserByNameStatusCode404 { content = content }
+        member this.GetUserInfo ctx  =
+          // let userId = UserContext.getUserId ctx.User.Claims
+          // let user = CompositionRoot.getUser userId
+          // match user with 
+          // | None ->
+          //     GetUserInfoStatusCode404 { content = "Not found"}
+          // | Some u ->
+            let user = 
+              { 
+                User.ApiKey= getApiKey ctx.User.Claims; 
+                Id=getUserId ctx.User.Claims;
+                OrganizationId=getOrgId ctx.User.Claims;
+                Username="";
+                Password="";
+              }
+            GetUserInfoDefaultStatusCode { content = user }
 
         member this.LoginUser ctx args =
           if true then 

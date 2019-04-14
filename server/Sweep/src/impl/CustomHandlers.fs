@@ -23,6 +23,9 @@ open Microsoft.AspNetCore.Http
 open System.IO
 open Microsoft.AspNetCore.Cors.Infrastructure
 open TemplateRenderer
+open AspNet.Security.ApiKey.Providers.Events
+open System.Threading.Tasks
+open AspNet.Security.ApiKey.Providers
 
 module CustomHandlers = 
 
@@ -37,24 +40,25 @@ module CustomHandlers =
   let fetchOrCreateUser id email  = 
     match CompositionRoot.getUser id with 
     | Some u -> 
-        u.OrganizationId
+        u
     | None ->
-        let apiKey = ApiKey.generate().ToString()
+        let apiKey = (Guid.NewGuid().ToString())
         CompositionRoot.saveUser id email apiKey (Guid.NewGuid().ToString()) |> ignore
         CompositionRoot.saveOrganization id
         match CompositionRoot.getUser id with
         | Some u ->
-          u.OrganizationId
+          u
         | None ->
           raise (Exception("Unknown error occurred saving user."))
+
 
   let onCreatingTicket name (ctx:OAuthCreatingTicketContext) = 
     task {
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
-        let orgId = fetchOrCreateUser id email 
-
-        ctx.Identity.AddClaim(Claim(ClaimTypes.GroupSid, orgId))
+        let user = fetchOrCreateUser id email  
+        ctx.Identity.AddClaim(Claim(ClaimTypes.GroupSid, user.OrganizationId))
+        ctx.Identity.AddClaim(Claim("apiKey", user.ApiKey))
     } :> Tasks.Task
 
   let setOAuthOptions name (options:OAuthOptions) scopes (settings:IConfiguration) = 
@@ -71,6 +75,24 @@ module CustomHandlers =
       ()
     | _ -> 
       ()
+
+  let setApiKeyEvents name (events:ApiKeyEvents) = 
+    events.OnApiKeyValidated <- (fun ctx -> 
+      task {
+        let user = CompositionRoot.findUserByApiKey ctx.ApiKey 
+        if user.IsSome then
+          let claims = 
+            [|  
+              Claim(ClaimTypes.GroupSid, user.Value.OrganizationId);
+              Claim(ClaimTypes.Email, user.Value.Id)
+            |]  
+          let identity = ClaimsIdentity(claims, ApiKeyDefaults.AuthenticationScheme)
+          //ctx.Principal <- ClaimsPrincipal([|identity|])
+          ctx.HttpContext.User <- ClaimsPrincipal([|identity|])
+          ctx.Success()
+      } :> Task
+    )
+    events
   
   let signOut (authScheme : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
@@ -107,11 +129,16 @@ module CustomHandlers =
   ]
 
   let configureCors (builder : CorsPolicyBuilder) =
-    builder.WithOrigins([|"http://localhost:8080";"http://sweep-development.ngrok.io";|])
-           .AllowAnyMethod()
-           .AllowAnyHeader()
-           .AllowCredentials()
-           |> ignore
+    builder
+    #if DEBUG
+      .WithOrigins([|"http://localhost:8080";"http://sweep-development.ngrok.io";"null"|])
+      .AllowCredentials()
+    #else     
+      .AllowAnyOrigin
+    #endif
+     .AllowAnyMethod()
+     .AllowAnyHeader()
+     |> ignore
 
   let configureApp (app : IApplicationBuilder) = 
     app.UseCors(configureCors)

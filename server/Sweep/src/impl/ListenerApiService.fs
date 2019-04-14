@@ -53,7 +53,7 @@ module ListenerApiServiceImplementation =
           | NotFoundException(msg) ->
             GetListenerStatusCode404 { content = msg }
 
-        member this.ListListeners ctx args  =
+        member this.ListListeners ctx  =
           let userId = getUserId ctx.User.Claims
           let orgId = getOrgId ctx.User.Claims
           let listeners = listListeners orgId

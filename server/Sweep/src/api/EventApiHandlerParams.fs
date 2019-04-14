@@ -42,13 +42,6 @@ module EventApiHandlerParams =
     }
     //#endregion
 
-    //#region Header parameters
-    [<CLIMutable>]
-    type GetEventByIdHeaderParams = {
-      apiKey : string option;
-    }
-    //#endregion
-
     
     type GetEventByIdDefaultStatusCodeResponse = {
       content:Event;
@@ -62,16 +55,8 @@ module EventApiHandlerParams =
     type GetEventByIdResult = GetEventByIdDefaultStatusCode of GetEventByIdDefaultStatusCodeResponse|GetEventByIdStatusCode404 of GetEventByIdStatusCode404Response
 
     type GetEventByIdArgs = {
-      headerParams:GetEventByIdHeaderParams;
       pathParams:GetEventByIdPathParams;
     }
-
-    //#region Header parameters
-    [<CLIMutable>]
-    type ListEventsHeaderParams = {
-      apiKey : string option;
-    }
-    //#endregion
 
     
     type ListEventsDefaultStatusCodeResponse = {
@@ -80,7 +65,4 @@ module EventApiHandlerParams =
     }
     type ListEventsResult = ListEventsDefaultStatusCode of ListEventsDefaultStatusCodeResponse
 
-    type ListEventsArgs = {
-      headerParams:ListEventsHeaderParams;
-    }
     

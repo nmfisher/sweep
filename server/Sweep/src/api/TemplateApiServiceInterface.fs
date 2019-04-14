@@ -12,7 +12,7 @@ module TemplateApiServiceInterface =
       abstract member AddTemplate:HttpContext -> AddTemplateArgs->AddTemplateResult
       abstract member DeleteTemplate:HttpContext -> DeleteTemplateArgs->DeleteTemplateResult
       abstract member GetTemplateById:HttpContext -> GetTemplateByIdArgs->GetTemplateByIdResult
-      abstract member ListTemplate:HttpContext -> ListTemplateArgs->ListTemplateResult
+      abstract member ListTemplate:HttpContext ->ListTemplateResult
       abstract member RenderTemplate:HttpContext -> RenderTemplateArgs->RenderTemplateResult
       abstract member UpdateTemplate:HttpContext -> UpdateTemplateArgs->UpdateTemplateResult
     //#endregion

@@ -77,7 +77,7 @@ module TemplateApiServiceImplementation =
           | NotFoundException(msg) ->
             GetTemplateByIdStatusCode404 { content = msg }
 
-        member this.ListTemplate ctx args  =
+        member this.ListTemplate ctx  =
           let orgId = getOrgId ctx.User.Claims
           let templates = CompositionRoot.listTemplates orgId
           ListTemplateDefaultStatusCode { content = templates }

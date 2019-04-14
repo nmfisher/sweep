@@ -7,28 +7,6 @@ open System.Collections.Generic
 module UserApiHandlerParams = 
 
 
-    //#region Body parameters
-    [<CLIMutable>]
-    type CreateUserBodyParams = UserRequestBody 
-    //#endregion
-
-    
-    type CreateUserDefaultStatusCodeResponse = {
-      content:string;
-      
-    }
-    type CreateUserResult = CreateUserDefaultStatusCode of CreateUserDefaultStatusCodeResponse
-
-    type CreateUserArgs = {
-      bodyParams:CreateUserBodyParams
-    }
-    //#region Path parameters
-    [<CLIMutable>]
-    type DeleteUserPathParams = {
-      userId : string ;
-    }
-    //#endregion
-
     
     type DeleteUserStatusCode400Response = {
       content:string;
@@ -41,36 +19,24 @@ module UserApiHandlerParams =
     }
     type DeleteUserResult = DeleteUserStatusCode400 of DeleteUserStatusCode400Response|DeleteUserStatusCode404 of DeleteUserStatusCode404Response
 
-    type DeleteUserArgs = {
-      pathParams:DeleteUserPathParams;
-    }
-    //#region Path parameters
-    [<CLIMutable>]
-    type GetUserByNamePathParams = {
-      userId : string ;
-    }
-    //#endregion
 
     
-    type GetUserByNameDefaultStatusCodeResponse = {
+    type GetUserInfoDefaultStatusCodeResponse = {
       content:User;
       
     }
     
-    type GetUserByNameStatusCode400Response = {
+    type GetUserInfoStatusCode400Response = {
       content:string;
       
     }
     
-    type GetUserByNameStatusCode404Response = {
+    type GetUserInfoStatusCode404Response = {
       content:string;
       
     }
-    type GetUserByNameResult = GetUserByNameDefaultStatusCode of GetUserByNameDefaultStatusCodeResponse|GetUserByNameStatusCode400 of GetUserByNameStatusCode400Response|GetUserByNameStatusCode404 of GetUserByNameStatusCode404Response
+    type GetUserInfoResult = GetUserInfoDefaultStatusCode of GetUserInfoDefaultStatusCodeResponse|GetUserInfoStatusCode400 of GetUserInfoStatusCode400Response|GetUserInfoStatusCode404 of GetUserInfoStatusCode404Response
 
-    type GetUserByNameArgs = {
-      pathParams:GetUserByNamePathParams;
-    }
 
     //#region Query parameters
     [<CLIMutable>]
@@ -106,12 +72,6 @@ module UserApiHandlerParams =
     }
     type LogoutUserResult = LogoutUserDefaultStatusCode of LogoutUserDefaultStatusCodeResponse
 
-    //#region Path parameters
-    [<CLIMutable>]
-    type UpdateUserPathParams = {
-      userId : string ;
-    }
-    //#endregion
 
     //#region Body parameters
     [<CLIMutable>]
@@ -131,7 +91,6 @@ module UserApiHandlerParams =
     type UpdateUserResult = UpdateUserStatusCode400 of UpdateUserStatusCode400Response|UpdateUserStatusCode404 of UpdateUserStatusCode404Response
 
     type UpdateUserArgs = {
-      pathParams:UpdateUserPathParams;
       bodyParams:UpdateUserBodyParams
     }
     

@@ -17,6 +17,8 @@ open Microsoft.Extensions.DependencyInjection
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open System.Diagnostics
 open Giraffe.GiraffeViewEngine
+open AspNet.Security.ApiKey.Providers
+
 open EventApiHandlerParams
 open ListenerApiHandlerParams
 open MessageApiHandlerParams
@@ -48,31 +50,30 @@ module App =
 
   let webApp =
     choose (CustomHandlers.handlers @ [
-      HttpPost >=> route "/1.0.0/events" >=> requiresAuthentication authFailure >=> EventApiHandler.AddEvent;
-      HttpGet >=> routeBind<GetEventByIdPathParams> "/1.0.0/events/{eventId}"  (fun x -> requiresAuthentication authFailure >=> EventApiHandler.GetEventById x);
-      HttpGet >=> route "/1.0.0/events" >=> requiresAuthentication authFailure >=> EventApiHandler.ListEvents;
-      HttpPost >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=> ListenerApiHandler.AddListener;
-      HttpPost >=> routeBind<AddListenerTemplatePathParams> "/1.0.0/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.AddListenerTemplate x) x);
-      HttpDelete >=> routeBind<DeleteListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.DeleteListener x);
-      HttpDelete >=> routeBind<DeleteListenerTemplatePathParams> "/1.0.0/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.DeleteListenerTemplate x) x);
-      HttpGet >=> routeBind<GetListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.GetListener x);
-      HttpGet >=> routeBind<ListListenerTemplatesPathParams> "/1.0.0/listeners/{listenerId}/templates"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.ListListenerTemplates x);
-      HttpGet >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=> ListenerApiHandler.ListListeners;
-      HttpPut >=> routeBind<UpdateListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=> ListenerApiHandler.UpdateListener x);
-      HttpGet >=> routeBind<GetMessageByIdPathParams> "/1.0.0/messages/{messageId}"  (fun x -> requiresAuthentication authFailure >=> MessageApiHandler.GetMessageById x);
-      HttpGet >=> route "/1.0.0/messages" >=> requiresAuthentication authFailure >=> MessageApiHandler.ListMessages;
-      HttpPost >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=> TemplateApiHandler.AddTemplate;
-      HttpDelete >=> routeBind<DeleteTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.DeleteTemplate x);
-      HttpGet >=> routeBind<GetTemplateByIdPathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.GetTemplateById x);
-      HttpGet >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=> TemplateApiHandler.ListTemplate;
-      HttpPost >=> routeBind<RenderTemplatePathParams> "/1.0.0/templates/{templateId}/render"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.RenderTemplate x);
-      HttpPut >=> routeBind<UpdateTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=> TemplateApiHandler.UpdateTemplate x);
-      HttpPost >=> route "/1.0.0/user" >=> requiresAuthentication authFailure >=> UserApiHandler.CreateUser;
-      HttpDelete >=> routeBind<DeleteUserPathParams> "/1.0.0/user/{userId}"  (fun x -> requiresAuthentication authFailure >=> UserApiHandler.DeleteUser x);
-      HttpGet >=> routeBind<GetUserByNamePathParams> "/1.0.0/user/{userId}"  (fun x -> requiresAuthentication authFailure >=> UserApiHandler.GetUserByName x);
-      HttpGet >=> route "/1.0.0/user/login" >=> requiresAuthentication authFailure >=> UserApiHandler.LoginUser;
-      HttpGet >=> route "/1.0.0/user/logout" >=> requiresAuthentication authFailure >=> UserApiHandler.LogoutUser;
-      HttpPut >=> routeBind<UpdateUserPathParams> "/1.0.0/user/{userId}"  (fun x -> requiresAuthentication authFailure >=> UserApiHandler.UpdateUser x);
+      HttpPost >=> route "/1.0.0/events" >=> challenge ApiKeyDefaults.AuthenticationScheme >=> requiresAuthentication authFailure >=>  EventApiHandler.AddEvent;
+      HttpGet >=> routeBind<GetEventByIdPathParams> "/1.0.0/events/{eventId}"  (fun x ->  EventApiHandler.GetEventById x);
+      HttpGet >=> route "/1.0.0/events" >=> requiresAuthentication authFailure >=>  EventApiHandler.ListEvents;
+      HttpPost >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=>  ListenerApiHandler.AddListener;
+      HttpPost >=> routeBind<AddListenerTemplatePathParams> "/1.0.0/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.AddListenerTemplate x) x);
+      HttpDelete >=> routeBind<DeleteListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.DeleteListener x);
+      HttpDelete >=> routeBind<DeleteListenerTemplatePathParams> "/1.0.0/listeners/{listenerId}/templates/{templateId}"  (fun x -> (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.DeleteListenerTemplate x) x);
+      HttpGet >=> routeBind<GetListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.GetListener x);
+      HttpGet >=> routeBind<ListListenerTemplatesPathParams> "/1.0.0/listeners/{listenerId}/templates"  (fun x ->  ListenerApiHandler.ListListenerTemplates x);
+      HttpGet >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=>  ListenerApiHandler.ListListeners;
+      HttpPut >=> routeBind<UpdateListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.UpdateListener x);
+      HttpGet >=> routeBind<GetMessageByIdPathParams> "/1.0.0/messages/{messageId}"  (fun x -> requiresAuthentication authFailure >=>  MessageApiHandler.GetMessageById x);
+      HttpGet >=> route "/1.0.0/messages" >=> requiresAuthentication authFailure >=>  MessageApiHandler.ListMessages;
+      HttpPost >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=>  TemplateApiHandler.AddTemplate;
+      HttpDelete >=> routeBind<DeleteTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=>  TemplateApiHandler.DeleteTemplate x);
+      HttpGet >=> routeBind<GetTemplateByIdPathParams> "/1.0.0/templates/{templateId}"  (fun x ->  TemplateApiHandler.GetTemplateById x);
+      HttpGet >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=>  TemplateApiHandler.ListTemplate;
+      HttpPost >=> routeBind<RenderTemplatePathParams> "/1.0.0/templates/{templateId}/render"  (fun x -> requiresAuthentication authFailure >=>  TemplateApiHandler.RenderTemplate x);
+      HttpPut >=> routeBind<UpdateTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=>  TemplateApiHandler.UpdateTemplate x);
+      HttpDelete >=> route "/1.0.0/user" >=>  UserApiHandler.DeleteUser;
+      HttpGet >=> route "/1.0.0/user" >=> requiresAuthentication authFailure >=>  UserApiHandler.GetUserInfo;
+      HttpGet >=> route "/1.0.0/user/login" >=>  UserApiHandler.LoginUser;
+      HttpGet >=> route "/1.0.0/user/logout" >=>  UserApiHandler.LogoutUser;
+      HttpPut >=> route "/1.0.0/user" >=>  UserApiHandler.UpdateUser;
       RequestErrors.notFound (text "Not Found") 
     ])
   // ---------------------------------
