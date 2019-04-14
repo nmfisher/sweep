@@ -42,12 +42,6 @@ paths:
       summary: List all received events
       description: Returns a list of all events
       operationId: listEvents
-      parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: successful operation
@@ -90,12 +84,6 @@ paths:
       summary: List all Listeners
       description: Returns a list of Listeners
       operationId: listListeners
-      parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: successful operation
@@ -112,12 +100,6 @@ paths:
         - listener
       summary: Create a new Listener
       operationId: addListener
-      parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: successful operation
@@ -143,11 +125,6 @@ paths:
       description: Returns a listener
       operationId: getListener
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: listenerId
           in: path
           description: ID of listener to update
@@ -171,11 +148,6 @@ paths:
       summary: Updates a Listener
       operationId: updateListener
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: listenerId
           in: path
           description: ID of listener to update
@@ -207,11 +179,6 @@ paths:
       summary: Deletes a Listener
       operationId: deleteListener
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: listenerId
           in: path
           description: ID of listener to return
@@ -257,11 +224,6 @@ paths:
       summary: Disassociates a Template from a Listener
       operationId: deleteListenerTemplate
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: listenerId
           in: path
           description: Listener id to disassociate
@@ -287,11 +249,6 @@ paths:
       summary: Associates a Template to a Listener
       operationId: addListenerTemplate
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: listenerId
           in: path
           description: Listener id to disassociate
@@ -318,12 +275,6 @@ paths:
         summary: List all messages
         description: Returns a list of messages
         operationId: listMessages
-        parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         responses:
           '200':
             description: successful operation
@@ -343,11 +294,6 @@ paths:
       description: Returns a single message
       operationId: getMessageById
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: messageId
           in: path
           description: ID of message to return
@@ -372,11 +318,6 @@ paths:
       summary: Find raised event by ID
       operationId: getEventById
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: eventId
           in: path
           description: ID of event that needs to be fetched
@@ -400,12 +341,6 @@ paths:
       summary: List all Templates
       description: Returns a list of templates
       operationId: listTemplate
-      parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: successful operation
@@ -422,12 +357,6 @@ paths:
         - template
       summary: Create a new Template
       operationId: addTemplate
-      parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: Success
@@ -453,11 +382,6 @@ paths:
       description: Returns a single template
       operationId: getTemplateById
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: templateId
           in: path
           description: ID of template to return
@@ -479,11 +403,6 @@ paths:
       summary: Update an existing Template
       operationId: updateTemplate
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: templateId
           in: path
           description: ID of template to return
@@ -516,11 +435,6 @@ paths:
       summary: Deletes a Template
       operationId: deleteTemplate
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: templateId
           in: path
           description: Template id to delete
@@ -543,11 +457,6 @@ paths:
       description: Returns a string representing the HTML content of an email to be sent
       operationId: renderTemplate
       parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
         - name: templateId
           in: path
           description: ID of template to return
@@ -627,19 +536,14 @@ paths:
       responses:
         default:
           description: successful operation
-  '/user/{userId}':
+  '/user':
     get:
       tags:
         - user
-      summary: Get user by user name
-      operationId: getUserByName
-      parameters:
-        - name: userId
-          in: path
-          description: The user id.
-          required: true
-          schema:
-            type: string
+      summary: Get user info for the currently authenticated user
+      operationId: getUserInfo
+      security:
+        - Google: []
       responses:
         '200':
           description: successful operation
@@ -660,13 +564,6 @@ paths:
       summary: Updated user
       description: This can only be done by the logged in user.
       operationId: updateUser
-      parameters:
-        - name: userId
-          in: path
-          description: ID of the user ame that need to be updated
-          required: true
-          schema:
-            type: string
       responses:
         '400':
           description: Invalid user supplied
@@ -684,13 +581,6 @@ paths:
       summary: Delete user
       description: This can only be done by the logged in user.
       operationId: deleteUser
-      parameters:
-        - name: userId
-          in: path
-          description: The ID of the user to be deleted
-          required: true
-          schema:
-            type: string
       responses:
         '400':
           description: Invalid username supplied
@@ -842,6 +732,7 @@ components:
       required:
         - id
         - organizationId
+        - apiKey
       properties:
         id:
           type: string
