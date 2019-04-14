@@ -2,9 +2,19 @@
   <v-layout fill-height style="margin:0">
     <v-card style="position:absolute;left:-50px;z-index:9999" class="elevation-0">
       <v-card-text>
-      <v-layout column>
-          <v-btn flat icon color="indigo" @click="save" :disabled="!validated"><v-icon>mdi-content-save</v-icon></v-btn>
+      <v-layout column justify-center align-center>
           <v-btn flat icon color="orange" @click="$emit('close')"><v-icon>mdi-arrow-left</v-icon></v-btn>
+          <v-btn flat icon color="indigo" @click="save" :disabled="!validated"><v-icon>mdi-content-save</v-icon></v-btn>
+          <v-btn flat icon color="grey">
+          <v-tooltip>
+            <v-icon slot="activator" size="16">
+              mdi-help
+            </v-icon>
+              <!-- <p>Type a double brace "{{" to insert an event parameter as a <a href='https://mustache.github.io/'>Mustache variable</a>.</p> -->
+              <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
+              <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
+          </v-tooltip>
+          </v-btn>
       </v-layout>
       </v-card-text>
     </v-card>
@@ -14,66 +24,74 @@
      </v-dialog>
         <v-container fill-height id="tribute-wrapper">
           <v-layout column>
-            <v-layout row>
-            <v-flex xs6>
-              <v-form ref="form">
-                  <combobox2
-                    :search-input.sync="sendToInput"
-                    clearable
-                    :preventCapture="preventComboCapture"
-                      label="To (address)"
-                      ref="sendTo"
-                      :items="sendTo"
-                      :rules="[rules.recipients]"
-                      v-model="sendTo"
-                      hint="Type an e-mail address or a template variable and press enter"
-                      class="white-input"
-                      hide-selected
-                      multiple
-                      persistent-hint
-                      @keyup.native="onComboBoxInput"
-                      small-chips>
-                      <template v-slot:selection="{ item, parent, selected }">
-                        <helper-combobox-item :rules="[rules.required, rules.templateOrEmail]" :item="item" @remove="sendTo.splice(sendTo.indexOf(item), 1)"/>
-                      </template>
-                  </combobox2>
-                      <v-text-field
-                          ref="subject"
-                          v-model="subject"
-                          label="Subject"
-                          :rules="[rules.templateOrString]"
-                          class="white-input"/>
-                      <v-text-field
-                          label="From (display name)"
-                          ref="fromName"
-                          v-model="fromName"
-                          :rules="[rules.templateOrString]"
-                          class="white-input"/>
-                      <v-text-field
-                          v-model="fromAddress"
-                          ref="fromAddress"
-                          label="From (address)"
-                          :rules="[rules.templateOrEmailOrEmpty]"
-                          class="white-input"/>
-            </v-form>
+            <v-flex xs4>
+              <v-layout row  align-center justify-center>
+                <v-flex xs6>
+                  <v-form ref="form">
+                      <combobox2
+                        :search-input.sync="sendToInput"
+                        clearable
+                        :preventCapture="preventComboCapture"
+                          label="To (address)"
+                          ref="sendTo"
+                          :items="sendTo"
+                          :rules="[rules.recipients]"
+                          v-model="sendTo"
+                          hint="Type an e-mail address or a template variable and press enter"
+                          class="white-input"
+                          hide-selected
+                          multiple
+                          persistent-hint
+                          @keyup.native="onComboBoxInput"
+                          small-chips>
+                          <template v-slot:selection="{ item, parent, selected }">
+                            <helper-combobox-item :rules="[rules.required, rules.templateOrEmail]" :item="item" @remove="sendTo.splice(sendTo.indexOf(item), 1)"/>
+                          </template>
+                      </combobox2>
+                          <v-text-field
+                              ref="subject"
+                              v-model="subject"
+                              label="Subject"
+                              :rules="[rules.templateOrString]"
+                              class="white-input"/>
+                </v-form>
+              </v-flex>
+              <v-flex xs6>
+                  <v-text-field
+                              label="From (display name)"
+                              ref="fromName"
+                              v-model="fromName"
+                              :rules="[rules.templateOrString]"
+                              class="white-input"/>
+                  <v-text-field
+                      v-model="fromAddress"
+                      ref="fromAddress"
+                      label="From (address)"
+                      :rules="[rules.templateOrEmailOrEmpty]"
+                      class="white-input"/>
+              </v-flex>
+            </v-layout>
           </v-flex>
-          <v-flex xs6>
-              <!-- <p>Type a double brace "{{" to insert an event parameter as a <a href='https://mustache.github.io/'>Mustache variable</a>.</p> -->
-                  <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
-                  <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
+          <v-flex xs8>
+            <v-layout column fill-height>
+              <v-flex xs11>
+                  <jodit-vue v-model="content" :config="joditConfig" :buttons="joditConfig.buttons"/>
+                  <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
+              </v-flex>
+              <v-flex xs1>
+                <v-layout row justify-center align-center>
+                  <v-btn outline color="green" @click="showPreview" :disabled="!validated" style="float:right">
+                    <span v-if="!saving">
+                      Preview
+                    </span>
+                    <v-icon class="rotate" v-if="saving">
+                      mdi-reload
+                    </v-icon>
+                  </v-btn>
+                </v-layout>
+              </v-flex>
+            </v-layout>
           </v-flex>
-          </v-layout>
-          <v-layout column xs8 fill-height>
-            <v-flex xs11>
-                <jodit-vue v-model="content" :config="joditConfig" :buttons="joditConfig.buttons"/>
-                <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
-            </v-flex>
-            <v-flex xs1>
-              <v-layout row justify-center>
-                  <v-btn outline color="green" @click="showPreview" :disabled="!validated" style="float:right">Preview</v-btn>
-              </v-layout>
-            </v-flex>
-          </v-layout>
         </v-layout>
       </v-container>
    </v-card>
@@ -134,6 +152,7 @@ export default {
       showingPreview:false,
       contentValidationError:false,
       loading:false,
+      saving:false,
       newRecipient:null,
       templateId:null,
       validated:false,
@@ -175,17 +194,22 @@ export default {
           sendTo:this.sendTo,
       }
       if(this.templateId == null) {
+        vm.saving = true;
         return new TemplateApi().addTemplate(requestBody, null, {withCredentials:true}).then((resp) => {
             vm.templateId = resp.data.id;
             return new ListenerApi().addListenerTemplate(vm.listener.id, resp.data.id, null, {withCredentials:true});
         }).catch((err) => {
             console.error(err);
             vm.$store.state.app.snackbar = err;
+        }).finally(() => {
+          vm.saving = false;
         });
       } else {
         return new TemplateApi().updateTemplate(this.templateId, requestBody, null, {withCredentials:true}).catch((err) => {
           console.error(err);
           vm.$store.state.app.snackbar = err;
+        }).finally(() => {
+          vm.saving = false;
         });
       }
     }
@@ -211,6 +235,8 @@ export default {
             return true;
         },
         template(val, allowNone) {
+          if(vm.listener == null)
+            return true;
           var expr = /{{([^{}]+?)(<\/span>)?}}/g;
           var matches = expr.exec(val);
 

@@ -20,7 +20,7 @@ export default [
     view: 'Listeners'
   },
   {
-    path: '/logs',
-    view: 'Logs'
+    path: '/events',
+    view: 'Events'
   },
 ]

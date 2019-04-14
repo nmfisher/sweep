@@ -37,6 +37,8 @@
             v-text="link.text"
           />
         </v-list-tile>
+        <h5>API Key</h5>
+        <p>{{apiKey}}</p>
       </v-layout>
   </v-navigation-drawer>
 </template>
@@ -47,9 +49,13 @@ import {
   mapMutations,
   mapState
 } from 'vuex'
+import { UserApiAxiosParamCreator, UserApiFp } from '../../../lib/api';
+import { UserApiFactory } from '../../../lib/api';
+import { UserApi } from '../../../lib/api';
 
 export default {
   data: () => ({
+    apiKey:null,
     logo: './img/vuetifylogo.png',
     links: [
       {
@@ -63,9 +69,9 @@ export default {
         text: 'Listeners'
       },
       {
-        to: '/logs',
+        to: '/events',
         icon: 'mdi-format-font',
-        text: 'Logs'
+        text: 'Events'
       },
       {
         to: '/user-profile',
@@ -95,8 +101,15 @@ export default {
     }
   },
   mounted () {
+    var vm = this;
+    new UserApi().getUserInfo({withCredentials:true}).then((resp) => {
+        vm.apiKey = resp.data.apiKey;
+    }).catch((err) => {
+      console.error(err);
+    })
     this.onResponsiveInverted()
     window.addEventListener('resize', this.onResponsiveInverted)
+
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.onResponsiveInverted)
