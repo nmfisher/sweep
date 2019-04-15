@@ -12,9 +12,9 @@
 CREATE TABLE IF NOT EXISTS `BaseMessage` (
   `id` CHAR(36) NOT NULL,
   `content` TEXT NOT NULL,
-  `subject` TEXT NOT NULL,
-  `fromAddress` TEXT NOT NULL,
-  `fromName` TEXT NOT NULL,
+  `subject` TEXT DEFAULT NULL,
+  `fromAddress` TEXT DEFAULT NULL,
+  `fromName` TEXT DEFAULT NULL,
   `sendTo` JSON NOT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS `Event` (
   `receivedOn` DATETIME NOT NULL,
   `processedOn` DATETIME DEFAULT NULL,
   `error` TEXT DEFAULT NULL,
-  `organizationId` TEXT NOT NULL
+  `organizationId` TEXT NOT NULL,
+  `actions` JSON DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -99,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `Message` (
   `fromName` TEXT NOT NULL,
   `sendTo` JSON NOT NULL,
   `organizationId` TEXT NOT NULL,
-  `eventId` TEXT NOT NULL
+  `listenerActionId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -125,9 +126,9 @@ CREATE TABLE IF NOT EXISTS `RenderTemplateRequestBody` (
 CREATE TABLE IF NOT EXISTS `Template` (
   `id` CHAR(36) NOT NULL,
   `content` TEXT NOT NULL,
-  `subject` TEXT NOT NULL,
-  `fromAddress` TEXT NOT NULL,
-  `fromName` TEXT NOT NULL,
+  `subject` TEXT DEFAULT NULL,
+  `fromAddress` TEXT DEFAULT NULL,
+  `fromName` TEXT DEFAULT NULL,
   `sendTo` JSON NOT NULL,
   `organizationId` TEXT NOT NULL,
   `deleted` TINYINT(1) DEFAULT NULL,

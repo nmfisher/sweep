@@ -1,0 +1,1 @@
+mysql -u root --password=MyNewPass -D sweep_db < dev.sql
