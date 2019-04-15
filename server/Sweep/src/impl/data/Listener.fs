@@ -65,8 +65,8 @@ module Listener =
 
 
   let add eventName eventParams trigger userId orgId = 
-    let ctx = Sql.GetDataContext()
-    let listener = ctx.SweepDevelopment.Listener.Create()
+    let ctx = GetDataContext()
+    let listener = ctx.SweepDb.Listener.Create()
     listener.Id <- Guid.NewGuid().ToString()
     if not(isNull eventParams) then
       listener.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
@@ -87,9 +87,9 @@ module Listener =
     }
 
   let update listenerId eventName eventParams trigger userId orgId =
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     let row = query {
-      for listener in ctx.SweepDevelopment.Listener do
+      for listener in ctx.SweepDb.Listener do
       where (listener.Id = listenerId && listener.OrganizationId = orgId)
       select listener
       exactlyOneOrDefault
@@ -119,9 +119,9 @@ module Listener =
       } 
 
   let get id orgId =
-    let ctx = Sql.GetDataContext();
+    let ctx = GetDataContext();
     let row = query {
-      for listener in ctx.SweepDevelopment.Listener do
+      for listener in ctx.SweepDb.Listener do
       where (listener.Id = id && listener.OrganizationId = orgId)
       select listener
       exactlyOneOrDefault
@@ -133,9 +133,9 @@ module Listener =
       row.MapTo<Listener>(deserializeListener)
 
   let delete id userId orgId = 
-    let ctx = Sql.GetDataContext();
+    let ctx = GetDataContext();
     let row = query {
-      for listener in ctx.SweepDevelopment.Listener do
+      for listener in ctx.SweepDb.Listener do
       where (listener.Id = id && listener.OrganizationId = orgId)
       select listener
       exactlyOneOrDefault
@@ -148,9 +148,9 @@ module Listener =
       ctx.SubmitUpdates()
 
   let list orgId = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {
-      for listener in ctx.SweepDevelopment.Listener do
+      for listener in ctx.SweepDb.Listener do
       where (listener.OrganizationId = orgId)
       select listener
     } |> Seq.map(fun x -> x.MapTo<Listener>(deserializeListener))

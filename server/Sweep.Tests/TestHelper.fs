@@ -126,11 +126,11 @@ module TestHelper =
       | "application/x-www-form-urlencoded" -> raise (NotSupportedException()) // TODO - implement FormUrlEncodedContent
       | _ -> x |> Encoding.UTF8.GetBytes |> (fun x -> new MemoryStream(x)) |> (fun x -> new StreamContent(x)))
 
-  let conn  = MySql.createConnection "server=localhost;database=sweep_development;user=root;password=MyNewPass;Allow User Variables=true"
+  let conn  = MySql.createConnection (Environment.GetEnvironmentVariable("ConnectionString"))
   conn.Open() |> ignore
 
   let initialize () = 
-    let mutable cmd = MySql.createCommand "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sweep_development'" conn
+    let mutable cmd = MySql.createCommand "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sweep_db'" conn
     let reader = cmd.ExecuteReader()
     let tables = 
           seq {

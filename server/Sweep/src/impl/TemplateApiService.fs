@@ -88,7 +88,7 @@ module TemplateApiServiceImplementation =
             let userId = getUserId ctx.User.Claims
             let template = CompositionRoot.getTemplate args.pathParams.templateId orgId
             let mailDefaults = ctx.GetService<MailDefaults>()
-            let rendered = renderTemplate mailDefaults args.bodyParams.Params template
+            let rendered = renderTemplate mailDefaults args.bodyParams.Params "NULL" template
             RenderTemplateDefaultStatusCode { content = rendered }
           with
           | NotFoundException(msg) ->

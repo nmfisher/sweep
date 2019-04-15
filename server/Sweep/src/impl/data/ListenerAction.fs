@@ -10,39 +10,42 @@ open System
 
 module ListenerAction = 
 
-  let deserialize (prop,value) =
-    match (prop.ToString().Contains("Id")) with
-    | true -> value.ToString() :> obj
-    | false -> value
+  let deserializeListenerAction (prop,value) =
+    if (prop.ToString().Contains("Id")) then
+      value.ToString() :> obj
+    else if prop.Equals("completed") then
+      value :> obj
+    else
+      value    
 
   let list organizationId = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {      
-      for listenerAction in ctx.SweepDevelopment.Listeneraction do
+      for listenerAction in ctx.SweepDb.Listeneraction do
       where (listenerAction.OrganizationId = organizationId)
       select (listenerAction)
     } 
-    |> Seq.map (fun x -> x.MapTo<ListenerAction>(deserialize))
+    |> Seq.map (fun x -> x.MapTo<ListenerAction>(deserializeListenerAction))
     |> Seq.toArray
 
   let create eventId listenerId organizationId = 
-    let ctx = Sql.GetDataContext()
-    let listenerAction = ctx.SweepDevelopment.Listeneraction.Create()
+    let ctx = GetDataContext()
+    let listenerAction = ctx.SweepDb.Listeneraction.Create()
     listenerAction.OrganizationId <- organizationId
     listenerAction.ListenerId <- listenerId
     listenerAction.EventId <- eventId
     ctx.SubmitUpdates()  
 
   let createFromEvent (event:Sweep.Model.Event.Event) = 
-    let ctx = Sweep.Data.Sql.Sql.GetDataContext()
+    let ctx = GetDataContext()
     query { 
-      for listener in ctx.SweepDevelopment.Listener do
+      for listener in ctx.SweepDb.Listener do
       where (listener.EventName = event.EventName && listener.OrganizationId = event.OrganizationId)
       select listener
     } 
     |> Seq.map (fun x -> 
       let listener = x.MapTo<Listener>(Listener.deserializeListener)
-      let listenerAction = ctx.SweepDevelopment.Listeneraction.Create()
+      let listenerAction = ctx.SweepDb.Listeneraction.Create()
       listenerAction.Id <- Guid.NewGuid().ToString()
       listenerAction.ListenerId <- listener.Id
       listenerAction.EventId <- event.Id
@@ -53,18 +56,18 @@ module ListenerAction =
     |> Seq.toList
 
   let listIncomplete () = 
-    let ctx = Sweep.Data.Sql.Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {
-      for listenerAction in ctx.SweepDevelopment.Listeneraction do
+      for listenerAction in ctx.SweepDb.Listeneraction do
       where (listenerAction.Completed = sbyte(0))
       select listenerAction
-    } |> Seq.map (fun x -> x.MapTo<Sweep.Model.ListenerAction.ListenerAction>(deserialize))     
+    } |> Seq.map (fun x -> x.MapTo<Sweep.Model.ListenerAction.ListenerAction>(deserializeListenerAction))     
 
   let markAsComplete listenerActionId error =
-    let ctx = Sweep.Data.Sql.Sql.GetDataContext()
+    let ctx = GetDataContext()
     let row = 
       query {
-        for listenerAction in ctx.SweepDevelopment.Listeneraction do
+        for listenerAction in ctx.SweepDb.Listeneraction do
         where (listenerAction.Id = listenerActionId)
         select listenerAction
         exactlyOneOrDefault

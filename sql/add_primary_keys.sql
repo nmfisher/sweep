@@ -6,7 +6,7 @@ begin
     DECLARE done int default false;
     DECLARE tbl_name CHAR(255);
 
-    DECLARE cur1 cursor for SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = "sweep_development" and COLUMN_NAME LIKE "id" ;
+    DECLARE cur1 cursor for SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = "sweep_db" and COLUMN_NAME LIKE "id" ;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     open cur1;
 
@@ -15,7 +15,7 @@ begin
         if done then
             leave myloop;
         end if;
-        set @sql = CONCAT('ALTER TABLE `sweep_development`.', tbl_name, ' ADD PRIMARY KEY(id)');
+        set @sql = CONCAT('ALTER TABLE `sweep_db`.', tbl_name, ' ADD PRIMARY KEY(id)');
         select @sql;
         prepare stmt from @sql;
         execute stmt;

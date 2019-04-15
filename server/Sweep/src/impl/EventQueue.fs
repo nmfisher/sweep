@@ -33,13 +33,11 @@ module EventQueue =
   let findEvent (events:seq<Event>) eventId = 
     events |> Seq.where (fun x -> x.Id = eventId) |> Seq.head
   
-  let fetchTemplates (mailer:seq<Template> -> Event -> unit) listenerAction  =
-    let templates = CompositionRoot.listTemplatesForListener listenerAction.ListenerId listenerAction.OrganizationId
-    mailer templates, listenerAction
+  let fetchTemplates listenerAction  =
+    CompositionRoot.listTemplatesForListener listenerAction.ListenerId listenerAction.OrganizationId
 
-  let fetchInvokingEvent events (mailer:Event -> unit, listenerAction) =
-    let invokingEvent = findEvent events listenerAction.EventId
-    (fun () -> mailer invokingEvent), listenerAction, invokingEvent
+  let fetchInvokingEvent events (listenerAction:ListenerAction) =
+    findEvent events listenerAction.EventId
 
   let sendUnconditional mailer success failure = 
     try 
@@ -77,7 +75,7 @@ module EventQueue =
     events |> Seq.map Event.markAsProcessed |> Seq.toList |> ignore
 
     // dequeue all incomplete listenerActions
-    let incomplete = ListenerAction.listIncomplete() 
+    let incomplete = ListenerAction.listIncomplete() : seq<ListenerAction>
     match Seq.isEmpty incomplete with 
     | true ->
       ()
@@ -85,18 +83,15 @@ module EventQueue =
       // get all events since the first action
       let events = incomplete |> Seq.head |> (fun x -> Event.listAllAfter x.EventId) 
 
-      // fetch all templates associated with the incomplete ListenerActions
-      incomplete 
-      |> Seq.map (fetchTemplates mailer 
-                  // extract the original event that created the ListenerAction
-                  >> fetchInvokingEvent events 
-                  >> (fun (mailer, listenerAction, event) -> 
-                    // get a sender function that depends on whether the ListenerCondition needs checking 
-                    let sender = getSender listenerAction (isMetBy events event) (noLongerApplies event)
-                    // invoke the sender function, with success/error handlers to update the status of the ListenerAction
-                    sender mailer (fun () -> onSuccess listenerAction) (onFailure listenerAction)))
-      |> Seq.toList                
-      |> ignore
+      for listenerAction in incomplete do
+        // fetch all templates associated with the incomplete ListenerActions
+        let templates = fetchTemplates listenerAction
+        // extract the original event that created the ListenerAction
+        let invokingEvent = fetchInvokingEvent events listenerAction
+        // get a sender function that depends on whether the ListenerCondition needs checking 
+        let sender = getSender listenerAction (isMetBy events invokingEvent) (noLongerApplies invokingEvent)
+        // invoke the sender function, with success/error handlers to update the status of the ListenerAction
+        sender (fun () -> mailer invokingEvent templates) (fun () -> onSuccess listenerAction) (onFailure listenerAction)
 
   let initialize (apiKey:string) defaults = 
       let timer = new Timers.Timer(10000.)

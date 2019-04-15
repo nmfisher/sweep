@@ -4,6 +4,7 @@ open Sweep.Model.Message
 open Sql
 open Sweep.Exceptions
 open Newtonsoft.Json
+open System
 
 module Message = 
 
@@ -11,15 +12,17 @@ module Message =
     match prop with
      | "Id" ->
         value.ToString() :> obj
+      | "EventId" ->
+        value.ToString() :> obj
      | "SendTo" ->   
         JsonConvert.DeserializeObject<string[]> (value.ToString()) :> obj
      | _ -> 
         value
 
   let get id organizationId = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     let row = query {
-      for message in ctx.SweepDevelopment.Message do
+      for message in ctx.SweepDb.Message do
       where (message.OrganizationId = organizationId && message.Id = id)
       select message
       exactlyOneOrDefault
@@ -31,9 +34,9 @@ module Message =
       row.MapTo<Message>(deserializeMessage)
       
   let list organizationId =
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {      
-      for message in ctx.SweepDevelopment.Message do
+      for message in ctx.SweepDb.Message do
       where (message.OrganizationId = organizationId)
       select (message)
     } 
@@ -41,13 +44,14 @@ module Message =
     |> Seq.toArray
 
   let save message =
-    let ctx = Sql.GetDataContext()
-    let row = ctx.SweepDevelopment.Message.Create()
+    let ctx = GetDataContext()
+    let row = ctx.SweepDb.Message.Create()
     row.Content <- message.Content
     row.Subject <- message.Subject
     row.FromName <- message.FromName
     row.FromAddress <- message.FromAddress
     row.SendTo <- JsonConvert.SerializeObject message.SendTo
     row.OrganizationId <- message.OrganizationId
+    row.EventId <- message.EventId
     row.Id <- message.Id
     ctx.SubmitUpdates()

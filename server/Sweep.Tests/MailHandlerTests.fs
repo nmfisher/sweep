@@ -44,7 +44,7 @@ module MailHandlerTests =
         ReceivedOn=DateTime.Now; 
         ProcessedOn=Nullable<DateTime>();
         Error=""; 
-        OrganizationId=""
+        OrganizationId="";
       }
 
       let templates = [{
@@ -67,7 +67,7 @@ module MailHandlerTests =
         }
       let mutable success = false
       let saver = (fun x -> success <- true)
-      MailHandler.handle client defaults saver templates event 
+      MailHandler.handle client defaults saver event templates 
       Assert.True(success)
       
     }

@@ -18,8 +18,8 @@ module Template =
       value
 
   let add content subject fromName fromAddress sendTo organizationId userId : Template =
-    let ctx = Sql.GetDataContext()
-    let template = ctx.SweepDevelopment.Template.Create()
+    let ctx = GetDataContext()
+    let template = ctx.SweepDb.Template.Create()
     let id = Guid.NewGuid().ToString()
     template.Content <- content
     template.Subject <- subject
@@ -43,9 +43,9 @@ module Template =
     }
 
   let delete id orgId userId =
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     let row = query {
-      for template in ctx.SweepDevelopment.Template do
+      for template in ctx.SweepDb.Template do
       where (template.Id = id && template.OrganizationId = orgId)
       select template
       exactlyOneOrDefault
@@ -58,9 +58,9 @@ module Template =
       ctx.SubmitUpdates()
                
   let get id organizationId = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     let row = query {      
-      for template in ctx.SweepDevelopment.Template do
+      for template in ctx.SweepDb.Template do
       where (template.Id = id && template.OrganizationId = organizationId && (template.Deleted.IsNone || (template.Deleted.IsSome && template.Deleted.Value = sbyte(0))))
       select (template)
       exactlyOneOrDefault
@@ -71,9 +71,9 @@ module Template =
       row.MapTo<Template>(deserializeTemplate)
 
   let update id content subject fromName fromAddress sendTo organizationId = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     let row = query {      
-      for template in ctx.SweepDevelopment.Template do
+      for template in ctx.SweepDb.Template do
       where (template.Id = id && template.OrganizationId = organizationId)
       select (template)
       exactlyOneOrDefault
@@ -90,9 +90,9 @@ module Template =
       row.MapTo<Template>(deserializeTemplate)
 
   let list organizationId =
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {      
-      for template in ctx.SweepDevelopment.Template do
+      for template in ctx.SweepDb.Template do
       where (template.OrganizationId = organizationId && (template.Deleted.IsNone || (template.Deleted.IsSome && template.Deleted.Value = sbyte(0))))
       select (template)
     } |> Seq.map (fun x -> x.MapTo<Template>(deserializeTemplate))

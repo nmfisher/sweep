@@ -42,8 +42,8 @@ module CompositionRoot =
   // Organizations
 
   let saveOrganization id =
-    let ctx = Sql.GetDataContext()
-    let org = ctx.SweepDevelopment.Organization.Create()
+    let ctx = GetDataContext()
+    let org = ctx.SweepDb.Organization.Create()
     org.Id <- id
     ctx.SubmitUpdates()
 

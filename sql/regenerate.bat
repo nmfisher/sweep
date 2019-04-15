@@ -1,5 +1,5 @@
 pushd %~dp0
-mysql -u root --password=MyNewPass -e "DROP DATABASE sweep_development; CREATE DATABASE sweep_development"
-mysql -u root --password=MyNewPass -D sweep_development < mysql_schema.sql
-mysql -u root --password=MyNewPass -D sweep_development < add_primary_keys.sql
+mysql -u root --password=MyNewPass -e "DROP DATABASE sweep_db; CREATE DATABASE sweep_db"
+mysql -u root --password=MyNewPass -D sweep_db < mysql_schema.sql
+mysql -u root --password=MyNewPass -D sweep_db < add_primary_keys.sql
 popd

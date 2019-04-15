@@ -98,7 +98,8 @@ CREATE TABLE IF NOT EXISTS `Message` (
   `fromAddress` TEXT NOT NULL,
   `fromName` TEXT NOT NULL,
   `sendTo` JSON NOT NULL,
-  `organizationId` TEXT NOT NULL
+  `organizationId` TEXT NOT NULL,
+  `eventId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

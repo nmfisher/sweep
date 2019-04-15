@@ -43,7 +43,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=null;
           Error=""
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         }
       let condition = 
         {
@@ -65,7 +66,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=null;
           Error=""
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         } : Event
       let condition = 
         {
@@ -88,7 +90,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=null;
           Error=""
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         }
 
       let events = 
@@ -99,7 +102,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=null;
           Error=""
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         };
         {
           Id="2";
@@ -108,7 +112,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=null;
           Error=""
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         };]
 
       let condition = 
@@ -132,7 +137,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=dict ["key1","val1" :> obj];
           Error="";
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         }
 
       let events = 
@@ -143,7 +149,8 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=null;
           Error="";
-          OrganizationId="some_id"
+          OrganizationId="some_id";
+          
         };
         {
           Id="2";
@@ -152,7 +159,7 @@ module EventQueueTests =
           ProcessedOn=Nullable<DateTime>();
           Params=dict ["key1","val1" :> obj];
           Error=""
-          OrganizationId="some_id"
+          OrganizationId="some_id";
         };]
 
       let condition = 
@@ -254,7 +261,7 @@ module EventQueueTests =
 
       let mutable mailed = false
 
-      let mailer (templates:seq<Template>) (event:Event) = 
+      let mailer (event:Event) (templates:seq<Template>)  = 
         templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
         event.EventName |> shouldEqual "some_event" |> ignore
         mailed <- true
@@ -323,7 +330,7 @@ module EventQueueTests =
 
       let mutable mailed = false
 
-      let mailer (templates:seq<Template>) (event:Event) = 
+      let mailer (event:Event) (templates:seq<Template>)  = 
         templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
         event.EventName |> shouldEqual "some_event" |> ignore
         mailed <- true
@@ -425,7 +432,7 @@ module EventQueueTests =
 
       let mutable mailed = false
 
-      let mailer (templates:seq<Template>) (event:Event) = 
+      let mailer (event:Event) (templates:seq<Template>)  = 
         mailed <- true
         ()
 

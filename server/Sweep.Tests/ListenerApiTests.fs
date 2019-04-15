@@ -308,7 +308,7 @@ module ListenerApiHandlerTests =
           OrganizationId=orgId;
           ReceivedOn=DateTime.Now
           ProcessedOn=Nullable<DateTime>();
-          Error=""
+          Error="";
         }
 
       Sweep.Data.Listener.add "foo" [||] null "some_user_id" orgId

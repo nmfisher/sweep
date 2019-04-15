@@ -19,17 +19,17 @@ module User =
       value
 
   let save id username (apiKey:string) orgId = 
-    let ctx = Sql.GetDataContext()
-    let user = ctx.SweepDevelopment.User.Create()
+    let ctx = GetDataContext()
+    let user = ctx.SweepDb.User.Create()
     user.ApiKey <- apiKey
     user.Id <- id
-    user.OrganizationId <- id // TODO - need to allow multi-user organizations
+    user.OrganizationId <- orgId // TODO - need to allow multi-user organizations
     ctx.SubmitUpdates()
 
   let get id : User option = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {
-      for user in ctx.SweepDevelopment.User do
+      for user in ctx.SweepDb.User do
       where (user.Id = id)
       select user
     } 
@@ -37,9 +37,9 @@ module User =
     |> Seq.tryHead
 
   let findByApiKey apiKey = 
-    let ctx = Sql.GetDataContext()
+    let ctx = GetDataContext()
     query {
-      for user in ctx.SweepDevelopment.User do
+      for user in ctx.SweepDb.User do
       where (user.ApiKey = apiKey)
       select user
     } 

@@ -24,7 +24,7 @@ module Program =
                 //TemplateApiHandlerTests.``DeleteTemplate - Deletes a Template returns 404 where Template not found``() :> Task;
                 //TemplateApiHandlerTests.``GetTemplateById - Find Template by ID returns 200 where successful operation``() :> Task;
                 //TemplateApiHandlerTests.``GetTemplateById - Find Template by ID returns 404 where Listener not found``() :> Task;
-                //TemplateApiHandlerTests.``ListTemplate - List all Templates returns 200 where successful operation``() :> Task
+                TemplateApiHandlerTests.``ListTemplate - List all Templates returns 200 where successful operation``() :> Task
                 //TemplateApiHandlerTests.``UpdateTemplate - Update an existing Template returns 404 where Template not found``() :> Task;
                 //TemplateApiHandlerTests.``UpdateTemplate - Update an existing Template returns 200 where Successfully updated``() :> Task;
                 //TemplateApiHandlerTests.``UpdateTemplate - Update an existing Template returns 422 where Validation exception``() :> Task;
@@ -50,7 +50,7 @@ module Program =
                 //TemplateApiHandlerTests.``GetTemplateById - Find Template by ID returns 404 where Listener not found``() :> Task
                 //TemplateApiHandlerTests.``RenderTemplate - Renders a template using the provided event parameters returns 422 where Template could not be rendered``() :> Task
                 //MailHandlerTests.``Send test email``() :> Task
-                ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation`` ()  :> Task
+                // ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation`` ()  :> Task
                 ]
                 |> List.toArray
     Task.WaitAll(tasks)

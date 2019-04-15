@@ -32,7 +32,7 @@ module MessageApiHandlerTests =
       initialize()
 
       let id = (Guid.NewGuid().ToString())
-      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s')" 
+      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,eventId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
         id
         ""
         "some content"
@@ -40,6 +40,7 @@ module MessageApiHandlerTests =
         "me@you.com"
         "Me"
         TestHelper.orgId
+        (Guid.NewGuid().ToString())
         |> TestHelper.execute 
       
       "/1.0.0/messages/" + id
@@ -71,7 +72,7 @@ module MessageApiHandlerTests =
 
       let id = (Guid.NewGuid().ToString())
 
-      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s')" 
+      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,eventId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
         id
         ""
         "some content"
@@ -79,6 +80,7 @@ module MessageApiHandlerTests =
         "me@you.com"
         "Me"
         TestHelper.orgId
+        (Guid.NewGuid().ToString())
         |> TestHelper.execute 
 
       let path = "/1.0.0/messages"
