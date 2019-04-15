@@ -42,6 +42,12 @@ paths:
       summary: List all received events
       description: Returns a list of all events
       operationId: listEvents
+      parameters:
+        - name: withActions
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: successful operation
@@ -51,6 +57,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Event'
+        '500':
+          description: Bad query parameter
       security:
         - Google: []
     post:
@@ -266,6 +274,37 @@ paths:
           description: Successfully added
         '404':
           description: Listener or template not found
+      security:
+        - Google: []
+  '/actions/{listenerActionId}/messages':
+    get:
+      tags:
+        - listener
+      summary: List all messages
+      description: Returns a list of messages for the given ListenerAction
+      operationId: listMessagesForAction
+      parameters:
+      - name: listenerActionId
+        in: path
+        description: The id of the ListenerAction to limit the results
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '404':
+          description: Listener Action could not be found.
+          content:
+            application/json:
+              schema:
+                type: string
       security:
         - Google: []
   /messages:
@@ -711,6 +750,10 @@ components:
           type: string
         organizationId:
           type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListenerAction'
     RenderTemplateRequestBody:
       type: object
       properties:
@@ -758,9 +801,6 @@ components:
       required:
         - id
         - content
-        - subject
-        - fromAddress
-        - fromName
         - sendTo
         - organizationId
       properties:
@@ -785,6 +825,15 @@ components:
     Message:
       allOf:
         - $ref: '#/components/schemas/BaseMessage'
+        - type: object
+          required:
+            - listenerActionId
+            - fromAddress
+            - fromName
+            - subject
+          properties:
+            listenerActionId:
+              type: string
     Template:
       allOf:
         - $ref: '#/components/schemas/BaseMessage'
