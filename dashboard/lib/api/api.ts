@@ -41,19 +41,19 @@ export interface BaseMessage {
      * @type {string}
      * @memberof BaseMessage
      */
-    subject: string;
+    subject?: string;
     /**
      * 
      * @type {string}
      * @memberof BaseMessage
      */
-    fromAddress: string;
+    fromAddress?: string;
     /**
      * 
      * @type {string}
      * @memberof BaseMessage
      */
-    fromName: string;
+    fromName?: string;
     /**
      * 
      * @type {Array<string>}
@@ -116,6 +116,12 @@ export interface Event {
      * @memberof Event
      */
     organizationId: string;
+    /**
+     * 
+     * @type {Array<ListenerAction>}
+     * @memberof Event
+     */
+    actions?: Array<ListenerAction>;
 }
 
 /**
@@ -320,6 +326,12 @@ export interface Message {
      * @memberof Message
      */
     organizationId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Message
+     */
+    listenerActionId: string;
 }
 
 /**
@@ -373,19 +385,19 @@ export interface Template {
      * @type {string}
      * @memberof Template
      */
-    subject: string;
+    subject?: string;
     /**
      * 
      * @type {string}
      * @memberof Template
      */
-    fromAddress: string;
+    fromAddress?: string;
     /**
      * 
      * @type {string}
      * @memberof Template
      */
-    fromName: string;
+    fromName?: string;
     /**
      * 
      * @type {Array<string>}
@@ -596,10 +608,11 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * Returns a list of all events
          * @summary List all received events
+         * @param {boolean} [withActions] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(options: any = {}): RequestArgs {
+        listEvents(withActions?: boolean, options: any = {}): RequestArgs {
             const localVarPath = `/events`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -617,6 +630,10 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
                     ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+
+            if (withActions !== undefined) {
+                localVarQueryParameter['withActions'] = withActions;
             }
 
 
@@ -671,11 +688,12 @@ export const EventApiFp = function(configuration?: Configuration) {
         /**
          * Returns a list of all events
          * @summary List all received events
+         * @param {boolean} [withActions] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Event>> {
-            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(options);
+        listEvents(withActions?: boolean, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Event>> {
+            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(withActions, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -714,11 +732,12 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
         /**
          * Returns a list of all events
          * @summary List all received events
+         * @param {boolean} [withActions] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(options?: any) {
-            return EventApiFp(configuration).listEvents(options)(axios, basePath);
+        listEvents(withActions?: boolean, options?: any) {
+            return EventApiFp(configuration).listEvents(withActions, options)(axios, basePath);
         },
     };
 };
@@ -758,12 +777,13 @@ export class EventApi extends BaseAPI {
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {boolean} [withActions] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    public listEvents(options?: any) {
-        return EventApiFp(this.configuration).listEvents(options)(this.axios, this.basePath);
+    public listEvents(withActions?: boolean, options?: any) {
+        return EventApiFp(this.configuration).listEvents(withActions, options)(this.axios, this.basePath);
     }
 
 }
@@ -1077,6 +1097,49 @@ export const ListenerApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * Returns a list of messages for the given ListenerAction
+         * @summary List all messages
+         * @param {string} listenerActionId The id of the ListenerAction to limit the results
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMessagesForAction(listenerActionId: string, options: any = {}): RequestArgs {
+            // verify required parameter 'listenerActionId' is not null or undefined
+            if (listenerActionId === null || listenerActionId === undefined) {
+                throw new RequiredError('listenerActionId','Required parameter listenerActionId was null or undefined when calling listMessagesForAction.');
+            }
+            const localVarPath = `/actions/{listenerActionId}/messages`
+                .replace(`{${"listenerActionId"}}`, encodeURIComponent(String(listenerActionId)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+
+
+                localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Updates a Listener
          * @param {string} listenerId ID of listener to update
@@ -1237,6 +1300,20 @@ export const ListenerApiFp = function(configuration?: Configuration) {
             };
         },
         /**
+         * Returns a list of messages for the given ListenerAction
+         * @summary List all messages
+         * @param {string} listenerActionId The id of the ListenerAction to limit the results
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMessagesForAction(listenerActionId: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Message>> {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).listMessagesForAction(listenerActionId, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
          * 
          * @summary Updates a Listener
          * @param {string} listenerId ID of listener to update
@@ -1330,6 +1407,16 @@ export const ListenerApiFactory = function (configuration?: Configuration, baseP
          */
         listListeners(options?: any) {
             return ListenerApiFp(configuration).listListeners(options)(axios, basePath);
+        },
+        /**
+         * Returns a list of messages for the given ListenerAction
+         * @summary List all messages
+         * @param {string} listenerActionId The id of the ListenerAction to limit the results
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMessagesForAction(listenerActionId: string, options?: any) {
+            return ListenerApiFp(configuration).listMessagesForAction(listenerActionId, options)(axios, basePath);
         },
         /**
          * 
@@ -1435,6 +1522,18 @@ export class ListenerApi extends BaseAPI {
      */
     public listListeners(options?: any) {
         return ListenerApiFp(this.configuration).listListeners(options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Returns a list of messages for the given ListenerAction
+     * @summary List all messages
+     * @param {string} listenerActionId The id of the ListenerAction to limit the results
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    public listMessagesForAction(listenerActionId: string, options?: any) {
+        return ListenerApiFp(this.configuration).listMessagesForAction(listenerActionId, options)(this.axios, this.basePath);
     }
 
     /**

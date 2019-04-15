@@ -36,19 +36,19 @@ export interface BaseMessage {
      * @type {string}
      * @memberof BaseMessage
      */
-    subject: string;
+    subject?: string;
     /**
      *
      * @type {string}
      * @memberof BaseMessage
      */
-    fromAddress: string;
+    fromAddress?: string;
     /**
      *
      * @type {string}
      * @memberof BaseMessage
      */
-    fromName: string;
+    fromName?: string;
     /**
      *
      * @type {Array<string>}
@@ -112,6 +112,12 @@ export interface Event {
      * @memberof Event
      */
     organizationId: string;
+    /**
+     *
+     * @type {Array<ListenerAction>}
+     * @memberof Event
+     */
+    actions?: Array<ListenerAction>;
 }
 /**
  *
@@ -312,6 +318,12 @@ export interface Message {
      * @memberof Message
      */
     organizationId: string;
+    /**
+     *
+     * @type {string}
+     * @memberof Message
+     */
+    listenerActionId: string;
 }
 /**
  *
@@ -364,19 +376,19 @@ export interface Template {
      * @type {string}
      * @memberof Template
      */
-    subject: string;
+    subject?: string;
     /**
      *
      * @type {string}
      * @memberof Template
      */
-    fromAddress: string;
+    fromAddress?: string;
     /**
      *
      * @type {string}
      * @memberof Template
      */
-    fromName: string;
+    fromName?: string;
     /**
      *
      * @type {Array<string>}
@@ -514,10 +526,11 @@ export declare const EventApiAxiosParamCreator: (configuration?: Configuration) 
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {boolean} [withActions]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(options?: any): RequestArgs;
+    listEvents(withActions?: boolean, options?: any): RequestArgs;
 };
 /**
  * EventApi - functional programming interface
@@ -544,10 +557,11 @@ export declare const EventApiFp: (configuration?: Configuration) => {
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {boolean} [withActions]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event[]>;
+    listEvents(withActions?: boolean, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event[]>;
 };
 /**
  * EventApi - factory interface
@@ -574,10 +588,11 @@ export declare const EventApiFactory: (configuration?: Configuration, basePath?:
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {boolean} [withActions]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(options?: any): AxiosPromise<Event[]>;
+    listEvents(withActions?: boolean, options?: any): AxiosPromise<Event[]>;
 };
 /**
  * EventApi - object-oriented interface
@@ -608,11 +623,12 @@ export declare class EventApi extends BaseAPI {
     /**
      * Returns a list of all events
      * @summary List all received events
+     * @param {boolean} [withActions]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    listEvents(options?: any): AxiosPromise<Event[]>;
+    listEvents(withActions?: boolean, options?: any): AxiosPromise<Event[]>;
 }
 /**
  * ListenerApi - axios parameter creator
@@ -676,6 +692,14 @@ export declare const ListenerApiAxiosParamCreator: (configuration?: Configuratio
      * @throws {RequiredError}
      */
     listListeners(options?: any): RequestArgs;
+    /**
+     * Returns a list of messages for the given ListenerAction
+     * @summary List all messages
+     * @param {string} listenerActionId The id of the ListenerAction to limit the results
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listMessagesForAction(listenerActionId: string, options?: any): RequestArgs;
     /**
      *
      * @summary Updates a Listener
@@ -749,6 +773,14 @@ export declare const ListenerApiFp: (configuration?: Configuration) => {
      */
     listListeners(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Listener[]>;
     /**
+     * Returns a list of messages for the given ListenerAction
+     * @summary List all messages
+     * @param {string} listenerActionId The id of the ListenerAction to limit the results
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listMessagesForAction(listenerActionId: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message[]>;
+    /**
      *
      * @summary Updates a Listener
      * @param {string} listenerId ID of listener to update
@@ -820,6 +852,14 @@ export declare const ListenerApiFactory: (configuration?: Configuration, basePat
      * @throws {RequiredError}
      */
     listListeners(options?: any): AxiosPromise<Listener[]>;
+    /**
+     * Returns a list of messages for the given ListenerAction
+     * @summary List all messages
+     * @param {string} listenerActionId The id of the ListenerAction to limit the results
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listMessagesForAction(listenerActionId: string, options?: any): AxiosPromise<Message[]>;
     /**
      *
      * @summary Updates a Listener
@@ -901,6 +941,15 @@ export declare class ListenerApi extends BaseAPI {
      * @memberof ListenerApi
      */
     listListeners(options?: any): AxiosPromise<Listener[]>;
+    /**
+     * Returns a list of messages for the given ListenerAction
+     * @summary List all messages
+     * @param {string} listenerActionId The id of the ListenerAction to limit the results
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    listMessagesForAction(listenerActionId: string, options?: any): AxiosPromise<Message[]>;
     /**
      *
      * @summary Updates a Listener

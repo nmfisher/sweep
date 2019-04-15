@@ -13,11 +13,11 @@ The following models have been auto-generated from the provided OpenAPI schema:
 - model/TemplateModel.fs
 - model/RenderTemplateRequestBodyModel.fs
 - model/OrganizationModel.fs
-- model/MessageModel.fs
+- model/ListenerModel.fs
 - model/ListenerTemplateModel.fs
 - model/ListenerRequestBodyModel.fs
 - model/ListenerActionModel.fs
-- model/ListenerModel.fs
+- model/MessageModel.fs
 - model/EventRequestBodyModel.fs
 - model/EventModel.fs
 

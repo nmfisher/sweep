@@ -68,11 +68,10 @@ export const EventApiAxiosParamCreator = function (configuration) {
          *
          * @summary Find raised event by ID
          * @param {string} eventId ID of event that needs to be fetched
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventById(eventId, apiKey, options = {}) {
+        getEventById(eventId, options = {}) {
             // verify required parameter 'eventId' is not null or undefined
             if (eventId === null || eventId === undefined) {
                 throw new RequiredError('eventId', 'Required parameter eventId was null or undefined when calling getEventById.');
@@ -87,9 +86,6 @@ export const EventApiAxiosParamCreator = function (configuration) {
             const localVarRequestOptions = Object.assign({ method: 'GET' }, baseOptions, options);
             const localVarHeaderParameter = {};
             const localVarQueryParameter = {};
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -102,11 +98,11 @@ export const EventApiAxiosParamCreator = function (configuration) {
         /**
          * Returns a list of all events
          * @summary List all received events
-         * @param {string} [apiKey]
+         * @param {boolean} [withActions]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(apiKey, options = {}) {
+        listEvents(withActions, options = {}) {
             const localVarPath = `/events`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -124,8 +120,8 @@ export const EventApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
+            if (withActions !== undefined) {
+                localVarQueryParameter['withActions'] = withActions;
             }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -163,12 +159,11 @@ export const EventApiFp = function (configuration) {
          *
          * @summary Find raised event by ID
          * @param {string} eventId ID of event that needs to be fetched
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventById(eventId, apiKey, options) {
-            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).getEventById(eventId, apiKey, options);
+        getEventById(eventId, options) {
+            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).getEventById(eventId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -177,12 +172,12 @@ export const EventApiFp = function (configuration) {
         /**
          * Returns a list of all events
          * @summary List all received events
-         * @param {string} [apiKey]
+         * @param {boolean} [withActions]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(apiKey, options) {
-            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(apiKey, options);
+        listEvents(withActions, options) {
+            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(withActions, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -211,22 +206,21 @@ export const EventApiFactory = function (configuration, basePath, axios) {
          *
          * @summary Find raised event by ID
          * @param {string} eventId ID of event that needs to be fetched
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventById(eventId, apiKey, options) {
-            return EventApiFp(configuration).getEventById(eventId, apiKey, options)(axios, basePath);
+        getEventById(eventId, options) {
+            return EventApiFp(configuration).getEventById(eventId, options)(axios, basePath);
         },
         /**
          * Returns a list of all events
          * @summary List all received events
-         * @param {string} [apiKey]
+         * @param {boolean} [withActions]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(apiKey, options) {
-            return EventApiFp(configuration).listEvents(apiKey, options)(axios, basePath);
+        listEvents(withActions, options) {
+            return EventApiFp(configuration).listEvents(withActions, options)(axios, basePath);
         },
     };
 };
@@ -253,24 +247,23 @@ export class EventApi extends BaseAPI {
      *
      * @summary Find raised event by ID
      * @param {string} eventId ID of event that needs to be fetched
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    getEventById(eventId, apiKey, options) {
-        return EventApiFp(this.configuration).getEventById(eventId, apiKey, options)(this.axios, this.basePath);
+    getEventById(eventId, options) {
+        return EventApiFp(this.configuration).getEventById(eventId, options)(this.axios, this.basePath);
     }
     /**
      * Returns a list of all events
      * @summary List all received events
-     * @param {string} [apiKey]
+     * @param {boolean} [withActions]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    listEvents(apiKey, options) {
-        return EventApiFp(this.configuration).listEvents(apiKey, options)(this.axios, this.basePath);
+    listEvents(withActions, options) {
+        return EventApiFp(this.configuration).listEvents(withActions, options)(this.axios, this.basePath);
     }
 }
 /**
@@ -283,11 +276,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
          *
          * @summary Create a new Listener
          * @param {ListenerRequestBody} listenerRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listenerRequestBody, apiKey, options = {}) {
+        addListener(listenerRequestBody, options = {}) {
             // verify required parameter 'listenerRequestBody' is not null or undefined
             if (listenerRequestBody === null || listenerRequestBody === undefined) {
                 throw new RequiredError('listenerRequestBody', 'Required parameter listenerRequestBody was null or undefined when calling addListener.');
@@ -309,9 +301,6 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -329,11 +318,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
          * @summary Associates a Template to a Listener
          * @param {string} listenerId Listener id to disassociate
          * @param {string} templateId Template id to associate with the Listener
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListenerTemplate(listenerId, templateId, apiKey, options = {}) {
+        addListenerTemplate(listenerId, templateId, options = {}) {
             // verify required parameter 'listenerId' is not null or undefined
             if (listenerId === null || listenerId === undefined) {
                 throw new RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling addListenerTemplate.');
@@ -361,9 +349,6 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -377,11 +362,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
          *
          * @summary Deletes a Listener
          * @param {string} listenerId ID of listener to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteListener(listenerId, apiKey, options = {}) {
+        deleteListener(listenerId, options = {}) {
             // verify required parameter 'listenerId' is not null or undefined
             if (listenerId === null || listenerId === undefined) {
                 throw new RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling deleteListener.');
@@ -404,9 +388,6 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -421,11 +402,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
          * @summary Disassociates a Template from a Listener
          * @param {string} listenerId Listener id to disassociate
          * @param {string} templateId Template id to delete
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteListenerTemplate(listenerId, templateId, apiKey, options = {}) {
+        deleteListenerTemplate(listenerId, templateId, options = {}) {
             // verify required parameter 'listenerId' is not null or undefined
             if (listenerId === null || listenerId === undefined) {
                 throw new RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling deleteListenerTemplate.');
@@ -453,9 +433,6 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -469,11 +446,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
          * Returns a listener
          * @summary Get a listener by ID
          * @param {string} listenerId ID of listener to update
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getListener(listenerId, apiKey, options = {}) {
+        getListener(listenerId, options = {}) {
             // verify required parameter 'listenerId' is not null or undefined
             if (listenerId === null || listenerId === undefined) {
                 throw new RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling getListener.');
@@ -495,9 +471,6 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
-            }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
             }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -542,11 +515,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
         /**
          * Returns a list of Listeners
          * @summary List all Listeners
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listListeners(apiKey, options = {}) {
+        listListeners(options = {}) {
             const localVarPath = `/listeners`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -564,8 +536,44 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of messages for the given ListenerAction
+         * @summary List all messages
+         * @param {string} listenerActionId The id of the ListenerAction to limit the results
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMessagesForAction(listenerActionId, options = {}) {
+            // verify required parameter 'listenerActionId' is not null or undefined
+            if (listenerActionId === null || listenerActionId === undefined) {
+                throw new RequiredError('listenerActionId', 'Required parameter listenerActionId was null or undefined when calling listMessagesForAction.');
+            }
+            const localVarPath = `/actions/{listenerActionId}/messages`
+                .replace(`{${"listenerActionId"}}`, encodeURIComponent(String(listenerActionId)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, baseOptions, options);
+            const localVarHeaderParameter = {};
+            const localVarQueryParameter = {};
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -581,11 +589,10 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
          * @summary Updates a Listener
          * @param {string} listenerId ID of listener to update
          * @param {ListenerRequestBody} listenerRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateListener(listenerId, listenerRequestBody, apiKey, options = {}) {
+        updateListener(listenerId, listenerRequestBody, options = {}) {
             // verify required parameter 'listenerId' is not null or undefined
             if (listenerId === null || listenerId === undefined) {
                 throw new RequiredError('listenerId', 'Required parameter listenerId was null or undefined when calling updateListener.');
@@ -612,9 +619,6 @@ export const ListenerApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -639,12 +643,11 @@ export const ListenerApiFp = function (configuration) {
          *
          * @summary Create a new Listener
          * @param {ListenerRequestBody} listenerRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listenerRequestBody, apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListener(listenerRequestBody, apiKey, options);
+        addListener(listenerRequestBody, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListener(listenerRequestBody, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -655,12 +658,11 @@ export const ListenerApiFp = function (configuration) {
          * @summary Associates a Template to a Listener
          * @param {string} listenerId Listener id to disassociate
          * @param {string} templateId Template id to associate with the Listener
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListenerTemplate(listenerId, templateId, apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListenerTemplate(listenerId, templateId, apiKey, options);
+        addListenerTemplate(listenerId, templateId, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).addListenerTemplate(listenerId, templateId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -670,12 +672,11 @@ export const ListenerApiFp = function (configuration) {
          *
          * @summary Deletes a Listener
          * @param {string} listenerId ID of listener to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteListener(listenerId, apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).deleteListener(listenerId, apiKey, options);
+        deleteListener(listenerId, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).deleteListener(listenerId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -686,12 +687,11 @@ export const ListenerApiFp = function (configuration) {
          * @summary Disassociates a Template from a Listener
          * @param {string} listenerId Listener id to disassociate
          * @param {string} templateId Template id to delete
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteListenerTemplate(listenerId, templateId, apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).deleteListenerTemplate(listenerId, templateId, apiKey, options);
+        deleteListenerTemplate(listenerId, templateId, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).deleteListenerTemplate(listenerId, templateId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -701,12 +701,11 @@ export const ListenerApiFp = function (configuration) {
          * Returns a listener
          * @summary Get a listener by ID
          * @param {string} listenerId ID of listener to update
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getListener(listenerId, apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).getListener(listenerId, apiKey, options);
+        getListener(listenerId, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).getListener(listenerId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -729,12 +728,25 @@ export const ListenerApiFp = function (configuration) {
         /**
          * Returns a list of Listeners
          * @summary List all Listeners
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listListeners(apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).listListeners(apiKey, options);
+        listListeners(options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).listListeners(options);
+            return (axios = globalAxios, basePath = BASE_PATH) => {
+                const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Returns a list of messages for the given ListenerAction
+         * @summary List all messages
+         * @param {string} listenerActionId The id of the ListenerAction to limit the results
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMessagesForAction(listenerActionId, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).listMessagesForAction(listenerActionId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -745,12 +757,11 @@ export const ListenerApiFp = function (configuration) {
          * @summary Updates a Listener
          * @param {string} listenerId ID of listener to update
          * @param {ListenerRequestBody} listenerRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateListener(listenerId, listenerRequestBody, apiKey, options) {
-            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).updateListener(listenerId, listenerRequestBody, apiKey, options);
+        updateListener(listenerId, listenerRequestBody, options) {
+            const localVarAxiosArgs = ListenerApiAxiosParamCreator(configuration).updateListener(listenerId, listenerRequestBody, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -768,58 +779,53 @@ export const ListenerApiFactory = function (configuration, basePath, axios) {
          *
          * @summary Create a new Listener
          * @param {ListenerRequestBody} listenerRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListener(listenerRequestBody, apiKey, options) {
-            return ListenerApiFp(configuration).addListener(listenerRequestBody, apiKey, options)(axios, basePath);
+        addListener(listenerRequestBody, options) {
+            return ListenerApiFp(configuration).addListener(listenerRequestBody, options)(axios, basePath);
         },
         /**
          *
          * @summary Associates a Template to a Listener
          * @param {string} listenerId Listener id to disassociate
          * @param {string} templateId Template id to associate with the Listener
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addListenerTemplate(listenerId, templateId, apiKey, options) {
-            return ListenerApiFp(configuration).addListenerTemplate(listenerId, templateId, apiKey, options)(axios, basePath);
+        addListenerTemplate(listenerId, templateId, options) {
+            return ListenerApiFp(configuration).addListenerTemplate(listenerId, templateId, options)(axios, basePath);
         },
         /**
          *
          * @summary Deletes a Listener
          * @param {string} listenerId ID of listener to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteListener(listenerId, apiKey, options) {
-            return ListenerApiFp(configuration).deleteListener(listenerId, apiKey, options)(axios, basePath);
+        deleteListener(listenerId, options) {
+            return ListenerApiFp(configuration).deleteListener(listenerId, options)(axios, basePath);
         },
         /**
          *
          * @summary Disassociates a Template from a Listener
          * @param {string} listenerId Listener id to disassociate
          * @param {string} templateId Template id to delete
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteListenerTemplate(listenerId, templateId, apiKey, options) {
-            return ListenerApiFp(configuration).deleteListenerTemplate(listenerId, templateId, apiKey, options)(axios, basePath);
+        deleteListenerTemplate(listenerId, templateId, options) {
+            return ListenerApiFp(configuration).deleteListenerTemplate(listenerId, templateId, options)(axios, basePath);
         },
         /**
          * Returns a listener
          * @summary Get a listener by ID
          * @param {string} listenerId ID of listener to update
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getListener(listenerId, apiKey, options) {
-            return ListenerApiFp(configuration).getListener(listenerId, apiKey, options)(axios, basePath);
+        getListener(listenerId, options) {
+            return ListenerApiFp(configuration).getListener(listenerId, options)(axios, basePath);
         },
         /**
          * Returns a list of templates associated with this listener
@@ -834,24 +840,32 @@ export const ListenerApiFactory = function (configuration, basePath, axios) {
         /**
          * Returns a list of Listeners
          * @summary List all Listeners
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listListeners(apiKey, options) {
-            return ListenerApiFp(configuration).listListeners(apiKey, options)(axios, basePath);
+        listListeners(options) {
+            return ListenerApiFp(configuration).listListeners(options)(axios, basePath);
+        },
+        /**
+         * Returns a list of messages for the given ListenerAction
+         * @summary List all messages
+         * @param {string} listenerActionId The id of the ListenerAction to limit the results
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMessagesForAction(listenerActionId, options) {
+            return ListenerApiFp(configuration).listMessagesForAction(listenerActionId, options)(axios, basePath);
         },
         /**
          *
          * @summary Updates a Listener
          * @param {string} listenerId ID of listener to update
          * @param {ListenerRequestBody} listenerRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateListener(listenerId, listenerRequestBody, apiKey, options) {
-            return ListenerApiFp(configuration).updateListener(listenerId, listenerRequestBody, apiKey, options)(axios, basePath);
+        updateListener(listenerId, listenerRequestBody, options) {
+            return ListenerApiFp(configuration).updateListener(listenerId, listenerRequestBody, options)(axios, basePath);
         },
     };
 };
@@ -866,63 +880,58 @@ export class ListenerApi extends BaseAPI {
      *
      * @summary Create a new Listener
      * @param {ListenerRequestBody} listenerRequestBody
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    addListener(listenerRequestBody, apiKey, options) {
-        return ListenerApiFp(this.configuration).addListener(listenerRequestBody, apiKey, options)(this.axios, this.basePath);
+    addListener(listenerRequestBody, options) {
+        return ListenerApiFp(this.configuration).addListener(listenerRequestBody, options)(this.axios, this.basePath);
     }
     /**
      *
      * @summary Associates a Template to a Listener
      * @param {string} listenerId Listener id to disassociate
      * @param {string} templateId Template id to associate with the Listener
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    addListenerTemplate(listenerId, templateId, apiKey, options) {
-        return ListenerApiFp(this.configuration).addListenerTemplate(listenerId, templateId, apiKey, options)(this.axios, this.basePath);
+    addListenerTemplate(listenerId, templateId, options) {
+        return ListenerApiFp(this.configuration).addListenerTemplate(listenerId, templateId, options)(this.axios, this.basePath);
     }
     /**
      *
      * @summary Deletes a Listener
      * @param {string} listenerId ID of listener to return
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    deleteListener(listenerId, apiKey, options) {
-        return ListenerApiFp(this.configuration).deleteListener(listenerId, apiKey, options)(this.axios, this.basePath);
+    deleteListener(listenerId, options) {
+        return ListenerApiFp(this.configuration).deleteListener(listenerId, options)(this.axios, this.basePath);
     }
     /**
      *
      * @summary Disassociates a Template from a Listener
      * @param {string} listenerId Listener id to disassociate
      * @param {string} templateId Template id to delete
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    deleteListenerTemplate(listenerId, templateId, apiKey, options) {
-        return ListenerApiFp(this.configuration).deleteListenerTemplate(listenerId, templateId, apiKey, options)(this.axios, this.basePath);
+    deleteListenerTemplate(listenerId, templateId, options) {
+        return ListenerApiFp(this.configuration).deleteListenerTemplate(listenerId, templateId, options)(this.axios, this.basePath);
     }
     /**
      * Returns a listener
      * @summary Get a listener by ID
      * @param {string} listenerId ID of listener to update
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    getListener(listenerId, apiKey, options) {
-        return ListenerApiFp(this.configuration).getListener(listenerId, apiKey, options)(this.axios, this.basePath);
+    getListener(listenerId, options) {
+        return ListenerApiFp(this.configuration).getListener(listenerId, options)(this.axios, this.basePath);
     }
     /**
      * Returns a list of templates associated with this listener
@@ -938,26 +947,35 @@ export class ListenerApi extends BaseAPI {
     /**
      * Returns a list of Listeners
      * @summary List all Listeners
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    listListeners(apiKey, options) {
-        return ListenerApiFp(this.configuration).listListeners(apiKey, options)(this.axios, this.basePath);
+    listListeners(options) {
+        return ListenerApiFp(this.configuration).listListeners(options)(this.axios, this.basePath);
+    }
+    /**
+     * Returns a list of messages for the given ListenerAction
+     * @summary List all messages
+     * @param {string} listenerActionId The id of the ListenerAction to limit the results
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListenerApi
+     */
+    listMessagesForAction(listenerActionId, options) {
+        return ListenerApiFp(this.configuration).listMessagesForAction(listenerActionId, options)(this.axios, this.basePath);
     }
     /**
      *
      * @summary Updates a Listener
      * @param {string} listenerId ID of listener to update
      * @param {ListenerRequestBody} listenerRequestBody
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ListenerApi
      */
-    updateListener(listenerId, listenerRequestBody, apiKey, options) {
-        return ListenerApiFp(this.configuration).updateListener(listenerId, listenerRequestBody, apiKey, options)(this.axios, this.basePath);
+    updateListener(listenerId, listenerRequestBody, options) {
+        return ListenerApiFp(this.configuration).updateListener(listenerId, listenerRequestBody, options)(this.axios, this.basePath);
     }
 }
 /**
@@ -970,11 +988,10 @@ export const MessageApiAxiosParamCreator = function (configuration) {
          * Returns a single message
          * @summary Find message by ID
          * @param {string} messageId ID of message to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMessageById(messageId, apiKey, options = {}) {
+        getMessageById(messageId, options = {}) {
             // verify required parameter 'messageId' is not null or undefined
             if (messageId === null || messageId === undefined) {
                 throw new RequiredError('messageId', 'Required parameter messageId was null or undefined when calling getMessageById.');
@@ -997,9 +1014,6 @@ export const MessageApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -1012,11 +1026,10 @@ export const MessageApiAxiosParamCreator = function (configuration) {
         /**
          * Returns a list of messages
          * @summary List all messages
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(apiKey, options = {}) {
+        listMessages(options = {}) {
             const localVarPath = `/messages`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -1033,9 +1046,6 @@ export const MessageApiAxiosParamCreator = function (configuration) {
                     ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
-            }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
             }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -1058,12 +1068,11 @@ export const MessageApiFp = function (configuration) {
          * Returns a single message
          * @summary Find message by ID
          * @param {string} messageId ID of message to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMessageById(messageId, apiKey, options) {
-            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).getMessageById(messageId, apiKey, options);
+        getMessageById(messageId, options) {
+            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).getMessageById(messageId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1072,12 +1081,11 @@ export const MessageApiFp = function (configuration) {
         /**
          * Returns a list of messages
          * @summary List all messages
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(apiKey, options) {
-            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).listMessages(apiKey, options);
+        listMessages(options) {
+            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).listMessages(options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1095,22 +1103,20 @@ export const MessageApiFactory = function (configuration, basePath, axios) {
          * Returns a single message
          * @summary Find message by ID
          * @param {string} messageId ID of message to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMessageById(messageId, apiKey, options) {
-            return MessageApiFp(configuration).getMessageById(messageId, apiKey, options)(axios, basePath);
+        getMessageById(messageId, options) {
+            return MessageApiFp(configuration).getMessageById(messageId, options)(axios, basePath);
         },
         /**
          * Returns a list of messages
          * @summary List all messages
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(apiKey, options) {
-            return MessageApiFp(configuration).listMessages(apiKey, options)(axios, basePath);
+        listMessages(options) {
+            return MessageApiFp(configuration).listMessages(options)(axios, basePath);
         },
     };
 };
@@ -1125,24 +1131,22 @@ export class MessageApi extends BaseAPI {
      * Returns a single message
      * @summary Find message by ID
      * @param {string} messageId ID of message to return
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    getMessageById(messageId, apiKey, options) {
-        return MessageApiFp(this.configuration).getMessageById(messageId, apiKey, options)(this.axios, this.basePath);
+    getMessageById(messageId, options) {
+        return MessageApiFp(this.configuration).getMessageById(messageId, options)(this.axios, this.basePath);
     }
     /**
      * Returns a list of messages
      * @summary List all messages
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    listMessages(apiKey, options) {
-        return MessageApiFp(this.configuration).listMessages(apiKey, options)(this.axios, this.basePath);
+    listMessages(options) {
+        return MessageApiFp(this.configuration).listMessages(options)(this.axios, this.basePath);
     }
 }
 /**
@@ -1155,11 +1159,10 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
          *
          * @summary Create a new Template
          * @param {TemplateRequestBody} templateRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(templateRequestBody, apiKey, options = {}) {
+        addTemplate(templateRequestBody, options = {}) {
             // verify required parameter 'templateRequestBody' is not null or undefined
             if (templateRequestBody === null || templateRequestBody === undefined) {
                 throw new RequiredError('templateRequestBody', 'Required parameter templateRequestBody was null or undefined when calling addTemplate.');
@@ -1181,9 +1184,6 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -1200,11 +1200,10 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
          *
          * @summary Deletes a Template
          * @param {string} templateId Template id to delete
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteTemplate(templateId, apiKey, options = {}) {
+        deleteTemplate(templateId, options = {}) {
             // verify required parameter 'templateId' is not null or undefined
             if (templateId === null || templateId === undefined) {
                 throw new RequiredError('templateId', 'Required parameter templateId was null or undefined when calling deleteTemplate.');
@@ -1227,9 +1226,6 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -1243,11 +1239,10 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
          * Returns a single template
          * @summary Find Template by ID
          * @param {string} templateId ID of template to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTemplateById(templateId, apiKey, options = {}) {
+        getTemplateById(templateId, options = {}) {
             // verify required parameter 'templateId' is not null or undefined
             if (templateId === null || templateId === undefined) {
                 throw new RequiredError('templateId', 'Required parameter templateId was null or undefined when calling getTemplateById.');
@@ -1262,9 +1257,6 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
             const localVarRequestOptions = Object.assign({ method: 'GET' }, baseOptions, options);
             const localVarHeaderParameter = {};
             const localVarQueryParameter = {};
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -1277,11 +1269,10 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
         /**
          * Returns a list of templates
          * @summary List all Templates
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTemplate(apiKey, options = {}) {
+        listTemplate(options = {}) {
             const localVarPath = `/templates`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -1299,9 +1290,6 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -1316,11 +1304,10 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
          * @summary Renders a template using the provided event parameters
          * @param {string} templateId ID of template to return
          * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        renderTemplate(templateId, renderTemplateRequestBody, apiKey, options = {}) {
+        renderTemplate(templateId, renderTemplateRequestBody, options = {}) {
             // verify required parameter 'templateId' is not null or undefined
             if (templateId === null || templateId === undefined) {
                 throw new RequiredError('templateId', 'Required parameter templateId was null or undefined when calling renderTemplate.');
@@ -1347,9 +1334,6 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -1367,11 +1351,10 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
          * @param {TemplateRequestBody} templateRequestBody successful operation
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId, templateRequestBody, apiKey, options = {}) {
+        updateTemplate(templateId, templateRequestBody, options = {}) {
             // verify required parameter 'templateId' is not null or undefined
             if (templateId === null || templateId === undefined) {
                 throw new RequiredError('templateId', 'Required parameter templateId was null or undefined when calling updateTemplate.');
@@ -1398,9 +1381,6 @@ export const TemplateApiAxiosParamCreator = function (configuration) {
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
             }
-            if (apiKey !== undefined && apiKey !== null) {
-                localVarHeaderParameter['api_key'] = String(apiKey);
-            }
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -1425,12 +1405,11 @@ export const TemplateApiFp = function (configuration) {
          *
          * @summary Create a new Template
          * @param {TemplateRequestBody} templateRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(templateRequestBody, apiKey, options) {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).addTemplate(templateRequestBody, apiKey, options);
+        addTemplate(templateRequestBody, options) {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).addTemplate(templateRequestBody, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1440,12 +1419,11 @@ export const TemplateApiFp = function (configuration) {
          *
          * @summary Deletes a Template
          * @param {string} templateId Template id to delete
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteTemplate(templateId, apiKey, options) {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).deleteTemplate(templateId, apiKey, options);
+        deleteTemplate(templateId, options) {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).deleteTemplate(templateId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1455,12 +1433,11 @@ export const TemplateApiFp = function (configuration) {
          * Returns a single template
          * @summary Find Template by ID
          * @param {string} templateId ID of template to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTemplateById(templateId, apiKey, options) {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).getTemplateById(templateId, apiKey, options);
+        getTemplateById(templateId, options) {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).getTemplateById(templateId, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1469,12 +1446,11 @@ export const TemplateApiFp = function (configuration) {
         /**
          * Returns a list of templates
          * @summary List all Templates
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTemplate(apiKey, options) {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).listTemplate(apiKey, options);
+        listTemplate(options) {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).listTemplate(options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1485,12 +1461,11 @@ export const TemplateApiFp = function (configuration) {
          * @summary Renders a template using the provided event parameters
          * @param {string} templateId ID of template to return
          * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        renderTemplate(templateId, renderTemplateRequestBody, apiKey, options) {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).renderTemplate(templateId, renderTemplateRequestBody, apiKey, options);
+        renderTemplate(templateId, renderTemplateRequestBody, options) {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).renderTemplate(templateId, renderTemplateRequestBody, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1501,12 +1476,11 @@ export const TemplateApiFp = function (configuration) {
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
          * @param {TemplateRequestBody} templateRequestBody successful operation
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId, templateRequestBody, apiKey, options) {
-            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).updateTemplate(templateId, templateRequestBody, apiKey, options);
+        updateTemplate(templateId, templateRequestBody, options) {
+            const localVarAxiosArgs = TemplateApiAxiosParamCreator(configuration).updateTemplate(templateId, templateRequestBody, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1524,68 +1498,62 @@ export const TemplateApiFactory = function (configuration, basePath, axios) {
          *
          * @summary Create a new Template
          * @param {TemplateRequestBody} templateRequestBody
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addTemplate(templateRequestBody, apiKey, options) {
-            return TemplateApiFp(configuration).addTemplate(templateRequestBody, apiKey, options)(axios, basePath);
+        addTemplate(templateRequestBody, options) {
+            return TemplateApiFp(configuration).addTemplate(templateRequestBody, options)(axios, basePath);
         },
         /**
          *
          * @summary Deletes a Template
          * @param {string} templateId Template id to delete
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteTemplate(templateId, apiKey, options) {
-            return TemplateApiFp(configuration).deleteTemplate(templateId, apiKey, options)(axios, basePath);
+        deleteTemplate(templateId, options) {
+            return TemplateApiFp(configuration).deleteTemplate(templateId, options)(axios, basePath);
         },
         /**
          * Returns a single template
          * @summary Find Template by ID
          * @param {string} templateId ID of template to return
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTemplateById(templateId, apiKey, options) {
-            return TemplateApiFp(configuration).getTemplateById(templateId, apiKey, options)(axios, basePath);
+        getTemplateById(templateId, options) {
+            return TemplateApiFp(configuration).getTemplateById(templateId, options)(axios, basePath);
         },
         /**
          * Returns a list of templates
          * @summary List all Templates
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTemplate(apiKey, options) {
-            return TemplateApiFp(configuration).listTemplate(apiKey, options)(axios, basePath);
+        listTemplate(options) {
+            return TemplateApiFp(configuration).listTemplate(options)(axios, basePath);
         },
         /**
          * Returns a string representing the HTML content of an email to be sent
          * @summary Renders a template using the provided event parameters
          * @param {string} templateId ID of template to return
          * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        renderTemplate(templateId, renderTemplateRequestBody, apiKey, options) {
-            return TemplateApiFp(configuration).renderTemplate(templateId, renderTemplateRequestBody, apiKey, options)(axios, basePath);
+        renderTemplate(templateId, renderTemplateRequestBody, options) {
+            return TemplateApiFp(configuration).renderTemplate(templateId, renderTemplateRequestBody, options)(axios, basePath);
         },
         /**
          *
          * @summary Update an existing Template
          * @param {string} templateId ID of template to return
          * @param {TemplateRequestBody} templateRequestBody successful operation
-         * @param {string} [apiKey]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTemplate(templateId, templateRequestBody, apiKey, options) {
-            return TemplateApiFp(configuration).updateTemplate(templateId, templateRequestBody, apiKey, options)(axios, basePath);
+        updateTemplate(templateId, templateRequestBody, options) {
+            return TemplateApiFp(configuration).updateTemplate(templateId, templateRequestBody, options)(axios, basePath);
         },
     };
 };
@@ -1600,74 +1568,68 @@ export class TemplateApi extends BaseAPI {
      *
      * @summary Create a new Template
      * @param {TemplateRequestBody} templateRequestBody
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    addTemplate(templateRequestBody, apiKey, options) {
-        return TemplateApiFp(this.configuration).addTemplate(templateRequestBody, apiKey, options)(this.axios, this.basePath);
+    addTemplate(templateRequestBody, options) {
+        return TemplateApiFp(this.configuration).addTemplate(templateRequestBody, options)(this.axios, this.basePath);
     }
     /**
      *
      * @summary Deletes a Template
      * @param {string} templateId Template id to delete
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    deleteTemplate(templateId, apiKey, options) {
-        return TemplateApiFp(this.configuration).deleteTemplate(templateId, apiKey, options)(this.axios, this.basePath);
+    deleteTemplate(templateId, options) {
+        return TemplateApiFp(this.configuration).deleteTemplate(templateId, options)(this.axios, this.basePath);
     }
     /**
      * Returns a single template
      * @summary Find Template by ID
      * @param {string} templateId ID of template to return
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    getTemplateById(templateId, apiKey, options) {
-        return TemplateApiFp(this.configuration).getTemplateById(templateId, apiKey, options)(this.axios, this.basePath);
+    getTemplateById(templateId, options) {
+        return TemplateApiFp(this.configuration).getTemplateById(templateId, options)(this.axios, this.basePath);
     }
     /**
      * Returns a list of templates
      * @summary List all Templates
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    listTemplate(apiKey, options) {
-        return TemplateApiFp(this.configuration).listTemplate(apiKey, options)(this.axios, this.basePath);
+    listTemplate(options) {
+        return TemplateApiFp(this.configuration).listTemplate(options)(this.axios, this.basePath);
     }
     /**
      * Returns a string representing the HTML content of an email to be sent
      * @summary Renders a template using the provided event parameters
      * @param {string} templateId ID of template to return
      * @param {RenderTemplateRequestBody} renderTemplateRequestBody The event parameters used to render
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    renderTemplate(templateId, renderTemplateRequestBody, apiKey, options) {
-        return TemplateApiFp(this.configuration).renderTemplate(templateId, renderTemplateRequestBody, apiKey, options)(this.axios, this.basePath);
+    renderTemplate(templateId, renderTemplateRequestBody, options) {
+        return TemplateApiFp(this.configuration).renderTemplate(templateId, renderTemplateRequestBody, options)(this.axios, this.basePath);
     }
     /**
      *
      * @summary Update an existing Template
      * @param {string} templateId ID of template to return
      * @param {TemplateRequestBody} templateRequestBody successful operation
-     * @param {string} [apiKey]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TemplateApi
      */
-    updateTemplate(templateId, templateRequestBody, apiKey, options) {
-        return TemplateApiFp(this.configuration).updateTemplate(templateId, templateRequestBody, apiKey, options)(this.axios, this.basePath);
+    updateTemplate(templateId, templateRequestBody, options) {
+        return TemplateApiFp(this.configuration).updateTemplate(templateId, templateRequestBody, options)(this.axios, this.basePath);
     }
 }
 /**
@@ -1678,51 +1640,12 @@ export const UserApiAxiosParamCreator = function (configuration) {
     return {
         /**
          * This can only be done by the logged in user.
-         * @summary Create user
-         * @param {UserRequestBody} userRequestBody
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createUser(userRequestBody, options = {}) {
-            // verify required parameter 'userRequestBody' is not null or undefined
-            if (userRequestBody === null || userRequestBody === undefined) {
-                throw new RequiredError('userRequestBody', 'Required parameter userRequestBody was null or undefined when calling createUser.');
-            }
-            const localVarPath = `/user`;
-            const localVarUrlObj = url.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = Object.assign({ method: 'POST' }, baseOptions, options);
-            const localVarHeaderParameter = {};
-            const localVarQueryParameter = {};
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
-            const needsSerialization = ("UserRequestBody" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data = needsSerialization ? JSON.stringify(userRequestBody !== undefined ? userRequestBody : {}) : (userRequestBody || "");
-            return {
-                url: url.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * This can only be done by the logged in user.
          * @summary Delete user
-         * @param {string} userId The ID of the user to be deleted
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteUser(userId, options = {}) {
-            // verify required parameter 'userId' is not null or undefined
-            if (userId === null || userId === undefined) {
-                throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling deleteUser.');
-            }
-            const localVarPath = `/user/{userId}`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+        deleteUser(options = {}) {
+            const localVarPath = `/user`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -1742,18 +1665,12 @@ export const UserApiAxiosParamCreator = function (configuration) {
         },
         /**
          *
-         * @summary Get user by user name
-         * @param {string} userId The user id.
+         * @summary Get user info for the currently authenticated user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUserByName(userId, options = {}) {
-            // verify required parameter 'userId' is not null or undefined
-            if (userId === null || userId === undefined) {
-                throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling getUserByName.');
-            }
-            const localVarPath = `/user/{userId}`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+        getUserInfo(options = {}) {
+            const localVarPath = `/user`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -1762,6 +1679,14 @@ export const UserApiAxiosParamCreator = function (configuration) {
             const localVarRequestOptions = Object.assign({ method: 'GET' }, baseOptions, options);
             const localVarHeaderParameter = {};
             const localVarQueryParameter = {};
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
             delete localVarUrlObj.search;
@@ -1840,22 +1765,16 @@ export const UserApiAxiosParamCreator = function (configuration) {
         /**
          * This can only be done by the logged in user.
          * @summary Updated user
-         * @param {string} userId ID of the user ame that need to be updated
          * @param {UserRequestBody} userRequestBody
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(userId, userRequestBody, options = {}) {
-            // verify required parameter 'userId' is not null or undefined
-            if (userId === null || userId === undefined) {
-                throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling updateUser.');
-            }
+        updateUser(userRequestBody, options = {}) {
             // verify required parameter 'userRequestBody' is not null or undefined
             if (userRequestBody === null || userRequestBody === undefined) {
                 throw new RequiredError('userRequestBody', 'Required parameter userRequestBody was null or undefined when calling updateUser.');
             }
-            const localVarPath = `/user/{userId}`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            const localVarPath = `/user`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -1886,27 +1805,12 @@ export const UserApiFp = function (configuration) {
     return {
         /**
          * This can only be done by the logged in user.
-         * @summary Create user
-         * @param {UserRequestBody} userRequestBody
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createUser(userRequestBody, options) {
-            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).createUser(userRequestBody, options);
-            return (axios = globalAxios, basePath = BASE_PATH) => {
-                const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * This can only be done by the logged in user.
          * @summary Delete user
-         * @param {string} userId The ID of the user to be deleted
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteUser(userId, options) {
-            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).deleteUser(userId, options);
+        deleteUser(options) {
+            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).deleteUser(options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1914,13 +1818,12 @@ export const UserApiFp = function (configuration) {
         },
         /**
          *
-         * @summary Get user by user name
-         * @param {string} userId The user id.
+         * @summary Get user info for the currently authenticated user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUserByName(userId, options) {
-            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).getUserByName(userId, options);
+        getUserInfo(options) {
+            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).getUserInfo(options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1957,13 +1860,12 @@ export const UserApiFp = function (configuration) {
         /**
          * This can only be done by the logged in user.
          * @summary Updated user
-         * @param {string} userId ID of the user ame that need to be updated
          * @param {UserRequestBody} userRequestBody
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(userId, userRequestBody, options) {
-            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).updateUser(userId, userRequestBody, options);
+        updateUser(userRequestBody, options) {
+            const localVarAxiosArgs = UserApiAxiosParamCreator(configuration).updateUser(userRequestBody, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1979,33 +1881,21 @@ export const UserApiFactory = function (configuration, basePath, axios) {
     return {
         /**
          * This can only be done by the logged in user.
-         * @summary Create user
-         * @param {UserRequestBody} userRequestBody
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createUser(userRequestBody, options) {
-            return UserApiFp(configuration).createUser(userRequestBody, options)(axios, basePath);
-        },
-        /**
-         * This can only be done by the logged in user.
          * @summary Delete user
-         * @param {string} userId The ID of the user to be deleted
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteUser(userId, options) {
-            return UserApiFp(configuration).deleteUser(userId, options)(axios, basePath);
+        deleteUser(options) {
+            return UserApiFp(configuration).deleteUser(options)(axios, basePath);
         },
         /**
          *
-         * @summary Get user by user name
-         * @param {string} userId The user id.
+         * @summary Get user info for the currently authenticated user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUserByName(userId, options) {
-            return UserApiFp(configuration).getUserByName(userId, options)(axios, basePath);
+        getUserInfo(options) {
+            return UserApiFp(configuration).getUserInfo(options)(axios, basePath);
         },
         /**
          *
@@ -2030,13 +1920,12 @@ export const UserApiFactory = function (configuration, basePath, axios) {
         /**
          * This can only be done by the logged in user.
          * @summary Updated user
-         * @param {string} userId ID of the user ame that need to be updated
          * @param {UserRequestBody} userRequestBody
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(userId, userRequestBody, options) {
-            return UserApiFp(configuration).updateUser(userId, userRequestBody, options)(axios, basePath);
+        updateUser(userRequestBody, options) {
+            return UserApiFp(configuration).updateUser(userRequestBody, options)(axios, basePath);
         },
     };
 };
@@ -2049,36 +1938,23 @@ export const UserApiFactory = function (configuration, basePath, axios) {
 export class UserApi extends BaseAPI {
     /**
      * This can only be done by the logged in user.
-     * @summary Create user
-     * @param {UserRequestBody} userRequestBody
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof UserApi
-     */
-    createUser(userRequestBody, options) {
-        return UserApiFp(this.configuration).createUser(userRequestBody, options)(this.axios, this.basePath);
-    }
-    /**
-     * This can only be done by the logged in user.
      * @summary Delete user
-     * @param {string} userId The ID of the user to be deleted
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    deleteUser(userId, options) {
-        return UserApiFp(this.configuration).deleteUser(userId, options)(this.axios, this.basePath);
+    deleteUser(options) {
+        return UserApiFp(this.configuration).deleteUser(options)(this.axios, this.basePath);
     }
     /**
      *
-     * @summary Get user by user name
-     * @param {string} userId The user id.
+     * @summary Get user info for the currently authenticated user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    getUserByName(userId, options) {
-        return UserApiFp(this.configuration).getUserByName(userId, options)(this.axios, this.basePath);
+    getUserInfo(options) {
+        return UserApiFp(this.configuration).getUserInfo(options)(this.axios, this.basePath);
     }
     /**
      *
@@ -2105,13 +1981,12 @@ export class UserApi extends BaseAPI {
     /**
      * This can only be done by the logged in user.
      * @summary Updated user
-     * @param {string} userId ID of the user ame that need to be updated
      * @param {UserRequestBody} userRequestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserApi
      */
-    updateUser(userId, userRequestBody, options) {
-        return UserApiFp(this.configuration).updateUser(userId, userRequestBody, options)(this.axios, this.basePath);
+    updateUser(userRequestBody, options) {
+        return UserApiFp(this.configuration).updateUser(userRequestBody, options)(this.axios, this.basePath);
     }
 }
