@@ -16,5 +16,6 @@ module ListenerApiServiceInterface =
       abstract member GetListener:HttpContext -> GetListenerArgs->GetListenerResult
       abstract member ListListenerTemplates:HttpContext -> ListListenerTemplatesArgs->ListListenerTemplatesResult
       abstract member ListListeners:HttpContext ->ListListenersResult
+      abstract member ListMessagesForAction:HttpContext -> ListMessagesForActionArgs->ListMessagesForActionResult
       abstract member UpdateListener:HttpContext -> UpdateListenerArgs->UpdateListenerResult
     //#endregion

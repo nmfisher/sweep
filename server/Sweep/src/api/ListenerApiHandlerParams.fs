@@ -3,6 +3,7 @@ namespace Sweep
 open Sweep.Model.Listener
 open Sweep.Model.ListenerRequestBody
 open Sweep.Model.ListenerTemplate
+open Sweep.Model.Message
 open System.Collections.Generic
 
 module ListenerApiHandlerParams = 
@@ -150,6 +151,28 @@ module ListenerApiHandlerParams =
     }
     type ListListenersResult = ListListenersDefaultStatusCode of ListListenersDefaultStatusCodeResponse
 
+    //#region Path parameters
+    [<CLIMutable>]
+    type ListMessagesForActionPathParams = {
+      listenerActionId : string ;
+    }
+    //#endregion
+
+    
+    type ListMessagesForActionDefaultStatusCodeResponse = {
+      content:Message[];
+      
+    }
+    
+    type ListMessagesForActionStatusCode404Response = {
+      content:string;
+      
+    }
+    type ListMessagesForActionResult = ListMessagesForActionDefaultStatusCode of ListMessagesForActionDefaultStatusCodeResponse|ListMessagesForActionStatusCode404 of ListMessagesForActionStatusCode404Response
+
+    type ListMessagesForActionArgs = {
+      pathParams:ListMessagesForActionPathParams;
+    }
     //#region Path parameters
     [<CLIMutable>]
     type UpdateListenerPathParams = {

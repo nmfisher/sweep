@@ -10,6 +10,7 @@ open ListenerApiServiceImplementation
 open Sweep.Model.Listener
 open Sweep.Model.ListenerRequestBody
 open Sweep.Model.ListenerTemplate
+open Sweep.Model.Message
 
 module ListenerApiHandler = 
 
@@ -145,6 +146,25 @@ module ListenerApiHandler =
           return! (match result with 
                       | ListListenersDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
+          ) next ctx
+        }
+    //#endregion
+
+    //#region ListMessagesForAction
+    /// <summary>
+    /// List all messages
+    /// </summary>
+
+    let ListMessagesForAction (pathParams:ListMessagesForActionPathParams) : HttpHandler = 
+      fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+          let serviceArgs = {    pathParams=pathParams;  } : ListMessagesForActionArgs
+          let result = ListenerApiService.ListMessagesForAction ctx serviceArgs
+          return! (match result with 
+                      | ListMessagesForActionDefaultStatusCode resolved ->
+                            setStatusCode 200 >=> json resolved.content 
+                      | ListMessagesForActionStatusCode404 resolved ->
+                            setStatusCode 404 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

@@ -22,9 +22,9 @@ module Template =
     let template = ctx.SweepDb.Template.Create()
     let id = Guid.NewGuid().ToString()
     template.Content <- content
-    template.Subject <- subject
-    template.FromName <- fromName
-    template.FromAddress <- fromAddress
+    template.Subject <- Some(subject)
+    template.FromName <- Some(fromName)
+    template.FromAddress <- Some(fromAddress)
     template.SendTo <- JsonConvert.SerializeObject sendTo
     template.OrganizationId <- organizationId
     template.UserId <- userId
@@ -33,7 +33,7 @@ module Template =
     {
       Template.Id = id;
       Content = content;
-      Subject = content;
+      Subject = subject;
       FromName = fromName;
       FromAddress = fromAddress;
       SendTo = sendTo;
@@ -83,9 +83,9 @@ module Template =
     else
       row.SendTo <- JsonConvert.SerializeObject sendTo
       row.Content <- content
-      row.Subject <- subject
-      row.FromAddress <- fromAddress
-      row.FromName <- fromName
+      row.Subject <- Some(subject)
+      row.FromAddress <- Some(fromAddress)
+      row.FromName <- Some(fromName)
       ctx.SubmitUpdates()
       row.MapTo<Template>(deserializeTemplate)
 

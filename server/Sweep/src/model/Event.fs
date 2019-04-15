@@ -2,6 +2,7 @@ namespace Sweep.Model
 
 open System
 open System.Collections.Generic
+open Sweep.Model.ListenerAction
 open System.Collections.Generic
 
 module Event = 
@@ -17,6 +18,7 @@ module Event =
     ProcessedOn : Nullable<DateTime>;
     Error : string;
     OrganizationId : string;
+    Actions : ListenerAction[];
   }
   //#endregion
   

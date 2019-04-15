@@ -38,11 +38,17 @@ module EventApiServiceImplementation =
           | None ->              
               GetEventByIdStatusCode404 { content = "Event not found" }
            
-        member this.ListEvents ctx  =
+        member this.ListEvents ctx (args:ListEventsArgs)  =
           let userId = getUserId ctx.User.Claims
           let orgId = getOrgId ctx.User.Claims
-          let events = CompositionRoot.listEvents orgId |> Seq.toArray
-          ListEventsDefaultStatusCode { content = events }
+          match args.queryParams with 
+          | Ok queryParams -> 
+            let withActions = match queryParams.withActions with | Some w -> w | None -> false
+            let events = CompositionRoot.listEvents orgId withActions |> Seq.toArray
+            ListEventsDefaultStatusCode { content = events }
+          | _ ->
+            ListEventsStatusCode500 { content = "Unknown query parameter" }
+          
 
       //#endregion
 

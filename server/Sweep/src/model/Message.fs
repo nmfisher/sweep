@@ -17,7 +17,7 @@ module Message =
     FromName : string;
     SendTo : string[];
     OrganizationId : string;
-    EventId : string;
+    ListenerActionId : string;
   }
   //#endregion
   

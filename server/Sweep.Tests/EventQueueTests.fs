@@ -44,7 +44,8 @@ module EventQueueTests =
           Params=null;
           Error=""
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         }
       let condition = 
         {
@@ -67,7 +68,8 @@ module EventQueueTests =
           Params=null;
           Error=""
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         } : Event
       let condition = 
         {
@@ -91,7 +93,8 @@ module EventQueueTests =
           Params=null;
           Error=""
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         }
 
       let events = 
@@ -103,7 +106,8 @@ module EventQueueTests =
           Params=null;
           Error=""
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         };
         {
           Id="2";
@@ -113,7 +117,8 @@ module EventQueueTests =
           Params=null;
           Error=""
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         };]
 
       let condition = 
@@ -138,7 +143,8 @@ module EventQueueTests =
           Params=dict ["key1","val1" :> obj];
           Error="";
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         }
 
       let events = 
@@ -150,7 +156,8 @@ module EventQueueTests =
           Params=null;
           Error="";
           OrganizationId="some_id";
-          
+                    Actions = [||]
+
         };
         {
           Id="2";
@@ -160,6 +167,8 @@ module EventQueueTests =
           Params=dict ["key1","val1" :> obj];
           Error=""
           OrganizationId="some_id";
+                    Actions = [||]
+
         };]
 
       let condition = 
@@ -261,7 +270,7 @@ module EventQueueTests =
 
       let mutable mailed = false
 
-      let mailer (event:Event) (templates:seq<Template>)  = 
+      let mailer (event:Event) (actionId:string) (templates:seq<Template>)  = 
         templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
         event.EventName |> shouldEqual "some_event" |> ignore
         mailed <- true
@@ -330,7 +339,7 @@ module EventQueueTests =
 
       let mutable mailed = false
 
-      let mailer (event:Event) (templates:seq<Template>)  = 
+      let mailer (event:Event) (actionId:string) (templates:seq<Template>)  = 
         templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
         event.EventName |> shouldEqual "some_event" |> ignore
         mailed <- true
@@ -369,6 +378,22 @@ module EventQueueTests =
       dequeue mailer
 
       mailed |> shouldEqual true |> ignore
+
+      // list the events with actions
+      HttpGet client "/1.0.0/events?withActions=true"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<Event[]>
+      |> Seq.map (fun x -> x.Actions |> shouldBeLength 1)
+      |> ignore 
+      
+      // list the events without actions
+      HttpGet client "/1.0.0/events?withActions=false"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<Event[]>
+      |> Seq.map (fun x -> x.Actions |> shouldBeLength 0)
+      |> ignore 
     }
 
   [<Fact>]
@@ -432,7 +457,7 @@ module EventQueueTests =
 
       let mutable mailed = false
 
-      let mailer (event:Event) (templates:seq<Template>)  = 
+      let mailer (event:Event) (actionId:string) (templates:seq<Template>)  = 
         mailed <- true
         ()
 

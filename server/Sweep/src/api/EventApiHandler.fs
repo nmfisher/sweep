@@ -67,10 +67,14 @@ module EventApiHandler =
     let ListEvents  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let result = EventApiService.ListEvents ctx 
+          let queryParams = ctx.TryBindQueryString<ListEventsQueryParams>()
+          let serviceArgs = {  queryParams=queryParams;    } : ListEventsArgs
+          let result = EventApiService.ListEvents ctx serviceArgs
           return! (match result with 
                       | ListEventsDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
+                      | ListEventsStatusCode500 resolved ->
+                            setStatusCode 500 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

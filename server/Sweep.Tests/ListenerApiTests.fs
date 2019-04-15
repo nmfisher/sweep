@@ -23,6 +23,7 @@ open Sweep.Model.Template
 open Sweep.Model.TemplateRequestBody
 open Sweep.Model.Event
 open Sweep.Model.ListenerTemplate
+open Sweep.Model.Message
 
 module ListenerApiHandlerTests =
 
@@ -309,6 +310,7 @@ module ListenerApiHandlerTests =
           ReceivedOn=DateTime.Now
           ProcessedOn=Nullable<DateTime>();
           Error="";
+          Actions = [||]
         }
 
       Sweep.Data.Listener.add "foo" [||] null "some_user_id" orgId
@@ -317,3 +319,68 @@ module ListenerApiHandlerTests =
 
       Sweep.Data.ListenerAction.list orgId |> Seq.toArray |> shouldBeLength 1 |> ignore
     }
+
+  [<Fact>]
+  let ``ListMessagesForAction - List all messages returns 200 where successful operation`` () =
+    task {
+        use server = new TestServer(createHost())
+        use client = server.CreateClient()
+
+        // create a mock a listener action entry
+
+        let listenerActionId = Guid.NewGuid().ToString()
+
+        sprintf "INSERT INTO listeneraction (id,eventId,listenerId,organizationId,completed) VALUES('%s', '%s', '%s', '%s', '%d')" 
+            listenerActionId
+            (Guid.NewGuid().ToString())
+            (Guid.NewGuid().ToString())
+            TestHelper.orgId
+            1
+            |> TestHelper.execute 
+
+        // create a mock message attached to the listener action
+        sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,listenerActionId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
+          (Guid.NewGuid().ToString())
+          ""
+          "some content"
+          "[\"user@foo.com\"]"
+          "me@you.com"
+          "Me"
+          TestHelper.orgId
+          listenerActionId
+          |> TestHelper.execute 
+        // create a mock message unattached to the listener action
+        sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,listenerActionId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
+          (Guid.NewGuid().ToString())
+          ""
+          "some content"
+          "[\"user@foo.com\"]"
+          "me@you.com"
+          "Me"
+          TestHelper.orgId
+          (Guid.NewGuid().ToString())
+          |> TestHelper.execute 
+
+        let path = "/1.0.0/actions/" + listenerActionId + "/messages"
+
+        HttpGet client path
+          |> isStatus (enum<HttpStatusCode>(200))
+          |> readText
+          |> JsonConvert.DeserializeObject<Message[]>
+          |> shouldBeLength 1
+          |> ignore
+      }
+
+  [<Fact>]
+  let ``ListMessagesForAction - List all messages returns 404 where Listener Action could not be found.`` () =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      let path = "/1.0.0/actions/{listenerActionId}/messages"
+
+      HttpGet client path
+        |> isStatus (enum<HttpStatusCode>(404))
+        |> readText
+        |> ignore
+      }

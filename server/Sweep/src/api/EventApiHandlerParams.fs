@@ -58,11 +58,27 @@ module EventApiHandlerParams =
       pathParams:GetEventByIdPathParams;
     }
 
+    //#region Query parameters
+    [<CLIMutable>]
+    type ListEventsQueryParams = {
+      withActions : bool option;
+      
+    }
+    //#endregion
+
     
     type ListEventsDefaultStatusCodeResponse = {
       content:Event[];
       
     }
-    type ListEventsResult = ListEventsDefaultStatusCode of ListEventsDefaultStatusCodeResponse
+    
+    type ListEventsStatusCode500Response = {
+      content:string;
+      
+    }
+    type ListEventsResult = ListEventsDefaultStatusCode of ListEventsDefaultStatusCodeResponse|ListEventsStatusCode500 of ListEventsStatusCode500Response
 
+    type ListEventsArgs = {
+      queryParams:Result<ListEventsQueryParams,string>;
+    }
     

@@ -91,7 +91,7 @@ module EventQueue =
         // get a sender function that depends on whether the ListenerCondition needs checking 
         let sender = getSender listenerAction (isMetBy events invokingEvent) (noLongerApplies invokingEvent)
         // invoke the sender function, with success/error handlers to update the status of the ListenerAction
-        sender (fun () -> mailer invokingEvent templates) (fun () -> onSuccess listenerAction) (onFailure listenerAction)
+        sender (fun () -> mailer invokingEvent listenerAction.Id templates) (fun () -> onSuccess listenerAction) (onFailure listenerAction)
 
   let initialize (apiKey:string) defaults = 
       let timer = new Timers.Timer(10000.)

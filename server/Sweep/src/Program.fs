@@ -60,6 +60,7 @@ module App =
       HttpGet >=> routeBind<GetListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.GetListener x);
       HttpGet >=> routeBind<ListListenerTemplatesPathParams> "/1.0.0/listeners/{listenerId}/templates"  (fun x ->  ListenerApiHandler.ListListenerTemplates x);
       HttpGet >=> route "/1.0.0/listeners" >=> requiresAuthentication authFailure >=>  ListenerApiHandler.ListListeners;
+      HttpGet >=> routeBind<ListMessagesForActionPathParams> "/1.0.0/actions/{listenerActionId}/messages"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.ListMessagesForAction x);
       HttpPut >=> routeBind<UpdateListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.UpdateListener x);
       HttpGet >=> routeBind<GetMessageByIdPathParams> "/1.0.0/messages/{messageId}"  (fun x -> requiresAuthentication authFailure >=>  MessageApiHandler.GetMessageById x);
       HttpGet >=> route "/1.0.0/messages" >=> requiresAuthentication authFailure >=>  MessageApiHandler.ListMessages;

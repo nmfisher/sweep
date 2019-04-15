@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open Sql
 open Sweep.Exceptions
+open Sweep.Model.ListenerAction
 open Newtonsoft.Json
 
 type Event = Sweep.Model.Event.Event
@@ -49,13 +50,32 @@ module Event =
     |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
     |> Seq.tryHead
       
-  let list organizationId =
+  let list organizationId returnActions =
     let ctx = GetDataContext()
-    query {      
-      for event in ctx.SweepDb.Event do
-      where (event.OrganizationId = organizationId)
-      select (event)
-    } |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
+    match returnActions with 
+    | false -> 
+      query {      
+        for event in ctx.SweepDb.Event do
+        where (event.OrganizationId = organizationId)
+        select (event)
+      } 
+      |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
+    | true ->
+      query {      
+          for event in ctx.SweepDb.Event do
+          join listenerAction in ctx.SweepDb.Listeneraction on (event.Id = listenerAction.EventId)
+          where (event.OrganizationId = organizationId)
+          select (event, listenerAction)
+      } 
+      |> Seq.map (fun (event, listenerAction) ->
+        event.MapTo<Event>(deserializeEvent), listenerAction.MapTo<ListenerAction>(ListenerAction.deserializeListenerAction))
+      |> Seq.groupBy (fun (event, action) ->  event.Id)
+      |> Seq.map (fun (eventId, groups) ->
+          let event = groups |> Seq.head |> fst 
+          let listenerActions = groups |> Seq.map snd |> Seq.toArray
+          {
+              event with Actions=listenerActions;
+          })
 
   let listAllAfter eventId = 
     let ctx = GetDataContext()  
@@ -71,7 +91,7 @@ module Event =
       where (baseEvent.ReceivedOn <= event.ReceivedOn)
       select event
     } 
-    |> Seq.map (fun x-> x.MapTo<Event>(deserializeEvent))  
+    |> Seq.map (fun x-> x.MapTo<Event>(deserializeEvent)) 
 
   let listAllUnprocessed () = 
     let ctx = GetDataContext()

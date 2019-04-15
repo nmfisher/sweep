@@ -32,7 +32,7 @@ module MessageApiHandlerTests =
       initialize()
 
       let id = (Guid.NewGuid().ToString())
-      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,eventId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
+      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,listenerActionId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
         id
         ""
         "some content"
@@ -72,7 +72,7 @@ module MessageApiHandlerTests =
 
       let id = (Guid.NewGuid().ToString())
 
-      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,eventId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
+      sprintf "INSERT INTO message (id,subject,content,sendTo,fromAddress,fromName,organizationId,listenerActionId) VALUES('%s', '%s', '%s', '%s', '%s', '%s','%s','%s')" 
         id
         ""
         "some content"

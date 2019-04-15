@@ -245,6 +245,19 @@ module TemplateApiHandlerTests =
       |> HttpPost client path
       |> isStatus (enum<HttpStatusCode>(200))
       |> ignore
+
+      // save a template without a subject, from address or from name
+      {
+          TemplateRequestBody.Content="Hello Again";
+          SendTo=[|"baz@qux"|];
+          Subject="";
+          FromAddress="";
+          FromName="";
+      } 
+      |> encode
+      |> HttpPost client path
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
       
       let path = "/1.0.0/templates"
 
@@ -252,7 +265,7 @@ module TemplateApiHandlerTests =
         |> isStatus (enum<HttpStatusCode>(200))
         |> readText
         |> JsonConvert.DeserializeObject<Template[]>
-        |> shouldBeLength 2
+        |> shouldBeLength 3
         |> ignore
       }
 

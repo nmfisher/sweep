@@ -22,7 +22,7 @@ module TemplateRenderer =
     | false ->
       a
 
-  let renderTemplate mailDefaults eventParams eventId  (template:Template) =
+  let renderTemplate mailDefaults eventParams listenerActionId (template:Template) =
     let paramDict = match eventParams with | null -> dict [||] | _ -> eventParams
 
     let unresolved = 
@@ -48,7 +48,7 @@ module TemplateRenderer =
         Subject = (<=>) (builder.Render(template.Subject, paramDict)) mailDefaults.Subject;
         Content = "<html><body>" + builder.Render(template.Content, paramDict).Replace("<html>","").Replace("<body>","") + "</body></html>";
         OrganizationId = template.OrganizationId;
-        EventId = eventId;
+        ListenerActionId = listenerActionId;
       } 
       message
       

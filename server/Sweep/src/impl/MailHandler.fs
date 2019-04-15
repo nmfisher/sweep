@@ -21,8 +21,8 @@ module MailHandler =
     |> Async.RunSynchronously
 
     
-  let handle client defaults saver event templates  = 
-    let messages = templates |> Seq.map (renderTemplate defaults event.Params event.Id)
+  let handle client defaults saver event listenerActionId templates  = 
+    let messages = templates |> Seq.map (renderTemplate defaults event.Params listenerActionId)
     
     for message in messages do
       let resp = send client message 

@@ -18,6 +18,24 @@ module ListenerAction =
     else
       value    
 
+  let get id organizationId = 
+    let ctx = GetDataContext()
+    let row = 
+      query {      
+        for listenerAction in ctx.SweepDb.Listeneraction do
+        where (listenerAction.Id = id && listenerAction.OrganizationId = organizationId)
+        select (listenerAction)
+      } 
+      |> Seq.map (fun x -> x.MapTo<ListenerAction>(deserializeListenerAction))
+      |> Seq.tryHead
+    match row with 
+    | None ->
+      raise (NotFoundException("Not Found"))
+    | Some listenerAction -> 
+      listenerAction    
+    
+    
+
   let list organizationId = 
     let ctx = GetDataContext()
     query {      

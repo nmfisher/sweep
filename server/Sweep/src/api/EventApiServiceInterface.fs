@@ -11,5 +11,5 @@ module EventApiServiceInterface =
     type IEventApiService = 
       abstract member AddEvent:HttpContext -> AddEventArgs->AddEventResult
       abstract member GetEventById:HttpContext -> GetEventByIdArgs->GetEventByIdResult
-      abstract member ListEvents:HttpContext ->ListEventsResult
+      abstract member ListEvents:HttpContext -> ListEventsArgs->ListEventsResult
     //#endregion

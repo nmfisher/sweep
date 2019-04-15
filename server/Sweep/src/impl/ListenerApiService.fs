@@ -51,8 +51,19 @@ module ListenerApiServiceImplementation =
             GetListenerDefaultStatusCode { content = listener }
           with
           | NotFoundException(msg) ->
-            GetListenerStatusCode404 { content = msg }
+            GetListenerStatusCode404 { content = msg }        
 
+        member this.ListMessagesForAction ctx args =
+          try
+            let userId = getUserId ctx.User.Claims
+            let orgId = getOrgId ctx.User.Claims
+            CompositionRoot.getListenerAction args.pathParams.listenerActionId orgId |> ignore // throws NotFoundException
+            let messages = CompositionRoot.listMessagesForListenerAction args.pathParams.listenerActionId orgId
+            ListMessagesForActionDefaultStatusCode { content = messages }
+          with
+          | NotFoundException(msg) ->
+            ListMessagesForActionStatusCode404 { content = msg }
+            
         member this.ListListeners ctx  =
           let userId = getUserId ctx.User.Claims
           let orgId = getOrgId ctx.User.Claims

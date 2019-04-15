@@ -52,6 +52,16 @@ module Message =
     row.FromAddress <- message.FromAddress
     row.SendTo <- JsonConvert.SerializeObject message.SendTo
     row.OrganizationId <- message.OrganizationId
-    row.EventId <- message.EventId
+    row.ListenerActionId <- message.ListenerActionId
     row.Id <- message.Id
     ctx.SubmitUpdates()
+
+  let listForListenerAction listenerActionId orgId = 
+    let ctx = GetDataContext()
+    query {
+      for message in ctx.SweepDb.Message do
+      where (message.ListenerActionId = listenerActionId && message.OrganizationId = orgId)
+      select message
+    } |> Seq.map(fun x -> x.MapTo<Message>(deserializeMessage))
+    |> Seq.toArray
+  
