@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <v-container
     fill-height
@@ -25,7 +24,7 @@
           >
             <v-layout row wrap align-center>
               <v-flex xs12 lg6>
-                <h4 class="title font-weight-light mb-2">Events & Templates</h4>
+                <h4 class="title font-weight-light mb-2">Listeners</h4>
               </v-flex>
               <v-flex
                 xs12
@@ -170,7 +169,7 @@ export default {
   mounted() {
     var vm = this;
     vm.loading = true;
-    ListenerApiFactory().listListeners(null,{withCredentials:true}).then((resp) => {
+    ListenerApiFactory().listListeners({withCredentials:true}).then((resp) => {
       vm.listeners = resp.data;
     }).catch((err) => {
       vm.$store.state.app.snackbar = err;
@@ -184,7 +183,7 @@ export default {
       var vm = this;
       this.saving = true;
       var req = {eventName:this.newListener}
-      new ListenerApi().addListener(req, null, {withCredentials:true}).then((resp) => {
+      new ListenerApi().addListener(req, {withCredentials:true}).then((resp) => {
         resp.data.eventParams = [];
         this.listeners.splice(0,0,resp.data);
         vm.newListener = null;
@@ -197,7 +196,7 @@ export default {
     },
     deleteListener(listener) {
       var vm = this;
-      new ListenerApi().deleteListener(listener.id, null, {withCredentials:true}).then((resp) => {
+      new ListenerApi().deleteListener(listener.id, {withCredentials:true}).then((resp) => {
         vm.listeners.splice(vm.listeners.indexOf(listener), 1);
       }).catch((err) => {
         console.error(err);
@@ -218,7 +217,7 @@ export default {
         return;
       }
             
-      new ListenerApi().updateListener(item.id, item, null, {withCredentials:true}).then((resp) => {
+      new ListenerApi().updateListener(item.id, item, {withCredentials:true}).then((resp) => {
 
       }).catch((err) => {
         console.error(err);
@@ -227,7 +226,7 @@ export default {
     }
   },
   components: { 
-    TemplateEditor//, CodePreview
+    TemplateEditor
   },
 }
 </script>

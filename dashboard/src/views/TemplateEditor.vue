@@ -1,6 +1,6 @@
 <template>
   <v-layout fill-height style="margin:0">
-    <v-card style="position:absolute;left:-50px;z-index:9999" class="elevation-0">
+    <v-card style="position:absolute;left:-50px;z-index:9999" class="elevation-0"> 
       <v-card-text>
       <v-layout column justify-center align-center>
           <v-btn flat icon color="orange" @click="$emit('close')"><v-icon>mdi-arrow-left</v-icon></v-btn>
@@ -10,7 +10,6 @@
             <v-icon slot="activator" size="16">
               mdi-help
             </v-icon>
-              <!-- <p>Type a double brace "{{" to insert an event parameter as a <a href='https://mustache.github.io/'>Mustache variable</a>.</p> -->
               <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
               <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
           </v-tooltip>
@@ -18,7 +17,7 @@
       </v-layout>
       </v-card-text>
     </v-card>
-   <v-card color="none" :elevation="0" style="height:100%;width:100%">
+    <v-card color="none" :elevation="0" style="height:100%;width:100%">
      <v-dialog v-model="showingPreview" width="600">
        <message-preview ref="preview" :templateId="templateId" :params="listener ? listener.eventParams : null"/>
      </v-dialog>
@@ -75,7 +74,7 @@
           <v-flex xs8>
             <v-layout column fill-height>
               <v-flex xs11>
-                  <jodit-vue v-model="content" :config="joditConfig" :buttons="joditConfig.buttons"/>
+                  <jodit-editor @change="content = $event" ref="editor"></jodit-editor>
                   <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
               </v-flex>
               <v-flex xs1>
@@ -93,55 +92,25 @@
             </v-layout>
           </v-flex>
         </v-layout>
-      </v-container>
-   </v-card>
+      </v-container> 
+   </v-card> 
   </v-layout>
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import JoditVue from 'jodit-vue'
-import Jodit from 'jodit'
 import Tribute from '../../lib/tribute/src'
 import Combobox2 from '../components/helper/Combobox2'
-Vue.use(JoditVue)
-import 'jodit/build/jodit.min.css'
 import 'tributejs/dist/tribute.css'
 import { TemplateApi, TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
 import MessagePreview from './MessagePreview.vue';
+import Jodit from 'jodit'
+import JoditEditor from './JoditEditor.vue';
 
 export default {
   props:{
     listener:Object
   },
    data: () => ({
-      joditConfig:{
-        defaultMode: JoditVue.MODE_SOURCE,
-        inline:true,
-        buttons: [
-          'source',
-          '|',
-          'fontsize',
-          'font',
-          'bold',
-          'strikethrough',
-          'underline',
-          'italic',
-          '|',
-          'ul',
-          'ol',
-          '|',
-          'outdent',
-          'indent',
-          '|',
-          'brush',
-          '|',
-          'image',
-          'table',
-          'link',
-          '|',
-          'align',],
-        toolbarButtonSize: "large"
-      },
       content:"",
       sendTo:[],
       sendToInput:"",
@@ -193,21 +162,21 @@ export default {
           fromName:this.fromName,
           sendTo:this.sendTo,
       }
+      vm.saving = true;
       if(this.templateId == null) {
-        vm.saving = true;
-        return new TemplateApi().addTemplate(requestBody, null, {withCredentials:true}).then((resp) => {
+        return new TemplateApi().addTemplate(requestBody, {withCredentials:true}).then((resp) => {
             vm.templateId = resp.data.id;
-            return new ListenerApi().addListenerTemplate(vm.listener.id, resp.data.id, null, {withCredentials:true});
+            return new ListenerApi().addListenerTemplate(vm.listener.id, resp.data.id, {withCredentials:true});
         }).catch((err) => {
             console.error(err);
-            vm.$store.state.app.snackbar = err;
+            vm.$store.state.app.snackbar = err.response.data;
         }).finally(() => {
           vm.saving = false;
         });
       } else {
-        return new TemplateApi().updateTemplate(this.templateId, requestBody, null, {withCredentials:true}).catch((err) => {
+        return new TemplateApi().updateTemplate(this.templateId, requestBody, {withCredentials:true}).catch((err) => {
           console.error(err);
-          vm.$store.state.app.snackbar = err;
+          vm.$store.state.app.snackbar = err.response.data;
         }).finally(() => {
           vm.saving = false;
         });
@@ -286,6 +255,7 @@ export default {
                 var options = {
                     trigger: '{{',
                     requireLeadingSpace: false,
+                    replaceTextSuffix: '  ',
                     selectTemplate: (item) => {
                       return '{{' + item.original.value + '}}';
                     },
@@ -301,31 +271,31 @@ export default {
 
                 ["fromName", "fromAddress","subject"].forEach((k) => {
                   vm.$refs[k].$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
-                    vm[k] = vm.$refs[k].$el.getElementsByTagName("input")[0].value;
+                    vm[k] = vm.$refs[k].$el.getElementsByTagName("input")[0].value.trim();
                   });
                 });
                 
                 vm.$refs.sendTo.$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
-                  //if(vm.sendTo == null)
-                  //  vm.sendTo = [];
-                  vm.sendTo.push(vm.$refs.sendTo.$el.getElementsByTagName("input")[0].value);
-                  console.log(vm.$refs.sendTo )
+                  vm.sendTo.push(vm.$refs.sendTo.$el.getElementsByTagName("input")[0].value.trim());
                   vm.sendToInput = "";
-                  //vm.newRecipient = null;
                 });
             });
     };
-  },
-  components: { 
-    JoditVue, Combobox2, MessagePreview
   },
   watch:{
     listener:{
       deep:true,
       handler(newVal) {
+        this.$refs.editor.reset();
         this.validate();
         var vm = this;
-        if(typeof(this.tribute) !== "undefined" && typeof(newVal) != "undefined" && newVal != null && typeof(newVal.eventParams) != "undefined" && newVal.eventParams != null && newVal.eventParams.length > 0) {
+        if(typeof(this.tribute) === "undefined")
+          return;
+
+        if(typeof(newVal) == "undefined" || newVal == null)
+          return;
+
+        if(typeof(newVal.eventParams) != "undefined" && newVal.eventParams != null && newVal.eventParams.length > 0) {
           this.tribute.collection[0].values=newVal.eventParams.map((x) => { return {key:x,value:x} });
         } else {
           this.tribute.collection[0].values=[];
@@ -333,7 +303,7 @@ export default {
         if(newVal != null) {
           new ListenerApi().listListenerTemplates(newVal.id, { withCredentials:true }).then((resp) => { 
             if(resp.data.length > 0)
-              return new TemplateApi().getTemplateById(resp.data[0].templateId, null, {withCredentials:true});
+              return new TemplateApi().getTemplateById(resp.data[0].templateId, {withCredentials:true});
 
           }).then((resp) => {
             if(typeof(resp) !== "undefined") {
@@ -343,7 +313,15 @@ export default {
               vm.fromName = resp.data.fromName;
               vm.sendTo = resp.data.sendTo;
               vm.subject = resp.data.subject;
+            } else {
+              vm.templateId = null;
+              vm.content = null;
+              vm.fromAddress = null;
+              vm.fromName = null;
+              vm.sendTo = [];
+              vm.subject = null;
             }
+            vm.$refs.editor.content = vm.content;
           }).catch((err) => {
               console.error(err);
               vm.$store.state.app.snackbar = err;
@@ -366,7 +344,10 @@ export default {
     subject(newVal) {
       this.validate();
     }
-  }
+  },
+  components: { 
+    Combobox2, MessagePreview, JoditEditor
+  },
 }
 </script>
 <style lang="scss">
