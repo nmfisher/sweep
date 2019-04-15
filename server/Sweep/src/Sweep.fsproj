@@ -33,13 +33,12 @@
     <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.0.1" />
   </ItemGroup>
 
-   
-
   <ItemGroup>
     <Content Include="openapi.yaml" />
     <Content Include="appsettings.json" />
     <Compile Include="helpers/Helpers.fs" />
     <Compile Include="model/BaseMessage.fs" />
+    <Compile Include="model/ListenerAction.fs" />
     <Compile Include="model/Event.fs" />
     <Compile Include="model/EventRequestBody.fs" />
     <Compile Include="model/UserRequestBody.fs" />
@@ -49,7 +48,6 @@
     <Compile Include="model/RenderTemplateRequestBody.fs" />
     <Compile Include="model/Message.fs" />
     <Compile Include="model/Listener.fs" />
-    <Compile Include="model/ListenerAction.fs" />
     <Compile Include="model/ListenerRequestBody.fs" />
     <Compile Include="model/ListenerTemplate.fs" />
     <Compile Include="impl/Exceptions.fs" />
