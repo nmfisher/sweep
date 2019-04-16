@@ -1,22 +1,5 @@
 <template>
   <v-layout fill-height style="margin:0">
-    <v-card style="position:absolute;left:-50px;z-index:9999" class="elevation-0"> 
-      <v-card-text>
-      <v-layout column justify-center align-center>
-          <v-btn flat icon color="orange" @click="$emit('close')"><v-icon>mdi-arrow-left</v-icon></v-btn>
-          <v-btn flat icon color="indigo" @click="save" :disabled="!validated"><v-icon>mdi-content-save</v-icon></v-btn>
-          <v-btn flat icon color="grey">
-          <v-tooltip>
-            <v-icon slot="activator" size="16">
-              mdi-help
-            </v-icon>
-              <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
-              <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
-          </v-tooltip>
-          </v-btn>
-      </v-layout>
-      </v-card-text>
-    </v-card>
     <v-card color="none" :elevation="0" style="height:100%;width:100%">
      <v-dialog v-model="showingPreview" width="600">
        <message-preview ref="preview" :templateId="templateId" :params="listener ? listener.eventParams : null"/>
@@ -73,15 +56,29 @@
           </v-flex>
           <v-flex>
             <v-layout column fill-height>
+              <v-layout row style="flex-grow:0;padding:12px">
+                <v-switch v-model="editRaw" :label="editRaw ? `Raw HTML`: `Visual`"></v-switch>
+                <span v-if="validated" @click="showPreview">
+                    Preview
+                </span>
+                <v-btn flat icon color="grey">
+                  <v-tooltip>
+                    <v-icon slot="activator" size="16">
+                      mdi-help
+                    </v-icon>
+                      <p>When an event is raised, these are replaced by the value of the event parameter you raise in your code.</p>
+                      <p>Event parameters not referenced in templates will be logged but ignored. If you raise an event without event parameters for all template variables, the event will fail and no e-mail will be sent.</p>
+                    </v-tooltip>
+                </v-btn>
+              </v-layout>
               <v-flex xs11>
-                  <content-tools-editor @change="content = $event" :tribute="tribute"/>
+                  <content-tools-editor @change="content = $event" :tribute="tribute" :editRaw="editRaw"/>
                   <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
               </v-flex>
               <v-flex xs1>
-                <v-layout column justify-center align-center>
-                  <span v-if="validated" @click="showPreview">
-                    Preview
-                  </span>
+                <v-layout row justify-center align-center>
+                  <v-btn flat outline color="primary" @click="$emit('close')">Close</v-btn>
+                  <v-btn flat outline color="indigo" @click="save" :disabled="!validated" class="ml-3">Save</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -106,7 +103,7 @@ export default {
   },
    data: () => ({
       content:"",
-      editingHTML:0,
+      editRaw:false,
       sendTo:[],
       sendToInput:"",
       fromName:"",
@@ -248,8 +245,7 @@ export default {
         selectTemplate: (item) => {
           return '{{' + item.original.value + '}}';
         },
-        menuContainer:document.getElementById("tribute-container"),
-        values:[]
+        values:[],
     });
 
     ["fromName", "fromAddress","subject","sendTo"].forEach((k) => {
