@@ -23,7 +23,7 @@
      </v-dialog>
         <v-container fill-height id="tribute-wrapper">
           <v-layout column>
-            <v-flex xs4>
+            <v-flex style="flex-grow:0">
               <v-layout row  align-center justify-center>
                 <v-flex xs6>
                   <v-form ref="form">
@@ -71,22 +71,17 @@
               </v-flex>
             </v-layout>
           </v-flex>
-          <v-flex xs8>
+          <v-flex>
             <v-layout column fill-height>
               <v-flex xs11>
-                  <jodit-editor @change="content = $event" ref="editor"></jodit-editor>
+                  <content-tools-editor @change="content = $event" :tribute="tribute"/>
                   <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
               </v-flex>
               <v-flex xs1>
-                <v-layout row justify-center align-center>
-                  <v-btn outline color="green" @click="showPreview" :disabled="!validated" style="float:right">
-                    <span v-if="!saving">
-                      Preview
-                    </span>
-                    <v-icon class="rotate" v-if="saving">
-                      mdi-reload
-                    </v-icon>
-                  </v-btn>
+                <v-layout column justify-center align-center>
+                  <span v-if="validated" @click="showPreview">
+                    Preview
+                  </span>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -102,9 +97,8 @@ import Tribute from '../../lib/tribute/src'
 import Combobox2 from '../components/helper/Combobox2'
 import 'tributejs/dist/tribute.css'
 import { TemplateApi, TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
-import MessagePreview from './MessagePreview.vue';
-import Jodit from 'jodit'
-import JoditEditor from './JoditEditor.vue';
+import ContentToolsEditor from './ContentToolsEditor.vue';
+
 
 export default {
   props:{
@@ -112,6 +106,7 @@ export default {
   },
    data: () => ({
       content:"",
+      editingHTML:0,
       sendTo:[],
       sendToInput:"",
       fromName:"",
@@ -125,6 +120,7 @@ export default {
       newRecipient:null,
       templateId:null,
       validated:false,
+      tribute:null
   }),
   methods:{
     onComboBoxInput() {
@@ -242,51 +238,40 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     var vm = this;
-    Jodit.plugins.tributejs = function (editor) {
-        editor.events
-            .on('beforeEnter', function (event) {
-                if (vm.tribute.isActive) {
-                    return true;
-                }
-            })
-            .on('afterInit', function () {
-                var options = {
-                    trigger: '{{',
-                    requireLeadingSpace: false,
-                    replaceTextSuffix: '  ',
-                    selectTemplate: (item) => {
-                      return '{{' + item.original.value + '}}';
-                    },
-                    menuContainer:document.getElementById("tribute-container"),
-                    values:[]
-                };
-                vm.tribute = new Tribute(options);
-                vm.tribute.attach(editor.editor)  ;
+  
+    vm.tribute = new Tribute({
+        trigger: '{{',
+        requireLeadingSpace: false,
+        replaceTextSuffix: '  ',
+        selectTemplate: (item) => {
+          return '{{' + item.original.value + '}}';
+        },
+        menuContainer:document.getElementById("tribute-container"),
+        values:[]
+    });
 
-                ["fromName", "fromAddress","subject","sendTo"].forEach((k) => {
-                  vm.tribute.attach(vm.$refs[k].$el.getElementsByTagName("input")[0]);
-                });
+    ["fromName", "fromAddress","subject","sendTo"].forEach((k) => {
+      vm.tribute.attach(vm.$refs[k].$el.getElementsByTagName("input")[0]);
+    });
 
-                ["fromName", "fromAddress","subject"].forEach((k) => {
-                  vm.$refs[k].$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
-                    vm[k] = vm.$refs[k].$el.getElementsByTagName("input")[0].value.trim();
-                  });
-                });
-                
-                vm.$refs.sendTo.$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
-                  vm.sendTo.push(vm.$refs.sendTo.$el.getElementsByTagName("input")[0].value.trim());
-                  vm.sendToInput = "";
-                });
-            });
-    };
+    ["fromName", "fromAddress","subject"].forEach((k) => {
+      vm.$refs[k].$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
+        vm[k] = vm.$refs[k].$el.getElementsByTagName("input")[0].value.trim();
+      });
+    });
+    
+    vm.$refs.sendTo.$el.getElementsByTagName("input")[0].addEventListener('tribute-replaced', function (evt) {
+      vm.sendTo.push(vm.$refs.sendTo.$el.getElementsByTagName("input")[0].value.trim());
+      vm.sendToInput = "";
+    });
   },
   watch:{
     listener:{
       deep:true,
       handler(newVal) {
-        this.$refs.editor.reset();
+        //this.$refs.editor.reset();
         this.validate();
         var vm = this;
         if(typeof(this.tribute) === "undefined")
@@ -321,7 +306,7 @@ export default {
               vm.sendTo = [];
               vm.subject = null;
             }
-            vm.$refs.editor.content = vm.content;
+            //vm.$refs.editor.content = vm.content;
           }).catch((err) => {
               console.error(err);
               vm.$store.state.app.snackbar = err;
@@ -346,25 +331,15 @@ export default {
     }
   },
   components: { 
-    Combobox2, MessagePreview, JoditEditor
+    Combobox2, ContentToolsEditor
   },
 }
 </script>
-<style lang="scss">
-.jodit_source {
-    height:90%;
-}
-.jodit_workplace {
-  height:90% !important;
-  border: 1px solid #ccc;
-}
-.jodit_container {
-  height:90% !important;
-}
+<style>
 .hide-input {
-    margin-top:25px;
+     margin-top:25px;
 }
 .hide-input .v-input__slot {
-  display:none !important;
-}
+   display:none !important;
+} 
 </style>

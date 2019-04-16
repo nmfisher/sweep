@@ -11,6 +11,7 @@ export default {
   data:() => ({
     content:"",
     config:{
+      disablePlugins: 'cleanHTML,beautifyHTML',
       defaultMode: JoditVue.MODE_SOURCE,
       inline:true,
       buttons: [
@@ -44,7 +45,7 @@ export default {
   },
   watch:{
     content(newVal) {
-        this.$emit("change", newVal);
+      this.$emit("change", newVal);
     }
   },
   methods:{

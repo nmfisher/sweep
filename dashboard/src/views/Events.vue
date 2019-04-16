@@ -113,14 +113,13 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import MessagePreview from './MessagePreview.vue';
-import {EventApi} from '../../lib/api'
 import {
   mapMutations,
   mapState
 } from 'vuex'
-import { ListenerApi } from '../../lib/api';
+import Vue from 'vue'
+import MessagePreview from '../components/MessagePreview.vue';
+import { EventApi, ListenerApi } from '../../lib/api'
 
 export default {
     data: () => ({
@@ -176,7 +175,8 @@ export default {
               console.log(message);
           });
         }).catch((err) => {
-          vm.$store.state.app.snackbar = err.response.data;
+          console.error(err);
+          vm.$store.state.app.snackbar = err;
         });
       });
       Promise.all(promises).finally(() => {
@@ -203,7 +203,8 @@ export default {
           }
         });
       }).catch((err) => {
-        vm.$store.state.app.snackbar = err.response.data;
+        console.error(err);
+        vm.$store.state.app.snackbar = err;
       }).finally(() => {
         vm.loading = false;
       })
@@ -213,18 +214,5 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-.ace_editor {
-    border: 1px solid #ccc;
-}
-pre {
-    padding-top:35px !important;
-}
-code {
-    box-shadow:none;
-    white-space: pre-wrap !important;
-}
-code::before {
-    content:''
-}
+<style>
 </style>

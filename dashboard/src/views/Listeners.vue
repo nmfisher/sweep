@@ -4,6 +4,7 @@
     fluid
     grid-list-xl
   >
+
     <v-expand-x-transition hide-on-leave>
       <v-navigation-drawer v-show="editing" absolute right width="800" style="overflow:visible">
         <template-editor :listener="selected" @close="editing=null;selected=null;"></template-editor>
@@ -144,15 +145,13 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import {
   mapMutations,
   mapState
 } from 'vuex'
 import Vue from 'vue'
-
-import TemplateEditor from './TemplateEditor.vue';
-// import CodePreview from './TemplateEditor.vue';
+import TemplateEditor from '../components/TemplateEditor.vue';
 
 import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
 

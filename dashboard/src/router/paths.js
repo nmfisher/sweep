@@ -21,6 +21,7 @@ export default [
   },
   {
     path: '/events',
+    name: 'Events',
     view: 'Events'
   },
 ]

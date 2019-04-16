@@ -1,5 +1,5 @@
-/* eslint-disable */
 <template>
+  <div></div>
 </template>
 <script>
 import Vue from 'vue'
@@ -10,9 +10,12 @@ import 'prismjs/components/prism-fsharp'
 
 import 'prismjs/components/prism-python'
 import 'prismjs/themes/prism-twilight.css'
+export default {
+  
+}
 </script>
 <style>
-pre {
+/* pre {
     padding-top:35px !important;
 }
 code {
@@ -21,6 +24,6 @@ code {
 }
 code::before {
     content:''
-}
+} */
 
 </style>
