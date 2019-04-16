@@ -75,7 +75,7 @@
         if(this.templateId == null)
           return;
         
-        new TemplateApi().renderTemplate(this.templateId, {params:this.requestBody}, null, { withCredentials:true }).then((resp) => { 
+        new TemplateApi().renderTemplate(this.templateId, {params:this.requestBody}, { withCredentials:true }).then((resp) => { 
           vm.message = resp.data;
           vm.active = 1;
         }).catch((err) => {

@@ -56,9 +56,9 @@
           </v-flex>
           <v-flex>
             <v-layout column fill-height>
-              <v-layout row style="flex-grow:0;padding:12px">
+              <v-layout row style="flex-grow:0;padding:12px" align-center>
                 <v-switch v-model="editRaw" :label="editRaw ? `Raw HTML`: `Visual`"></v-switch>
-                <span v-if="validated" @click="showPreview">
+                <span v-if="validated" @click="showPreview" style="cursor:pointer">
                     Preview
                 </span>
                 <v-btn flat icon color="grey">
@@ -72,7 +72,7 @@
                 </v-btn>
               </v-layout>
               <v-flex xs11>
-                  <content-tools-editor @change="content = $event" :tribute="tribute" :editRaw="editRaw"/>
+                  <content-tools-editor @change="content = $event" :tribute="tribute" :editRaw="editRaw" :active="active"/>
                   <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
               </v-flex>
               <v-flex xs1>
@@ -99,7 +99,8 @@ import ContentToolsEditor from './ContentToolsEditor.vue';
 
 export default {
   props:{
-    listener:Object
+    listener:Object,
+    active:Boolean
   },
    data: () => ({
       content:"",

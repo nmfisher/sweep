@@ -7,7 +7,7 @@
 
     <v-expand-x-transition hide-on-leave>
       <v-navigation-drawer v-show="editing" absolute right width="800" style="overflow:visible">
-        <template-editor :listener="selected" @close="editing=null;selected=null;"></template-editor>
+        <template-editor :listener="selected" @close="editing=false;selected=null;" :active="editing"></template-editor>
       </v-navigation-drawer>
     </v-expand-x-transition>
     <v-layout

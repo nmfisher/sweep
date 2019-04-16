@@ -4,6 +4,19 @@
     fluid
     grid-list-xl
   >
+  <v-dialog v-model="showingErrorDialog">
+    <v-card height="500">
+      <v-layout row fill-height align-center>
+        <v-list v-if="showingErrorItem">
+          <template v-for="action in showingErrorItem.actions">
+            <v-list-tile v-if="action.error" :key="action.error">
+              {{action.error}}
+            </v-list-tile>
+          </template>
+        </v-list>
+      </v-layout>
+    </v-card>
+  </v-dialog>
     <v-layout
       justify-center
       wrap
@@ -44,7 +57,7 @@
                 slot-scope="{ item }"
               >
                   <td>
-                      <v-icon v-if="item.status == `Error`" color="red">mdi-alert-circle</v-icon>
+                      <v-icon v-if="item.status == `Error`" color="red" @click="showingErrorDialog=true;showingErrorItem=item">mdi-alert-circle</v-icon>
                       <v-icon v-if="item.status == `Completed`" color="green">mdi-check</v-icon>
                       <v-icon v-if="item.status == `Pending`" color="gray">mdi-help</v-icon>
                   </td>
@@ -126,6 +139,8 @@ export default {
         content:``,
         loading:false,
         showMessages:false,
+        showingErrorItem:null,
+        showingErrorDialog:false,
         messages:null,
         headers: [
             {
