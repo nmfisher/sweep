@@ -6,6 +6,7 @@ open Sql
 open Sweep.Exceptions
 open Sweep.Model.ListenerAction
 open Newtonsoft.Json
+open FSharp.Data.Sql
 
 type Event = Sweep.Model.Event.Event
 
@@ -49,9 +50,10 @@ module Event =
     } 
     |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
     |> Seq.tryHead
-      
+
   let list organizationId returnActions =
-    let ctx = GetDataContext()
+    // let ctx = GetDataContext()
+    let ctx = Sql.GetDataContext()
     match returnActions with 
     | false -> 
       query {      
@@ -63,16 +65,27 @@ module Event =
     | true ->
       query {      
           for event in ctx.SweepDb.Event do
-          join listenerAction in ctx.SweepDb.Listeneraction on (event.Id = listenerAction.EventId)
-          where (event.OrganizationId = organizationId)
-          select (event, listenerAction)
+          join la in (!!) ctx.SweepDb.Listeneraction on (event.Id = la.EventId)
+          select (event,la)
       } 
       |> Seq.map (fun (event, listenerAction) ->
-        event.MapTo<Event>(deserializeEvent), listenerAction.MapTo<ListenerAction>(ListenerAction.deserializeListenerAction))
+        let mappedEvent = event.MapTo<Event>(deserializeEvent)
+        let mappedListener = (
+          match isNull (listenerAction.GetColumn("Id")) with
+          | true ->
+            None
+          | false ->
+            Some(listenerAction.MapTo<ListenerAction>(ListenerAction.deserializeListenerAction))          
+        )
+        mappedEvent, mappedListener)
       |> Seq.groupBy (fun (event, action) ->  event.Id)
       |> Seq.map (fun (eventId, groups) ->
           let event = groups |> Seq.head |> fst 
-          let listenerActions = groups |> Seq.map snd |> Seq.toArray
+          let listenerActions = 
+            groups 
+            |> Seq.where (fun x -> snd(x).IsSome) 
+            |> Seq.map (fun x -> snd(x).Value) 
+            |> Seq.toArray
           {
               event with Actions=listenerActions;
           })

@@ -425,7 +425,7 @@ module TemplateApiHandlerTests =
         |> readText
         |> JsonConvert.DeserializeObject<Sweep.Model.Message.Message>
         |> (fun x -> 
-          x.Content |> shouldEqual "<html><body>Hello Bob</body></html>" |> ignore
+          x.Content |> shouldEqual "Hello Bob" |> ignore
         ) |> ignore
       }
 

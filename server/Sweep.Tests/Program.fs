@@ -38,7 +38,7 @@ module Program =
                 //EventQueueTests.``sendConditional only invokes mailer if trigger is matched``() :> Task
                 // EventQueueTests.``Render default subject``() :> Task;
                 // EventQueueTests.``Dequeue and send mail for an event with no trigger``() :> Task
-                // EventQueueTests.``Dequeue and send mail for an event with a matched trigger``() :> Task
+                EventQueueTests.``Dequeue and send mail for an event with a matched trigger``() :> Task
                 // EventQueueTests.``Dequeue and mark event as completed with an expired trigger``() :> Task
                 //  ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task
                 //EventApiHandlerTests.``ListIncomplete lists events where ProcessedOn is null``() :> Task
@@ -51,7 +51,7 @@ module Program =
                 //TemplateApiHandlerTests.``RenderTemplate - Renders a template using the provided event parameters returns 422 where Template could not be rendered``() :> Task
                 //MailHandlerTests.``Send test email``() :> Task
                 // ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation`` ()  :> Task
-                  ListenerApiHandlerTests.``ListMessagesForAction - List all messages returns 200 where successful operation`` () :> Task
+                  // ListenerApiHandlerTests.``ListMessagesForAction - List all messages returns 200 where successful operation`` () :> Task
 
                 ]
                 |> List.toArray
