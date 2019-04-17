@@ -46,7 +46,7 @@ module TemplateRenderer =
         FromAddress = (<=>) (builder.Render(template.FromAddress, paramDict)) mailDefaults.FromAddress;
         FromName = (<=>)  (builder.Render(template.FromName, paramDict)) mailDefaults.FromName;
         Subject = (<=>) (builder.Render(template.Subject, paramDict)) mailDefaults.Subject;
-        Content = "<html><body>" + builder.Render(template.Content, paramDict).Replace("<html>","").Replace("<body>","") + "</body></html>";
+        Content = builder.Render(template.Content, paramDict);
         OrganizationId = template.OrganizationId;
         ListenerActionId = listenerActionId;
       } 
