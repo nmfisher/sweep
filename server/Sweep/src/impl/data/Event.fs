@@ -51,31 +51,32 @@ module Event =
     |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
     |> Seq.tryHead
 
-  let list organizationId returnActions =
-    // let ctx = GetDataContext()
+  let list organizationId returnActions startDate endDate =
     let ctx = Sql.GetDataContext()
     match returnActions with 
     | false -> 
       query {      
         for event in ctx.SweepDb.Event do
-        where (event.OrganizationId = organizationId)
+        where (event.OrganizationId = organizationId && event.ReceivedOn >= startDate && event.ReceivedOn <= endDate)
         select (event)
       } 
       |> Seq.map (fun x -> x.MapTo<Event>(deserializeEvent))
+      |> Seq.toList
     | true ->
       query {      
           for event in ctx.SweepDb.Event do
+          where (event.OrganizationId = organizationId && event.ReceivedOn >= startDate && event.ReceivedOn <= endDate)
           join la in (!!) ctx.SweepDb.Listeneraction on (event.Id = la.EventId)
           select (event,la)
       } 
       |> Seq.map (fun (event, listenerAction) ->
         let mappedEvent = event.MapTo<Event>(deserializeEvent)
         let mappedListener = (
-          match isNull (listenerAction.GetColumn("Id")) with
+          match listenerAction.ColumnValues |> Seq.find(fun x -> fst(x) = "id") |> snd |> isNull with
           | true ->
             None
           | false ->
-            Some(listenerAction.MapTo<ListenerAction>(ListenerAction.deserializeListenerAction))          
+            Some(listenerAction.MapTo<ListenerAction>(ListenerAction.deserializeListenerAction))
         )
         mappedEvent, mappedListener)
       |> Seq.groupBy (fun (event, action) ->  event.Id)
@@ -89,6 +90,7 @@ module Event =
           {
               event with Actions=listenerActions;
           })
+      |> Seq.toList        
 
   let listAllAfter eventId = 
     let ctx = GetDataContext()  

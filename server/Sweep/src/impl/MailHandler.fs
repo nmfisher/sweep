@@ -28,7 +28,7 @@ module MailHandler =
       let resp = send client message 
       match resp.StatusCode with 
       | HttpStatusCode.Accepted ->
-          saver message
+          saver { message with SentOn=Nullable(DateTime.Now)}
       | _ ->
         let error = 
           resp.Body.ReadAsStringAsync()

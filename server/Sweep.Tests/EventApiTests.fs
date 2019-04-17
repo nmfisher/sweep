@@ -181,13 +181,38 @@ module EventApiHandlerTests =
     }
 
   [<Fact>]
+  let ``List with start and end dates`` () =
+    task {
+      
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+
+      // add your setup code here
+      initialize() |> ignore
+
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "now" (DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "7days" (DateTime.Now.AddDays(float(-7)).ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
+      TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "3days" (DateTime.Now.AddDays(float(-3)).ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
+
+      HttpGet client ("/1.0.0/events?startDate=" + (DateTime.Now.AddDays(float(-5)).ToString("yyyy-MM-dd H:mm:ss")) + "&endDate=" + (DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")))
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<Event[]>
+      |> shouldBeLength 2
+      |> (fun x -> 
+              x |> Seq.find (fun y -> y.EventName = "now") |> ignore
+              x |> Seq.find (fun y -> y.EventName = "3days") |> ignore
+      ) |> ignore
+    }
+
+  [<Fact>]
   let ``List all events after the ReceivedOn date of the provided event`` () =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
       initialize() |> ignore
       TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
-      let event = Sweep.Data.Event.list TestHelper.orgId false |> Seq.head
+      let event = Sweep.Data.Event.list TestHelper.orgId false (DateTime(1970,1,1)) DateTime.Now |> Seq.head
       TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.AddDays(float 1).ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
       TestHelper.execute (sprintf "INSERT INTO event (id,eventName,receivedOn,organizationId) VALUES('%s','%s','%s','%s') " (Guid.NewGuid().ToString()) "some_event" (DateTime.Now.AddDays(float 1).ToString("yyyy-MM-dd H:mm:ss")) TestHelper.orgId)
       Sweep.Data.Event.listAllAfter event.Id |> Seq.toArray |> shouldBeLength 3 |> ignore

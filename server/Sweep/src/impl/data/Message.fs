@@ -33,7 +33,7 @@ module Message =
     | false ->        
       row.MapTo<Message>(deserializeMessage)
       
-  let list organizationId =
+  let list startDate endDate organizationId =
     let ctx = GetDataContext()
     query {      
       for message in ctx.SweepDb.Message do
@@ -53,6 +53,7 @@ module Message =
     row.SendTo <- JsonConvert.SerializeObject message.SendTo
     row.OrganizationId <- message.OrganizationId
     row.ListenerActionId <- message.ListenerActionId
+    row.SentOn <- Some(message.SentOn.Value)
     row.Id <- message.Id
     ctx.SubmitUpdates()
 

@@ -3,6 +3,7 @@ namespace Sweep
 open Sweep.Model.User
 open Sweep.Model.UserRequestBody
 open System.Collections.Generic
+open System
 
 module UserApiHandlerParams = 
 

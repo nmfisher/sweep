@@ -25,11 +25,17 @@ module MessageApiServiceImplementation =
           | NotFoundException(msg) ->
             GetMessageByIdStatusCode404 { content = msg }
 
-        member this.ListMessages ctx =
+        member this.ListMessages ctx args =
           let userId = getUserId ctx.User.Claims
           let orgId = getOrgId ctx.User.Claims
-          let messages = CompositionRoot.listMessages orgId 
-          ListMessagesDefaultStatusCode { content = messages }
+          match args.queryParams with 
+          | Ok queryParams -> 
+            let startDate = match queryParams.startDate with | Some d -> d | None -> DateTime(1970,1,1)
+            let endDate = match queryParams.endDate with | Some d -> d | None -> DateTime.Now
+            let messages = CompositionRoot.listMessages startDate endDate orgId 
+            ListMessagesDefaultStatusCode { content = messages }
+          | _ -> 
+            ListMessagesStatusCode500 { content = "Malformed query parameter" }
 
       //#endregion
 

@@ -18,6 +18,7 @@ module Message =
     SendTo : string[];
     OrganizationId : string;
     ListenerActionId : string;
+    SentOn : Nullable<DateTime>;
   }
   //#endregion
   

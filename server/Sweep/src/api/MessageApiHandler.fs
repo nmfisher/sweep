@@ -42,10 +42,14 @@ module MessageApiHandler =
     let ListMessages  : HttpHandler = 
       fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-          let result = MessageApiService.ListMessages ctx 
+          let queryParams = ctx.TryBindQueryString<ListMessagesQueryParams>()
+          let serviceArgs = {  queryParams=queryParams;    } : ListMessagesArgs
+          let result = MessageApiService.ListMessages ctx serviceArgs
           return! (match result with 
                       | ListMessagesDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
+                      | ListMessagesStatusCode500 resolved ->
+                            setStatusCode 500 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

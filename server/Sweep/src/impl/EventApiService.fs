@@ -44,7 +44,9 @@ module EventApiServiceImplementation =
           match args.queryParams with 
           | Ok queryParams -> 
             let withActions = match queryParams.withActions with | Some w -> w | None -> false
-            let events = CompositionRoot.listEvents orgId withActions |> Seq.toArray
+            let startDate = match queryParams.startDate with | Some s -> s | None -> DateTime(1970, 1, 1)
+            let endDate = match queryParams.endDate with | Some s -> s | None -> DateTime.Now;
+            let events = CompositionRoot.listEvents orgId withActions startDate endDate |> Seq.toArray
             ListEventsDefaultStatusCode { content = events }
           | _ ->
             ListEventsStatusCode500 { content = "Unknown query parameter" }

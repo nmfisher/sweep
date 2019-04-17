@@ -33,12 +33,13 @@ module Program =
                 //ListenerTests.``Validate Listener Condition``() :> Task
                 //EventQueueTests.``Listener condition expires when duration exceeds time elapsed since original event``() :> Task
                 // EventApiHandlerTests.``ListEvents - List all received events returns 200 where successful operation``() :> Task
+                EventApiHandlerTests.``List with start and end dates``() :> Task
                 // EventApiHandlerTests.``GetEventById - Find raised event by ID returns 200 where successful operation``() :> Task
                 // EventQueueTests.``Listener condition is met by events matching event name and key within duration ``() :> Task
                 //EventQueueTests.``sendConditional only invokes mailer if trigger is matched``() :> Task
                 // EventQueueTests.``Render default subject``() :> Task;
                 // EventQueueTests.``Dequeue and send mail for an event with no trigger``() :> Task
-                EventQueueTests.``Dequeue and send mail for an event with a matched trigger``() :> Task
+                // EventQueueTests.``Dequeue and send mail for an event with a matched trigger``() :> Task
                 // EventQueueTests.``Dequeue and mark event as completed with an expired trigger``() :> Task
                 //  ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task
                 //EventApiHandlerTests.``ListIncomplete lists events where ProcessedOn is null``() :> Task

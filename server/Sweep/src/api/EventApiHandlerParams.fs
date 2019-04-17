@@ -3,6 +3,7 @@ namespace Sweep
 open Sweep.Model.Event
 open Sweep.Model.EventRequestBody
 open System.Collections.Generic
+open System
 
 module EventApiHandlerParams = 
 
@@ -62,6 +63,12 @@ module EventApiHandlerParams =
     [<CLIMutable>]
     type ListEventsQueryParams = {
       withActions : bool option;
+      
+
+      startDate : DateTime option;
+      
+
+      endDate : DateTime option;
       
     }
     //#endregion

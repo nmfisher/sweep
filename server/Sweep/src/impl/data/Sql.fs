@@ -6,7 +6,8 @@ open FSharp.Data.Sql
 module Sql =
 
   let [<Literal>] resPath = __SOURCE_DIRECTORY__ + @"../../../../lib"
-
+  FSharp.Data.Sql.Common.QueryEvents.SqlQueryEvent |> Event.add (printfn "Executing SQL: %O")
+  
   type Sql = SqlDataProvider< 
                             ConnectionString = "server=localhost;database=sweep_db;user=root;password=MyNewPass",
                             DatabaseVendor = Common.DatabaseProviderTypes.MYSQL,

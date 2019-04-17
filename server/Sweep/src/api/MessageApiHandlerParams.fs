@@ -2,6 +2,7 @@ namespace Sweep
 
 open Sweep.Model.Message
 open System.Collections.Generic
+open System
 
 module MessageApiHandlerParams = 
 
@@ -28,11 +29,30 @@ module MessageApiHandlerParams =
       pathParams:GetMessageByIdPathParams;
     }
 
+    //#region Query parameters
+    [<CLIMutable>]
+    type ListMessagesQueryParams = {
+      startDate : DateTime option;
+      
+
+      endDate : DateTime option;
+      
+    }
+    //#endregion
+
     
     type ListMessagesDefaultStatusCodeResponse = {
       content:Message[];
       
     }
-    type ListMessagesResult = ListMessagesDefaultStatusCode of ListMessagesDefaultStatusCodeResponse
+    
+    type ListMessagesStatusCode500Response = {
+      content:string;
+      
+    }
+    type ListMessagesResult = ListMessagesDefaultStatusCode of ListMessagesDefaultStatusCodeResponse|ListMessagesStatusCode500 of ListMessagesStatusCode500Response
 
+    type ListMessagesArgs = {
+      queryParams:Result<ListMessagesQueryParams,string>;
+    }
     

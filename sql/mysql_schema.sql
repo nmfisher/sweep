@@ -100,7 +100,8 @@ CREATE TABLE IF NOT EXISTS `Message` (
   `fromName` TEXT NOT NULL,
   `sendTo` JSON NOT NULL,
   `organizationId` TEXT NOT NULL,
-  `listenerActionId` TEXT NOT NULL
+  `listenerActionId` TEXT NOT NULL,
+  `sentOn` DATETIME DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

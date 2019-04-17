@@ -49,6 +49,7 @@ module TemplateRenderer =
         Content = builder.Render(template.Content, paramDict);
         OrganizationId = template.OrganizationId;
         ListenerActionId = listenerActionId;
+        SentOn = Nullable();
       } 
       message
       

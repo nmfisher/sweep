@@ -5,6 +5,7 @@ open Sweep.Model.RenderTemplateRequestBody
 open Sweep.Model.Template
 open Sweep.Model.TemplateRequestBody
 open System.Collections.Generic
+open System
 
 module TemplateApiHandlerParams = 
 
