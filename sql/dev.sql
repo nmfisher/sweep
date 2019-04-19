@@ -89,16 +89,6 @@ LOCK TABLES `message` WRITE;
 UNLOCK TABLES;
 
 --
--- Dumping data for table `organization`
---
-
-LOCK TABLES `organization` WRITE;
-/*!40000 ALTER TABLE `organization` DISABLE KEYS */;
-INSERT INTO `organization` VALUES ('114797661408259946381');
-/*!40000 ALTER TABLE `organization` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Dumping data for table `rendertemplaterequestbody`
 --
 
@@ -132,8 +122,18 @@ UNLOCK TABLES;
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('114797661408259946381',NULL,NULL,'3b14cd66-febb-4339-9799-b9c04bab5dba','b55d39d8-776f-4045-9b66-2c0fe3c78eea');
+INSERT INTO `user` VALUES ('114797661408259946381','nick.fisher@avinium.com',NULL,'b55d39d8-776f-4045-9b66-2c0fe3c78eea');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `organization`
+--
+
+LOCK TABLES `organization` WRITE;
+/*!40000 ALTER TABLE `organization` DISABLE KEYS */;
+INSERT INTO `organization` VALUES ('b55d39d8-776f-4045-9b66-2c0fe3c78eea','154542ec-59ba-4814-a062-fbad03ec2630','4510d3ab-e2dd-4600-88c2-5e545911e3fe');
+/*!40000 ALTER TABLE `organization` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
