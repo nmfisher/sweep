@@ -18,10 +18,9 @@ module User =
     | _ -> 
       value
 
-  let save id username (apiKey:string) orgId = 
+  let save id username orgId = 
     let ctx = GetDataContext()
     let user = ctx.SweepDb.User.Create()
-    user.ApiKey <- apiKey
     user.Id <- id
     user.OrganizationId <- orgId // TODO - need to allow multi-user organizations
     ctx.SubmitUpdates()
@@ -31,16 +30,6 @@ module User =
     query {
       for user in ctx.SweepDb.User do
       where (user.Id = id)
-      select user
-    } 
-    |> Seq.map (fun x -> x.MapTo<User>(deserialize))
-    |> Seq.tryHead
-
-  let findByApiKey apiKey = 
-    let ctx = GetDataContext()
-    query {
-      for user in ctx.SweepDb.User do
-      where (user.ApiKey = apiKey)
       select user
     } 
     |> Seq.map (fun x -> x.MapTo<User>(deserialize))

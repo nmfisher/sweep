@@ -42,6 +42,7 @@
     <Compile Include="model/Event.fs" />
     <Compile Include="model/EventRequestBody.fs" />
     <Compile Include="model/UserRequestBody.fs" />
+    <Compile Include="model/Organization.fs" />
     <Compile Include="model/User.fs" />
     <Compile Include="model/Template.fs" />
     <Compile Include="model/TemplateRequestBody.fs" />
@@ -55,6 +56,7 @@
     <Compile Include="impl/UserContext.fs" />
     <Compile Include="impl/data/Sql.fs" />
     <Compile Include="impl/data/Message.fs" />
+    <Compile Include="impl/data/Organization.fs" />
     <Compile Include="impl/data/Template.fs" />
     <Compile Include="impl/data/Listener.fs" />
     <Compile Include="impl/data/ListenerTemplate.fs" />
@@ -82,6 +84,10 @@
     <Compile Include="api/UserApiServiceInterface.fs" />
     <Compile Include="impl/UserApiService.fs" />
     <Compile Include="api/UserApiHandler.fs" />
+    <Compile Include="api/OrganizationApiHandlerParams.fs" />
+    <Compile Include="api/OrganizationApiServiceInterface.fs" />
+    <Compile Include="impl/OrganizationApiService.fs" />
+    <Compile Include="api/OrganizationApiHandler.fs" />
     <Compile Include="impl/MailHandler.fs" />
     <Compile Include="impl/EventQueue.fs" />
     <Compile Include="impl/CustomHandlers.fs" />
@@ -91,6 +97,9 @@
   <Import Project="fsc.props" />
   <ItemGroup>
     <None Include="..\..\..\dashboard\dist\**" CopyToOutputDirectory="PreserveNewest" LinkBase="wwwroot" />
-    <None Include="view/login.html" CopyToOutputDirectory="PreserveNewest" Link="wwwroot\login.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".\view\*.*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always"/>
+    <Content Include=".\view\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>

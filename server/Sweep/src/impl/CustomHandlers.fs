@@ -42,9 +42,11 @@ module CustomHandlers =
     | Some u -> 
         u
     | None ->
-        let apiKey = (Guid.NewGuid().ToString())
-        CompositionRoot.saveUser id email apiKey (Guid.NewGuid().ToString()) |> ignore
-        CompositionRoot.saveOrganization id
+        CompositionRoot.saveUser id email |> ignore
+        let orgId = (Guid.NewGuid().ToString())
+        let primaryApiKey = (Guid.NewGuid().ToString())
+        let secondaryApiKey = (Guid.NewGuid().ToString())
+        CompositionRoot.saveOrganization orgId primaryApiKey secondaryApiKey
         match CompositionRoot.getUser id with
         | Some u ->
           u
@@ -58,7 +60,6 @@ module CustomHandlers =
         let email = (ctx.User.["email"].ToString())
         let user = fetchOrCreateUser id email  
         ctx.Identity.AddClaim(Claim(ClaimTypes.GroupSid, user.OrganizationId))
-        ctx.Identity.AddClaim(Claim("apiKey", user.ApiKey))
     } :> Tasks.Task
 
   let setOAuthOptions name (options:OAuthOptions) scopes (settings:IConfiguration) = 
@@ -79,17 +80,18 @@ module CustomHandlers =
   let setApiKeyEvents name (events:ApiKeyEvents) = 
     events.OnApiKeyValidated <- (fun ctx -> 
       task {
-        let user = CompositionRoot.findUserByApiKey ctx.ApiKey 
-        if user.IsSome then
+        match CompositionRoot.findOrgByApiKey ctx.ApiKey with
+        | Some org ->
           let claims = 
             [|  
-              Claim(ClaimTypes.GroupSid, user.Value.OrganizationId);
-              Claim(ClaimTypes.Email, user.Value.Id)
+              Claim(ClaimTypes.GroupSid, org.Id);
             |]  
           let identity = ClaimsIdentity(claims, ApiKeyDefaults.AuthenticationScheme)
-          //ctx.Principal <- ClaimsPrincipal([|identity|])
           ctx.HttpContext.User <- ClaimsPrincipal([|identity|])
           ctx.Success()
+        | _ -> 
+          ctx.HttpContext.GetService<ILogger>().LogError(sprintf "API key authentication failure : %s" ctx.ApiKey)
+          ()
       } :> Task
     )
     events

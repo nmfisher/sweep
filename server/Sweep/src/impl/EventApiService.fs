@@ -21,7 +21,6 @@ module EventApiServiceImplementation =
             if String.IsNullOrWhiteSpace(args.bodyParams.EventName) then
               AddEventStatusCode422 { content = "Event name must not be empty" }
             else 
-              let userId = getUserId ctx.User.Claims
               let orgId = getOrgId ctx.User.Claims
               let event = CompositionRoot.addEvent args.bodyParams.EventName args.bodyParams.Params orgId
               AddEventDefaultStatusCode { content = "OK" }

@@ -46,10 +46,6 @@ module UserApiHandler =
           return! (match result with 
                       | GetUserInfoDefaultStatusCode resolved ->
                             setStatusCode 200 >=> json resolved.content 
-                      | GetUserInfoStatusCode400 resolved ->
-                            setStatusCode 400 >=> text resolved.content 
-                      | GetUserInfoStatusCode404 resolved ->
-                            setStatusCode 404 >=> text resolved.content 
           ) next ctx
         }
     //#endregion

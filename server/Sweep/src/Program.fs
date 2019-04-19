@@ -22,6 +22,7 @@ open AspNet.Security.ApiKey.Providers
 open EventApiHandlerParams
 open ListenerApiHandlerParams
 open MessageApiHandlerParams
+open OrganizationApiHandlerParams
 open TemplateApiHandlerParams
 open UserApiHandlerParams
 open Giraffe
@@ -64,6 +65,7 @@ module App =
       HttpPut >=> routeBind<UpdateListenerPathParams> "/1.0.0/listeners/{listenerId}"  (fun x -> requiresAuthentication authFailure >=>  ListenerApiHandler.UpdateListener x);
       HttpGet >=> routeBind<GetMessageByIdPathParams> "/1.0.0/messages/{messageId}"  (fun x -> requiresAuthentication authFailure >=>  MessageApiHandler.GetMessageById x);
       HttpGet >=> route "/1.0.0/messages" >=> requiresAuthentication authFailure >=>  MessageApiHandler.ListMessages;
+      HttpGet >=> route "/1.0.0/organization" >=> requiresAuthentication authFailure >=>  OrganizationApiHandler.GetOrganizationInfo;
       HttpPost >=> route "/1.0.0/templates" >=> requiresAuthentication authFailure >=>  TemplateApiHandler.AddTemplate;
       HttpDelete >=> routeBind<DeleteTemplatePathParams> "/1.0.0/templates/{templateId}"  (fun x -> requiresAuthentication authFailure >=>  TemplateApiHandler.DeleteTemplate x);
       HttpGet >=> routeBind<GetTemplateByIdPathParams> "/1.0.0/templates/{templateId}"  (fun x ->  TemplateApiHandler.GetTemplateById x);

@@ -10,6 +10,8 @@ module Organization =
 
   type Organization = {
     Id : string;
+    PrimaryApiKey : string;
+    SecondaryApiKey : string;
   }
   //#endregion
   

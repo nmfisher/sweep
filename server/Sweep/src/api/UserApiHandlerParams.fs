@@ -26,17 +26,7 @@ module UserApiHandlerParams =
       content:User;
       
     }
-    
-    type GetUserInfoStatusCode400Response = {
-      content:string;
-      
-    }
-    
-    type GetUserInfoStatusCode404Response = {
-      content:string;
-      
-    }
-    type GetUserInfoResult = GetUserInfoDefaultStatusCode of GetUserInfoDefaultStatusCodeResponse|GetUserInfoStatusCode400 of GetUserInfoStatusCode400Response|GetUserInfoStatusCode404 of GetUserInfoStatusCode404Response
+    type GetUserInfoResult = GetUserInfoDefaultStatusCode of GetUserInfoDefaultStatusCodeResponse
 
 
     //#region Query parameters

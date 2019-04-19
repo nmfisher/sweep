@@ -15,6 +15,8 @@ info:
 tags:
   - name: user
     description: A User
+  - name: organization
+    description: A User
   - name: listener
     description: >-
       A Listener must be configured for a Message to be sent in response to any
@@ -52,12 +54,14 @@ paths:
           in: query
           required: false
           schema:
-            type: date
+            type: string
+            format: date-time
         - name: endDate
           in: query
           required: false
           schema:
-            type: date
+            type: string
+            format: date-time
       responses:
         '200':
           description: successful operation
@@ -329,12 +333,14 @@ paths:
             in: query
             required: false
             schema:
-              type: date
+              type: string
+              format: date-time
           - name: endDate
             in: query
             required: false
             schema:
-              type: date
+              type: string
+              format: date-time
         responses:
           '200':
             description: successful operation
@@ -598,6 +604,24 @@ paths:
       responses:
         default:
           description: successful operation
+  '/organization':
+    get:
+      tags:
+        - organization
+      summary: Get organization info for the currently authenticated context
+      operationId: getOrganizationInfo
+      security:
+        - Google: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Organization'
   '/user':
     get:
       tags:
@@ -616,10 +640,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
     put:
       tags:
         - user
@@ -788,11 +808,17 @@ components:
       type: object
       required:
         - id
+        - primaryApiKey
+        - secondaryApiKey
       properties:
         id:
           type: string
           minLength: 36
           maxLength: 36
+        primaryApiKey:
+          type: string
+        secondaryApiKey:
+          type: string
     User:
       type: object
       required:
@@ -807,8 +833,6 @@ components:
         username:
           type: string
         password:
-          type: string
-        apiKey:
           type: string
         organizationId:
           type: string

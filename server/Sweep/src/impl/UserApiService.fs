@@ -23,15 +23,8 @@ module UserApiServiceImplementation =
             DeleteUserStatusCode404 { content = content }
 
         member this.GetUserInfo ctx  =
-          // let userId = UserContext.getUserId ctx.User.Claims
-          // let user = CompositionRoot.getUser userId
-          // match user with 
-          // | None ->
-          //     GetUserInfoStatusCode404 { content = "Not found"}
-          // | Some u ->
             let user = 
               { 
-                User.ApiKey= getApiKey ctx.User.Claims; 
                 Id=getUserId ctx.User.Claims;
                 OrganizationId=getOrgId ctx.User.Claims;
                 Username="";

@@ -37,15 +37,11 @@ module CompositionRoot =
 
   let saveUser = Sweep.Data.User.save
   let getUser = Sweep.Data.User.get
-  let findUserByApiKey = Sweep.Data.User.findByApiKey
 
   // Organizations
-
-  let saveOrganization id =
-    let ctx = GetDataContext()
-    let org = ctx.SweepDb.Organization.Create()
-    org.Id <- id
-    ctx.SubmitUpdates()
+  let getOrganization = Sweep.Data.Organization.get 
+  let saveOrganization = Sweep.Data.Organization.add
+  let findOrgByApiKey = Sweep.Data.Organization.findByApiKey
 
   // Listeners
   let addListener  = Sweep.Data.Listener.add

@@ -5,6 +5,8 @@ configure_dev.ps1
 deploy/
 .vscode/
 
+.env*
+
 # Azure Functions localsettings file
 local.settings.json
 
