@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web" >
   <PropertyGroup>
     <Description>Sweep</Description>
     <Copyright>Sweep</Copyright>
@@ -9,14 +9,13 @@
     <AssemblyName>Sweep</AssemblyName>
     <PackageId>Sweep</PackageId>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="AspNet.Security.ApiKey.Providers" Version="1.1.0" />
     <PackageReference Include="Core.System.Configuration.Install" Version="1.0.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="2.0.21" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
-    <PackageReference Include="Giraffe" Version="3.4.*" />
+    <PackageReference Include="Giraffe" Version="3.6.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.0.0.1-preview" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.2.3" />
     <PackageReference Include="SendGrid" Version="9.10.0" />
@@ -95,11 +94,36 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="fsc.props" />
+  <PropertyGroup>
+    <DisableAutoSetFscCompilerPath>true</DisableAutoSetFscCompilerPath>
+    <DotnetFscCompilerPath></DotnetFscCompilerPath>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\..\dashboard\dist\**" CopyToOutputDirectory="PreserveNewest" LinkBase="wwwroot" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".\view\*.*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always"/>
     <Content Include=".\view\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
   </ItemGroup>
+   <UsingTask TaskName="TokenReplace" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Path ParameterType="System.String" Required="true" />
+      <Token ParameterType="System.String" Required="true" />
+      <Replacement ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+string content = File.ReadAllText(Path);
+content = content.Replace(Token, Replacement);
+File.WriteAllText(Path, content);
+
+]]></Code>
+    </Task>
+  </UsingTask>
+  <ItemGroup>
+    <JSLib Include="$(OutDir)\wwwroot\js\*.js"/>
+  </ItemGroup>
+  
+  <Target Name='Foo' AfterTargets="MSDeployPublish" Condition="$(Configuration) == 'Release'">
+    <TokenReplace Path="%(JSLib.Identity)" Token="sweep-development.ngrok.io" Replacement="app.sweephq.com"/>
+  </Target>
 </Project>
