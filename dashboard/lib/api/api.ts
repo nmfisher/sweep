@@ -332,6 +332,12 @@ export interface Message {
      * @memberof Message
      */
     listenerActionId: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Message
+     */
+    sentOn?: Date;
 }
 
 /**
@@ -346,6 +352,18 @@ export interface Organization {
      * @memberof Organization
      */
     id: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Organization
+     */
+    primaryApiKey: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Organization
+     */
+    secondaryApiKey: string;
 }
 
 /**
@@ -491,12 +509,6 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    apiKey: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
     organizationId: string;
 }
 
@@ -609,10 +621,12 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * Returns a list of all events
          * @summary List all received events
          * @param {boolean} [withActions] 
+         * @param {Date} [startDate] 
+         * @param {Date} [endDate] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(withActions?: boolean, options: any = {}): RequestArgs {
+        listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options: any = {}): RequestArgs {
             const localVarPath = `/events`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -634,6 +648,14 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
 
             if (withActions !== undefined) {
                 localVarQueryParameter['withActions'] = withActions;
+            }
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = (startDate as any).toISOString();
+            }
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = (endDate as any).toISOString();
             }
 
 
@@ -689,11 +711,13 @@ export const EventApiFp = function(configuration?: Configuration) {
          * Returns a list of all events
          * @summary List all received events
          * @param {boolean} [withActions] 
+         * @param {Date} [startDate] 
+         * @param {Date} [endDate] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(withActions?: boolean, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Event>> {
-            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(withActions, options);
+        listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Event>> {
+            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(withActions, startDate, endDate, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -733,11 +757,13 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * Returns a list of all events
          * @summary List all received events
          * @param {boolean} [withActions] 
+         * @param {Date} [startDate] 
+         * @param {Date} [endDate] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(withActions?: boolean, options?: any) {
-            return EventApiFp(configuration).listEvents(withActions, options)(axios, basePath);
+        listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any) {
+            return EventApiFp(configuration).listEvents(withActions, startDate, endDate, options)(axios, basePath);
         },
     };
 };
@@ -778,12 +804,14 @@ export class EventApi extends BaseAPI {
      * Returns a list of all events
      * @summary List all received events
      * @param {boolean} [withActions] 
+     * @param {Date} [startDate] 
+     * @param {Date} [endDate] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    public listEvents(withActions?: boolean, options?: any) {
-        return EventApiFp(this.configuration).listEvents(withActions, options)(this.axios, this.basePath);
+    public listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any) {
+        return EventApiFp(this.configuration).listEvents(withActions, startDate, endDate, options)(this.axios, this.basePath);
     }
 
 }
@@ -1604,10 +1632,12 @@ export const MessageApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Returns a list of messages
          * @summary List all messages
+         * @param {Date} [startDate] 
+         * @param {Date} [endDate] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(options: any = {}): RequestArgs {
+        listMessages(startDate?: Date, endDate?: Date, options: any = {}): RequestArgs {
             const localVarPath = `/messages`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -1625,6 +1655,14 @@ export const MessageApiAxiosParamCreator = function (configuration?: Configurati
                     ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = (startDate as any).toISOString();
+            }
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = (endDate as any).toISOString();
             }
 
 
@@ -1664,11 +1702,13 @@ export const MessageApiFp = function(configuration?: Configuration) {
         /**
          * Returns a list of messages
          * @summary List all messages
+         * @param {Date} [startDate] 
+         * @param {Date} [endDate] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Message>> {
-            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).listMessages(options);
+        listMessages(startDate?: Date, endDate?: Date, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Message>> {
+            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).listMessages(startDate, endDate, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1696,11 +1736,13 @@ export const MessageApiFactory = function (configuration?: Configuration, basePa
         /**
          * Returns a list of messages
          * @summary List all messages
+         * @param {Date} [startDate] 
+         * @param {Date} [endDate] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(options?: any) {
-            return MessageApiFp(configuration).listMessages(options)(axios, basePath);
+        listMessages(startDate?: Date, endDate?: Date, options?: any) {
+            return MessageApiFp(configuration).listMessages(startDate, endDate, options)(axios, basePath);
         },
     };
 };
@@ -1727,12 +1769,121 @@ export class MessageApi extends BaseAPI {
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {Date} [startDate] 
+     * @param {Date} [endDate] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    public listMessages(options?: any) {
-        return MessageApiFp(this.configuration).listMessages(options)(this.axios, this.basePath);
+    public listMessages(startDate?: Date, endDate?: Date, options?: any) {
+        return MessageApiFp(this.configuration).listMessages(startDate, endDate, options)(this.axios, this.basePath);
+    }
+
+}
+
+
+/**
+ * OrganizationApi - axios parameter creator
+ * @export
+ */
+export const OrganizationApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Get organization info for the currently authenticated context
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOrganizationInfo(options: any = {}): RequestArgs {
+            const localVarPath = `/organization`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+
+
+                localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * OrganizationApi - functional programming interface
+ * @export
+ */
+export const OrganizationApiFp = function(configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Get organization info for the currently authenticated context
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOrganizationInfo(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Organization> {
+            const localVarAxiosArgs = OrganizationApiAxiosParamCreator(configuration).getOrganizationInfo(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+    }
+};
+
+/**
+ * OrganizationApi - factory interface
+ * @export
+ */
+export const OrganizationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    return {
+        /**
+         * 
+         * @summary Get organization info for the currently authenticated context
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOrganizationInfo(options?: any) {
+            return OrganizationApiFp(configuration).getOrganizationInfo(options)(axios, basePath);
+        },
+    };
+};
+
+/**
+ * OrganizationApi - object-oriented interface
+ * @export
+ * @class OrganizationApi
+ * @extends {BaseAPI}
+ */
+export class OrganizationApi extends BaseAPI {
+    /**
+     * 
+     * @summary Get organization info for the currently authenticated context
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrganizationApi
+     */
+    public getOrganizationInfo(options?: any) {
+        return OrganizationApiFp(this.configuration).getOrganizationInfo(options)(this.axios, this.basePath);
     }
 
 }
