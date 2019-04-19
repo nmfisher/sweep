@@ -11,8 +11,9 @@
         lg4
       >
         <material-chart-card
-          :data="dailySalesChart.data"
-          :options="dailySalesChart.options"
+          v-if="weekEvents"
+          :data="eventsChart.data"
+          :options="eventsChart.options"
           color="info"
           type="Line"
         >
@@ -25,11 +26,11 @@
         lg4
       >
         <material-chart-card
-          :data="emailsSubscriptionChart.data"
-          :options="emailsSubscriptionChart.options"
-          :responsive-options="emailsSubscriptionChart.responsiveOptions"
+          v-if="weekEmails"
+          :data="emailsChart.data"
+          :options="emailsChart.options"
           color="blue"
-          type="Bar"
+          type="Line"
         >
           <h4 class="title font-weight-light">Emails sent</h4>
         </material-chart-card>
@@ -40,8 +41,9 @@
         lg4
       >
         <material-chart-card
-          :data="dataCompletedTasksChart.data"
-          :options="dataCompletedTasksChart.options"
+          v-if="weekErrors"
+          :data="errorsChart.data"
+          :options="errorsChart.options"
           color="red"
           type="Line"
         >
@@ -55,85 +57,13 @@
 <script lang="ts">
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-import { EventApiFp, EventApiFactory } from '../../lib/api/dist/api.js';
+import { EventApiFp, EventApiFactory, EventApi, MessageApi } from '../../lib/api/dist/api.js';
 import { Configuration, ConfigurationParameters } from '../../lib/api/dist/configuration.js';
+import _ from 'lodash';
 
 export default {
   data () {
     return {
-      dailySalesChart: {
-        data: {
-          labels: ['17/01', '18/01', '19/01', '20/01', '21/01', '22/01', '23/01', '24/01'],
-          series: [
-            [12, 17, 7, 17, 23, 18, 38, 10]
-          ]
-        },
-        options: {
-          lineSmooth: this.$chartist.Interpolation.cardinal({
-            tension: 0
-          }),
-          low: 0,
-          high: 50, //  : we recommend you to set the high sa the biggest value + something for a better look
-          chartPadding: {
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0
-          }
-        }
-      },
-      dataCompletedTasksChart: {
-        data: {
-          labels: ['17/01', '18/01', '19/01', '20/01', '21/01', '22/01', '23/01', '24/01'],
-          series: [
-            [0, 0, 0, 0, 0, 1, 0, 0]
-          ]
-        },
-        options: {
-          lineSmooth: this.$chartist.Interpolation.cardinal({
-            tension: 0
-          }),
-          low: 0,
-          high: 10, 
-          chartPadding: {
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0
-          }
-        }
-      },
-      emailsSubscriptionChart: {
-        data: {
-          labels: ['17/01', '18/01', '19/01', '20/01', '21/01', '22/01', '23/01', '24/01'],
-          series: [
-            [10, 7, 21, 15, 1, 2, 3, 12]
-
-          ]
-        },
-        options: {
-          axisX: {
-            showGrid: false
-          },
-          low: 0,
-          high: 50,
-          chartPadding: {
-            top: 0,
-            bottom: 0,
-            left: 0
-          }
-        },
-        responsiveOptions: [
-          ['screen and (max-width: 640px)', {
-            seriesBarDistance: 5,
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0]
-              }
-            }
-          }]
-        ]
-      },
       headers: [
         {
           sortable: false,
@@ -164,35 +94,8 @@ export default {
           align: 'right'
         }
       ],
-      items: [
-        {
-          name: 'Dakota Rice',
-          country: 'Niger',
-          city: 'Oud-Tunrhout',
-          salary: '$35,738'
-        },
-        {
-          name: 'Minerva Hooper',
-          country: 'Curaçao',
-          city: 'Sinaai-Waas',
-          salary: '$23,738'
-        }, {
-          name: 'Sage Rodriguez',
-          country: 'Netherlands',
-          city: 'Overland Park',
-          salary: '$56,142'
-        }, {
-          name: 'Philip Chanley',
-          country: 'Korea, South',
-          city: 'Gloucester',
-          salary: '$38,735'
-        }, {
-          name: 'Doris Greene',
-          country: 'Malawi',
-          city: 'Feldkirchen in Kārnten',
-          salary: '$63,542'
-        }
-      ],
+      events: [],
+      messages:[],
       tabs: 0,
       list: {
         0: false,
@@ -201,19 +104,104 @@ export default {
       }
     }
   },
-  methods: {
-    complete (index) {
-      this.list[index] = !this.list[index]
+  computed:{
+    lastWeek() {
+      var today = new Date();
+      var lastWeek = [...Array(7).keys()].map((d) => {
+        var date = new Date();
+        date.setDate(today.getDate()-d);
+        return date.getDate() + "/" + (date.getMonth() + 1);
+      }).reverse();
+      return lastWeek;
+    },
+    eventsChart:(component) => { 
+      return {
+        data: {
+          labels: component.lastWeek,
+          series: [component.weekEvents]
+        },
+        options: {
+          low: 0,
+          high: 50, 
+        }
+      }
+    },
+    emailsChart(component) {
+      console.log(component.weekEmails);
+      return {
+          data: {
+            labels: component.lastWeek,
+            series: [component.weekEmails]
+          },
+          options: {
+            low: 0,
+            high: 100, 
+          }
+      };
+    },
+    errorsChart:(component) => ({
+        data: {
+          labels: component.lastWeek,
+          series: [component.weekErrors]
+        },
+        options: {
+          low: 0,
+          high: 50,
+        },
+    }),
+    weekErrors() {
+      if(this.events == null)
+        return [];
+      var errors = this.events.filter((event) => event.actions.filter((action) => action.error != null));
+      var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
+      var grouped = _.groupBy(errors, (e) => {
+        new Date(e).getDate();  
+      });
+      return Object.values({...zeros, ...grouped});
+    },
+    weekEvents() {
+      if(this.events == null)
+        return [];
+      var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
+
+      var grouped = _.groupBy(this.events, (e) => {
+        new Date(e).getDate();
+      });
+      return Object.values({...zeros, ...grouped});
+    },
+    weekEmails() {
+      if(this.messages == null)
+        return [];
+      
+      var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
+
+      var grouped = _.groupBy(this.messages, (m) => {
+        new Date(m).getDate();
+      });
+      console.log(Object.values({...zeros, ...grouped}));
+
+      return Object.values({...zeros, ...grouped});
     }
   },
   mounted() {
     var vm = this;
-      EventApiFactory().listEvents(null, {withCredentials:true}).then((resp) => {
-        vm.items = resp;
-      }).catch((err) => {
-        console.error(err);
-        vm.$store.state.app.snackbar = err;
-      });
+    var today = new Date();
+    var lastWeek = new Date()
+    lastWeek.setDate(today.getDate()-7);
+    
+    new EventApi().listEvents(true, lastWeek, today, {withCredentials:true}).then((resp) => {
+      vm.events = resp.data;
+    }).catch((err) => {
+      console.error(err);
+      vm.$store.state.app.snackbar = err;
+    });
+
+    new MessageApi().listMessages(lastWeek, today, {withCredentials:true}).then((resp) => {
+      vm.messages = resp.data;
+    }).catch((err) => {
+      console.error(err);
+      vm.$store.state.app.snackbar = err;
+    });
   }
 }
 </script>

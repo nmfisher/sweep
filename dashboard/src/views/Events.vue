@@ -57,9 +57,14 @@
                 slot-scope="{ item }"
               >
                   <td>
-                      <v-icon v-if="item.status == `Error`" color="red" @click="showingErrorDialog=true;showingErrorItem=item">mdi-alert-circle</v-icon>
-                      <v-icon v-if="item.status == `Completed`" color="green">mdi-check</v-icon>
-                      <v-icon v-if="item.status == `Pending`" color="gray">mdi-help</v-icon>
+                      <v-icon v-if="item.actions.length == 0">
+                        mdi-sleep
+                      </v-icon>
+                      <template v-else>
+                        <v-icon v-if="item.status == `Error`" color="red" @click="showingErrorDialog=true;showingErrorItem=item">mdi-alert-circle</v-icon>
+                        <v-icon v-if="item.status == `Completed`" color="green">mdi-check</v-icon>
+                        <v-icon v-if="item.status == `Pending`" color="gray">mdi-help</v-icon>
+                      </template>
                   </td>
                   <td>{{ item.eventName }}</td>
                   <td>{{ item.params }}</td>
@@ -202,7 +207,8 @@ export default {
   mounted() {
       var vm = this;
       this.loading = true;
-      new EventApi().listEvents(true, {withCredentials:true}).then((resp) => {
+      
+      new EventApi().listEvents(true, undefined, undefined, {withCredentials:true}).then((resp) => {
         vm.items = resp.data;
         vm.items.forEach((item)=> {
           item.status = "Completed";

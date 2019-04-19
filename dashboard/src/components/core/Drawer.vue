@@ -37,8 +37,14 @@
             v-text="link.text"
           />
         </v-list-tile>
-        <h5>API Key</h5>
-        <p>{{apiKey}}</p>
+        <v-list-tile style="margin-top: auto;margin-bottom: 25px;">
+          <v-layout column>
+            <h6>API keys</h6>
+            <p class="caption">{{primaryApiKey}}</p>
+            <p class="caption">{{secondaryApiKey}}</p>
+          </v-layout>
+        </v-list-tile>  
+        
       </v-layout>
   </v-navigation-drawer>
 </template>
@@ -52,10 +58,12 @@ import {
 import { UserApiAxiosParamCreator, UserApiFp } from '../../../lib/api';
 import { UserApiFactory } from '../../../lib/api';
 import { UserApi } from '../../../lib/api';
+import { OrganizationApi } from '../../../lib/api';
 
 export default {
   data: () => ({
-    apiKey:null,
+    primaryApiKey:null,
+    secondaryApiKey:null,
     logo: './img/vuetifylogo.png',
     links: [
       {
@@ -102,10 +110,12 @@ export default {
   },
   mounted () {
     var vm = this;
-    new UserApi().getUserInfo({withCredentials:true}).then((resp) => {
-        vm.apiKey = resp.data.apiKey;
+    new OrganizationApi().getOrganizationInfo({withCredentials:true}).then((resp) => {
+        vm.primaryApiKey = resp.data.primaryApiKey;
+        vm.secondaryApiKey = resp.data.secondaryApiKey;
     }).catch((err) => {
       console.error(err);
+      vm.$store.state.app.snackbar = err;
     })
     this.onResponsiveInverted()
     window.addEventListener('resize', this.onResponsiveInverted)

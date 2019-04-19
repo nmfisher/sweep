@@ -12,9 +12,8 @@
         md8
       >
         <material-card
-          color="green"
-          title="Edit Profile"
-          text="Complete your profile"
+          color="tertiary"
+          title="Profile"
         >
           <v-form>
             <v-container py-0>
@@ -24,119 +23,48 @@
                   md4
                 >
                   <v-text-field
-                    label="Company (disabled)"
+                    label="Username"
+                    v-model="username"
                     disabled/>
                 </v-flex>
+              </v-layout>
+              <v-layout wrap>
                 <v-flex
                   xs12
                   md4
                 >
-                  <v-text-field
-                    class="purple-input"
-                    label="User Name"
+                  <v-select
+                    :items="plans"
+                    item-text="name"
+                    item-value="name"
+                    label="Plan"
+                    v-model="plan"
                   />
                 </v-flex>
                 <v-flex
                   xs12
                   md4
                 >
-                  <v-text-field
-                    label="Email Address"
-                    class="purple-input"/>
-                </v-flex>
-                <v-flex
-                  xs12
-                  md6
-                >
-                  <v-text-field
-                    label="First Name"
-                    class="purple-input"/>
-                </v-flex>
-                <v-flex
-                  xs12
-                  md6
-                >
-                  <v-text-field
-                    label="Last Name"
-                    class="purple-input"/>
-                </v-flex>
-                <v-flex
-                  xs12
-                  md12
-                >
-                  <v-text-field
-                    label="Adress"
-                    class="purple-input"/>
-                </v-flex>
-                <v-flex
-                  xs12
-                  md4>
-                  <v-text-field
-                    label="City"
-                    class="purple-input"/>
-                </v-flex>
-                <v-flex
-                  xs12
-                  md4>
-                  <v-text-field
-                    label="Country"
-                    class="purple-input"/>
-                </v-flex>
-                <v-flex
-                  xs12
-                  md4>
-                  <v-text-field
-                    class="purple-input"
-                    label="Postal Code"
-                    type="number"/>
-                </v-flex>
-                <v-flex xs12>
-                  <v-textarea
-                    class="purple-input"
-                    label="About Me"
-                    value="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                  <v-select
+                    :items="[`Monthly`, `Annually`]"
+                    label="Billing period"
+                    v-model="billingPeriod"
                   />
                 </v-flex>
-                <v-flex
-                  xs12
-                  text-xs-right
-                >
-                  <v-btn
-                    class="mx-0 font-weight-light"
-                    color="success"
-                  >
-                    Update Profile
-                  </v-btn>
-                </v-flex>
+              </v-layout>
+              <v-layout wrap>
+                <p v-if="success">Thanks! Your plan will be upgraded in the next 24-48 hours. Any events above quota will continue to be queued (but not processed) once the plan change is processed.</p>
+              </v-layout>
+              <v-layout wrap>
+                <v-btn
+                  color="success"
+                  @click="update"
+                  round
+                  class="font-weight-light"
+                >Update</v-btn>
               </v-layout>
             </v-container>
           </v-form>
-        </material-card>
-      </v-flex>
-      <v-flex
-        xs12
-        md4
-      >
-        <material-card class="v-card-profile">
-          <v-avatar
-            slot="offset"
-            class="mx-auto d-block"
-            size="130"
-          >
-            <img
-              src="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
-            >
-          </v-avatar>
-          <v-card-text class="text-xs-center">
-            <h6 class="category text-gray font-weight-thin mb-3">CEO / CO-FOUNDER</h6>
-            <h4 class="card-title font-weight-light">Alec Thompson</h4>
-            <p class="card-description font-weight-light">Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...</p>
-            <v-btn
-              color="success"
-              round
-              class="font-weight-light"
-            >Follow</v-btn>
-          </v-card-text>
         </material-card>
       </v-flex>
     </v-layout>
@@ -144,7 +72,42 @@
 </template>
 
 <script>
+import { UserApi, EventApi } from '../../lib/api';
+
 export default {
-  //
+  data:() => ({
+    success:false,
+    billingPeriod:'Monthly',
+    plan:"Basic",
+    username:null,
+    plans:[{name:'Basic',emails:9,annualPrice:'Free', monthlyPrice:'Free'},
+            {name:'Pro', emails:99,annualPrice:'$14/month', monthlyPrice:'$19/month'},
+            {name:'Enterprise', emails:999,annualPrice:'$79/month', monthlyPrice:'$99/month'}]
+  }),
+  mounted () {
+    var vm = this;
+    new UserApi().getUserInfo({withCredentials:true}).then((resp) => {
+        console.log(resp.data);
+        vm.username = resp.data.id;
+    }).catch((err) => {
+      console.error(err);
+      vm.$store.state.app.snackbar = err;
+    });
+  },
+  methods:{
+    update() {
+      var vm = this;
+      this.success = false;
+      new EventApi().addEvent(
+        {eventName:"upgrade_plan", params:{"plan":this.plan, "billingPeriod":this.billingPeriod}}, 
+        process.env.VUE_APP_SWEEP_APIKEY, 
+        {withCredentials:true}).then((resp) => {
+            vm.success = true;
+      }).catch((err) => {
+        console.error(err);
+        vm.$store.state.app.snackbar = err;
+      });
+    }
+  }
 }
 </script>
