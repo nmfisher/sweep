@@ -120,10 +120,11 @@ File.WriteAllText(Path, content);
     </Task>
   </UsingTask>
   <ItemGroup>
-    <JSLib Include="$(OutDir)\wwwroot\js\*.js"/>
+    <JSLib Include="$(PublishDir)/wwwroot/js/*.js"/>
   </ItemGroup>
   
-  <Target Name='Foo' AfterTargets="MSDeployPublish" Condition="$(Configuration) == 'Release'">
+  <Target Name='Foo' AfterTargets="Publish"  Condition="$(Configuration) == 'Release'">
+    <Message Text=">>>>>>>>>>>>>>>> Replacing Sweep development server URLs with production server URLs in %(JSLib.Identity)" Importance="High"/>
     <TokenReplace Path="%(JSLib.Identity)" Token="sweep-development.ngrok.io" Replacement="app.sweephq.com"/>
   </Target>
 </Project>
