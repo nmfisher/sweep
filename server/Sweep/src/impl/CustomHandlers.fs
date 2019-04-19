@@ -59,7 +59,7 @@ module CustomHandlers =
     task {
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
-        let user = fetchOrCreateUser id email (ctx.HttpContext.GetService<ILogger>())
+        let user = fetchOrCreateUser id email (ctx.HttpContext.GetLogger("Sweep.OAuth"))
         ctx.Identity.AddClaim(Claim(ClaimTypes.GroupSid, user.OrganizationId))
     } :> Tasks.Task
 
@@ -91,7 +91,7 @@ module CustomHandlers =
           ctx.HttpContext.User <- ClaimsPrincipal([|identity|])
           ctx.Success()
         | _ -> 
-          ctx.HttpContext.GetService<ILogger>().LogError(sprintf "API key authentication failure : %s" ctx.ApiKey)
+          ctx.HttpContext.GetLogger("Sweep.APIAuth").LogError(sprintf "API key authentication failure : %s" ctx.ApiKey)
           ()
       } :> Task
     )
