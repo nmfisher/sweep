@@ -324,6 +324,12 @@ export interface Message {
      * @memberof Message
      */
     listenerActionId: string;
+    /**
+     *
+     * @type {Date}
+     * @memberof Message
+     */
+    sentOn?: Date;
 }
 /**
  *
@@ -337,6 +343,18 @@ export interface Organization {
      * @memberof Organization
      */
     id: string;
+    /**
+     *
+     * @type {string}
+     * @memberof Organization
+     */
+    primaryApiKey: string;
+    /**
+     *
+     * @type {string}
+     * @memberof Organization
+     */
+    secondaryApiKey: string;
 }
 /**
  *
@@ -480,12 +498,6 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    apiKey: string;
-    /**
-     *
-     * @type {string}
-     * @memberof User
-     */
     organizationId: string;
 }
 /**
@@ -527,10 +539,12 @@ export declare const EventApiAxiosParamCreator: (configuration?: Configuration) 
      * Returns a list of all events
      * @summary List all received events
      * @param {boolean} [withActions]
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(withActions?: boolean, options?: any): RequestArgs;
+    listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any): RequestArgs;
 };
 /**
  * EventApi - functional programming interface
@@ -558,10 +572,12 @@ export declare const EventApiFp: (configuration?: Configuration) => {
      * Returns a list of all events
      * @summary List all received events
      * @param {boolean} [withActions]
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(withActions?: boolean, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event[]>;
+    listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Event[]>;
 };
 /**
  * EventApi - factory interface
@@ -589,10 +605,12 @@ export declare const EventApiFactory: (configuration?: Configuration, basePath?:
      * Returns a list of all events
      * @summary List all received events
      * @param {boolean} [withActions]
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listEvents(withActions?: boolean, options?: any): AxiosPromise<Event[]>;
+    listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any): AxiosPromise<Event[]>;
 };
 /**
  * EventApi - object-oriented interface
@@ -624,11 +642,13 @@ export declare class EventApi extends BaseAPI {
      * Returns a list of all events
      * @summary List all received events
      * @param {boolean} [withActions]
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    listEvents(withActions?: boolean, options?: any): AxiosPromise<Event[]>;
+    listEvents(withActions?: boolean, startDate?: Date, endDate?: Date, options?: any): AxiosPromise<Event[]>;
 }
 /**
  * ListenerApi - axios parameter creator
@@ -977,10 +997,12 @@ export declare const MessageApiAxiosParamCreator: (configuration?: Configuration
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listMessages(options?: any): RequestArgs;
+    listMessages(startDate?: Date, endDate?: Date, options?: any): RequestArgs;
 };
 /**
  * MessageApi - functional programming interface
@@ -998,10 +1020,12 @@ export declare const MessageApiFp: (configuration?: Configuration) => {
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listMessages(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message[]>;
+    listMessages(startDate?: Date, endDate?: Date, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Message[]>;
 };
 /**
  * MessageApi - factory interface
@@ -1019,10 +1043,12 @@ export declare const MessageApiFactory: (configuration?: Configuration, basePath
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listMessages(options?: any): AxiosPromise<Message[]>;
+    listMessages(startDate?: Date, endDate?: Date, options?: any): AxiosPromise<Message[]>;
 };
 /**
  * MessageApi - object-oriented interface
@@ -1043,11 +1069,68 @@ export declare class MessageApi extends BaseAPI {
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    listMessages(options?: any): AxiosPromise<Message[]>;
+    listMessages(startDate?: Date, endDate?: Date, options?: any): AxiosPromise<Message[]>;
+}
+/**
+ * OrganizationApi - axios parameter creator
+ * @export
+ */
+export declare const OrganizationApiAxiosParamCreator: (configuration?: Configuration) => {
+    /**
+     *
+     * @summary Get organization info for the currently authenticated context
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getOrganizationInfo(options?: any): RequestArgs;
+};
+/**
+ * OrganizationApi - functional programming interface
+ * @export
+ */
+export declare const OrganizationApiFp: (configuration?: Configuration) => {
+    /**
+     *
+     * @summary Get organization info for the currently authenticated context
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getOrganizationInfo(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Organization>;
+};
+/**
+ * OrganizationApi - factory interface
+ * @export
+ */
+export declare const OrganizationApiFactory: (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) => {
+    /**
+     *
+     * @summary Get organization info for the currently authenticated context
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getOrganizationInfo(options?: any): AxiosPromise<Organization>;
+};
+/**
+ * OrganizationApi - object-oriented interface
+ * @export
+ * @class OrganizationApi
+ * @extends {BaseAPI}
+ */
+export declare class OrganizationApi extends BaseAPI {
+    /**
+     *
+     * @summary Get organization info for the currently authenticated context
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrganizationApi
+     */
+    getOrganizationInfo(options?: any): AxiosPromise<Organization>;
 }
 /**
  * TemplateApi - axios parameter creator

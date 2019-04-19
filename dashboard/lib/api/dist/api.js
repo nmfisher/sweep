@@ -99,10 +99,12 @@ export const EventApiAxiosParamCreator = function (configuration) {
          * Returns a list of all events
          * @summary List all received events
          * @param {boolean} [withActions]
+         * @param {Date} [startDate]
+         * @param {Date} [endDate]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(withActions, options = {}) {
+        listEvents(withActions, startDate, endDate, options = {}) {
             const localVarPath = `/events`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -122,6 +124,12 @@ export const EventApiAxiosParamCreator = function (configuration) {
             }
             if (withActions !== undefined) {
                 localVarQueryParameter['withActions'] = withActions;
+            }
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate.toISOString();
+            }
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate.toISOString();
             }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -173,11 +181,13 @@ export const EventApiFp = function (configuration) {
          * Returns a list of all events
          * @summary List all received events
          * @param {boolean} [withActions]
+         * @param {Date} [startDate]
+         * @param {Date} [endDate]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(withActions, options) {
-            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(withActions, options);
+        listEvents(withActions, startDate, endDate, options) {
+            const localVarAxiosArgs = EventApiAxiosParamCreator(configuration).listEvents(withActions, startDate, endDate, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -216,11 +226,13 @@ export const EventApiFactory = function (configuration, basePath, axios) {
          * Returns a list of all events
          * @summary List all received events
          * @param {boolean} [withActions]
+         * @param {Date} [startDate]
+         * @param {Date} [endDate]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(withActions, options) {
-            return EventApiFp(configuration).listEvents(withActions, options)(axios, basePath);
+        listEvents(withActions, startDate, endDate, options) {
+            return EventApiFp(configuration).listEvents(withActions, startDate, endDate, options)(axios, basePath);
         },
     };
 };
@@ -258,12 +270,14 @@ export class EventApi extends BaseAPI {
      * Returns a list of all events
      * @summary List all received events
      * @param {boolean} [withActions]
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventApi
      */
-    listEvents(withActions, options) {
-        return EventApiFp(this.configuration).listEvents(withActions, options)(this.axios, this.basePath);
+    listEvents(withActions, startDate, endDate, options) {
+        return EventApiFp(this.configuration).listEvents(withActions, startDate, endDate, options)(this.axios, this.basePath);
     }
 }
 /**
@@ -1026,10 +1040,12 @@ export const MessageApiAxiosParamCreator = function (configuration) {
         /**
          * Returns a list of messages
          * @summary List all messages
+         * @param {Date} [startDate]
+         * @param {Date} [endDate]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(options = {}) {
+        listMessages(startDate, endDate, options = {}) {
             const localVarPath = `/messages`;
             const localVarUrlObj = url.parse(localVarPath, true);
             let baseOptions;
@@ -1046,6 +1062,12 @@ export const MessageApiAxiosParamCreator = function (configuration) {
                     ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
                     : configuration.accessToken;
                 localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate.toISOString();
+            }
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate.toISOString();
             }
             localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
             // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
@@ -1081,11 +1103,13 @@ export const MessageApiFp = function (configuration) {
         /**
          * Returns a list of messages
          * @summary List all messages
+         * @param {Date} [startDate]
+         * @param {Date} [endDate]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(options) {
-            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).listMessages(options);
+        listMessages(startDate, endDate, options) {
+            const localVarAxiosArgs = MessageApiAxiosParamCreator(configuration).listMessages(startDate, endDate, options);
             return (axios = globalAxios, basePath = BASE_PATH) => {
                 const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
                 return axios.request(axiosRequestArgs);
@@ -1112,11 +1136,13 @@ export const MessageApiFactory = function (configuration, basePath, axios) {
         /**
          * Returns a list of messages
          * @summary List all messages
+         * @param {Date} [startDate]
+         * @param {Date} [endDate]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMessages(options) {
-            return MessageApiFp(configuration).listMessages(options)(axios, basePath);
+        listMessages(startDate, endDate, options) {
+            return MessageApiFp(configuration).listMessages(startDate, endDate, options)(axios, basePath);
         },
     };
 };
@@ -1141,12 +1167,111 @@ export class MessageApi extends BaseAPI {
     /**
      * Returns a list of messages
      * @summary List all messages
+     * @param {Date} [startDate]
+     * @param {Date} [endDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MessageApi
      */
-    listMessages(options) {
-        return MessageApiFp(this.configuration).listMessages(options)(this.axios, this.basePath);
+    listMessages(startDate, endDate, options) {
+        return MessageApiFp(this.configuration).listMessages(startDate, endDate, options)(this.axios, this.basePath);
+    }
+}
+/**
+ * OrganizationApi - axios parameter creator
+ * @export
+ */
+export const OrganizationApiAxiosParamCreator = function (configuration) {
+    return {
+        /**
+         *
+         * @summary Get organization info for the currently authenticated context
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOrganizationInfo(options = {}) {
+            const localVarPath = `/organization`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, baseOptions, options);
+            const localVarHeaderParameter = {};
+            const localVarQueryParameter = {};
+            // authentication Google required
+            // oauth required
+            if (configuration && configuration.accessToken) {
+                const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
+                    ? configuration.accessToken("Google", ["https://www.googleapis.com/auth/userinfo.email"])
+                    : configuration.accessToken;
+                localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+            }
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    };
+};
+/**
+ * OrganizationApi - functional programming interface
+ * @export
+ */
+export const OrganizationApiFp = function (configuration) {
+    return {
+        /**
+         *
+         * @summary Get organization info for the currently authenticated context
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOrganizationInfo(options) {
+            const localVarAxiosArgs = OrganizationApiAxiosParamCreator(configuration).getOrganizationInfo(options);
+            return (axios = globalAxios, basePath = BASE_PATH) => {
+                const axiosRequestArgs = Object.assign({}, localVarAxiosArgs.options, { url: basePath + localVarAxiosArgs.url });
+                return axios.request(axiosRequestArgs);
+            };
+        },
+    };
+};
+/**
+ * OrganizationApi - factory interface
+ * @export
+ */
+export const OrganizationApiFactory = function (configuration, basePath, axios) {
+    return {
+        /**
+         *
+         * @summary Get organization info for the currently authenticated context
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOrganizationInfo(options) {
+            return OrganizationApiFp(configuration).getOrganizationInfo(options)(axios, basePath);
+        },
+    };
+};
+/**
+ * OrganizationApi - object-oriented interface
+ * @export
+ * @class OrganizationApi
+ * @extends {BaseAPI}
+ */
+export class OrganizationApi extends BaseAPI {
+    /**
+     *
+     * @summary Get organization info for the currently authenticated context
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrganizationApi
+     */
+    getOrganizationInfo(options) {
+        return OrganizationApiFp(this.configuration).getOrganizationInfo(options)(this.axios, this.basePath);
     }
 }
 /**
