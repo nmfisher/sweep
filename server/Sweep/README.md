@@ -33,6 +33,7 @@ Types have been generated for the URL, query, form, header and cookie parameters
 - api/EventApiHandlerParams.fs
 - api/ListenerApiHandlerParams.fs
 - api/MessageApiHandlerParams.fs
+- api/OrganizationApiHandlerParams.fs
 - api/TemplateApiHandlerParams.fs
 - api/UserApiHandlerParams.fs
 
@@ -43,6 +44,7 @@ Handlers will attempt to bind parameters to the applicable type and pass to a Se
 - api/EventApiServiceInterface.fs
 - api/ListenerApiServiceInterface.fs
 - api/MessageApiServiceInterface.fs
+- api/OrganizationApiServiceInterface.fs
 - api/TemplateApiServiceInterface.fs
 - api/UserApiServiceInterface.fs
 
@@ -110,6 +112,7 @@ Stubbed service implementations of those interfaces have been generated as follo
 - impl/EventApiService.fs
 - impl/ListenerApiService.fs
 - impl/MessageApiService.fs
+- impl/OrganizationApiService.fs
 - impl/TemplateApiService.fs
 - impl/UserApiService.fs
 
