@@ -134,13 +134,10 @@ module CustomHandlers =
     builder
     #if DEBUG
       .WithOrigins([|"http://localhost:8080";"http://sweep-development.ngrok.io";"null"|])
-      .AllowCredentials()
     #else     
-      .AllowAnyOrigin
+      .WithOrigins([|"http://app.sweephq.com";"https://app.sweephq.com";|])
     #endif
-     .AllowAnyMethod()
-     .AllowAnyHeader()
-     |> ignore
+     .AllowCredentials().AllowAnyMethod().AllowAnyHeader() |> ignore
 
   let configureApp (app : IApplicationBuilder) = 
     app.UseCors(configureCors)
