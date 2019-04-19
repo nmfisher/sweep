@@ -33,8 +33,11 @@
     <Compile Include="ListenerApiTests.fs" />
     <Compile Include="ListenerTemplateApiTests.fs" />
     <Compile Include="ListenerTests.fs" />
+    <Compile Include="OrganizationApiTestsHelper.fs" />
+    <Compile Include="OrganizationApiTests.fs" />
     <Compile Include="MessageApiTestsHelper.fs" />
     <Compile Include="MessageApiTests.fs" />
+
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -18,6 +18,7 @@ open Giraffe
 open Microsoft.AspNetCore.Identity
 open FSharp.Data.Sql.Providers
 open Microsoft.Extensions.DependencyInjection
+open Sweep.Data
 
 module TestHelper = 
 
@@ -30,13 +31,21 @@ module TestHelper =
 
   let orgId = Guid.NewGuid().ToString()    
 
+  let mutable apiAuthOnly = false
+
   type AuthMiddleware (next: RequestDelegate) =
 
     member __.Invoke (ctx : HttpContext) =
         task {
-            let claims = [new Claim(ClaimTypes.Email, "user");
-                          new Claim(ClaimTypes.NameIdentifier, "userId");
-                          new Claim(ClaimTypes.GroupSid, orgId);]
+            let claims = (
+              match apiAuthOnly with
+                | true ->
+                  [Claim(ClaimTypes.GroupSid, orgId);]
+                | false ->                         
+                   [Claim(ClaimTypes.Email, "user");
+                   Claim(ClaimTypes.NameIdentifier, "userId");
+                   Claim(ClaimTypes.GroupSid, orgId);]
+            )
             let claimsIdentity = ClaimsIdentity(claims, "Cookies")
             let principal = ClaimsPrincipal()
             ctx.User <- principal
@@ -118,6 +127,9 @@ module TestHelper =
   let shouldBeLength length (obj:'a[]) = 
       Assert.Equal(length, obj.Length)
       obj
+  
+  let shouldNotBeNull obj =
+      Assert.NotNull(obj)
 
 
   let getConverter mediaType = 
@@ -143,7 +155,7 @@ module TestHelper =
       cmd <- MySql.createCommand ("DELETE FROM " + table) conn
       cmd.ExecuteNonQuery() |> ignore
       cmd.Dispose()
-    ()
+    Organization.add orgId "apikey1" "apikey2"
   
   let execute query =
       let cmd = MySql.createCommand query conn

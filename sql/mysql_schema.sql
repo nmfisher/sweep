@@ -109,7 +109,9 @@ CREATE TABLE IF NOT EXISTS `Message` (
 --
 
 CREATE TABLE IF NOT EXISTS `Organization` (
-  `id` CHAR(36) NOT NULL
+  `id` CHAR(36) NOT NULL,
+  `primaryApiKey` TEXT NOT NULL,
+  `secondaryApiKey` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -156,7 +158,6 @@ CREATE TABLE IF NOT EXISTS `User` (
   `id` VARCHAR(100) NOT NULL,
   `username` TEXT DEFAULT NULL,
   `password` TEXT DEFAULT NULL,
-  `apiKey` TEXT NOT NULL,
   `organizationId` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

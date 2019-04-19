@@ -37,6 +37,8 @@ module EventApiHandlerTests =
 
       initialize() |> ignore
 
+      TestHelper.apiAuthOnly <- true
+
       let path = "/1.0.0/events"
 
       {
@@ -49,6 +51,8 @@ module EventApiHandlerTests =
       |> readText
       |> shouldEqual "OK"
       |> ignore
+
+      TestHelper.apiAuthOnly <- false
   }
 
   [<Fact>]

@@ -33,7 +33,7 @@ module Program =
                 //ListenerTests.``Validate Listener Condition``() :> Task
                 //EventQueueTests.``Listener condition expires when duration exceeds time elapsed since original event``() :> Task
                 // EventApiHandlerTests.``ListEvents - List all received events returns 200 where successful operation``() :> Task
-                EventApiHandlerTests.``List with start and end dates``() :> Task
+                // EventApiHandlerTests.``List with start and end dates``() :> Task
                 // EventApiHandlerTests.``GetEventById - Find raised event by ID returns 200 where successful operation``() :> Task
                 // EventQueueTests.``Listener condition is met by events matching event name and key within duration ``() :> Task
                 //EventQueueTests.``sendConditional only invokes mailer if trigger is matched``() :> Task
@@ -53,7 +53,7 @@ module Program =
                 //MailHandlerTests.``Send test email``() :> Task
                 // ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation`` ()  :> Task
                   // ListenerApiHandlerTests.``ListMessagesForAction - List all messages returns 200 where successful operation`` () :> Task
-
+                OrganizationApiHandlerTests.``GetOrganizationInfo - Get organization info for the currently authenticated context returns 200 where successful operation`` () :> Task
                 ]
                 |> List.toArray
     Task.WaitAll(tasks)
