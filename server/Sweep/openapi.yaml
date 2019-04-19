@@ -18,6 +18,8 @@ servers:
 tags:
 - description: A User
   name: user
+- description: A User
+  name: organization
 - description: A Listener must be configured for a Message to be sent in response to any Event. If an Event is raised without an appropriate Listener, no error will be raised on the client-side.
   name: listener
 - description: Clients choose when and where to raise Events, which are sent to a Sweep endpoint with the appropriate Event parameters (this may directly push to a Message Queue like Azure Service Bus). If a Listener is configured for the Event, the Listener will send a Message and update the Event with the status of the processing.
@@ -31,6 +33,30 @@ paths:
     get:
       description: Returns a list of all events
       operationId: listEvents
+      parameters:
+      - explode: true
+        in: query
+        name: withActions
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
       responses:
         200:
           content:
@@ -40,6 +66,8 @@ paths:
                   $ref: '#/components/schemas/Event'
                 type: array
           description: successful operation
+        500:
+          description: Bad query parameter
       security:
       - Google: []
       summary: List all received events
@@ -278,10 +306,19 @@ paths:
       summary: Associates a Template to a Listener
       tags:
       - listener
-  /messages:
+  /actions/{listenerActionId}/messages:
     get:
-      description: Returns a list of messages
-      operationId: listMessages
+      description: Returns a list of messages for the given ListenerAction
+      operationId: listMessagesForAction
+      parameters:
+      - description: The id of the ListenerAction to limit the results
+        explode: false
+        in: path
+        name: listenerActionId
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         200:
           content:
@@ -291,6 +328,49 @@ paths:
                   $ref: '#/components/schemas/Message'
                 type: array
           description: successful operation
+        404:
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Listener Action could not be found.
+      security:
+      - Google: []
+      summary: List all messages
+      tags:
+      - listener
+  /messages:
+    get:
+      description: Returns a list of messages
+      operationId: listMessages
+      parameters:
+      - explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Message'
+                type: array
+          description: successful operation
+        500:
+          description: Malformed or unknown query parameter
       security:
       - Google: []
       summary: List all messages
@@ -529,10 +609,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: successful operation
-        400:
-          description: Invalid username supplied
-        404:
-          description: User not found
       security:
       - Google: []
       summary: Get user info for the currently authenticated user
@@ -596,6 +672,24 @@ paths:
       summary: Logs out current logged in user session
       tags:
       - user
+  /organization:
+    get:
+      operationId: getOrganizationInfo
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: successful operation
+      security:
+      - Google: []
+      summary: Get organization info for the currently authenticated context
+      tags:
+      - organization
 components:
   schemas:
     Listener:
@@ -647,6 +741,13 @@ components:
       - eventName
       type: object
     ListenerAction:
+      example:
+        organizationId: organizationId
+        eventId: eventId
+        listenerId: listenerId
+        id: id
+        completed: false
+        error: error
       properties:
         id:
           maxLength: 36
@@ -722,6 +823,19 @@ components:
         params:
           key: '{}'
         error: error
+        actions:
+        - organizationId: organizationId
+          eventId: eventId
+          listenerId: listenerId
+          id: id
+          completed: false
+          error: error
+        - organizationId: organizationId
+          eventId: eventId
+          listenerId: listenerId
+          id: id
+          completed: false
+          error: error
       properties:
         id:
           maxLength: 36
@@ -743,6 +857,10 @@ components:
           type: string
         organizationId:
           type: string
+        actions:
+          items:
+            $ref: '#/components/schemas/ListenerAction'
+          type: array
       required:
       - eventName
       - id
@@ -760,19 +878,28 @@ components:
           type: object
       type: object
     Organization:
+      example:
+        primaryApiKey: primaryApiKey
+        id: id
+        secondaryApiKey: secondaryApiKey
       properties:
         id:
           maxLength: 36
           minLength: 36
           type: string
+        primaryApiKey:
+          type: string
+        secondaryApiKey:
+          type: string
       required:
       - id
+      - primaryApiKey
+      - secondaryApiKey
       type: object
     User:
       example:
         organizationId: organizationId
         password: password
-        apiKey: apiKey
         id: id
         username: username
       properties:
@@ -783,8 +910,6 @@ components:
         username:
           type: string
         password:
-          type: string
-        apiKey:
           type: string
         organizationId:
           type: string
@@ -824,16 +949,25 @@ components:
           type: string
       required:
       - content
-      - fromAddress
-      - fromName
       - id
       - organizationId
       - sendTo
-      - subject
       type: object
     Message:
       allOf:
       - $ref: '#/components/schemas/BaseMessage'
+      - properties:
+          listenerActionId:
+            type: string
+          sentOn:
+            format: date-time
+            type: string
+        required:
+        - fromAddress
+        - fromName
+        - listenerActionId
+        - subject
+        type: object
     Template:
       allOf:
       - $ref: '#/components/schemas/BaseMessage'
