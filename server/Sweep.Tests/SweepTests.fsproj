@@ -37,7 +37,7 @@
     <Compile Include="OrganizationApiTests.fs" />
     <Compile Include="MessageApiTestsHelper.fs" />
     <Compile Include="MessageApiTests.fs" />
-
+    <Compile Include="CustomHandlerTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -22,6 +22,7 @@ module User =
     let ctx = GetDataContext()
     let user = ctx.SweepDb.User.Create()
     user.Id <- id
+    user.Username <- Some(username)
     user.OrganizationId <- orgId // TODO - need to allow multi-user organizations
     ctx.SubmitUpdates()
 

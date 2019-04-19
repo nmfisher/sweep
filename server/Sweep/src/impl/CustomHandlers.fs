@@ -37,13 +37,14 @@ module CustomHandlers =
         o.SlidingExpiration   <- true
         o.ExpireTimeSpan      <- TimeSpan.FromDays 7.0
 
-  let fetchOrCreateUser id email  = 
+  let fetchOrCreateUser id email (logger:ILogger)  = 
     match CompositionRoot.getUser id with 
     | Some u -> 
         u
     | None ->
-        CompositionRoot.saveUser id email |> ignore
+        logger.LogDebug(sprintf "Creating user with ID: %s" id)
         let orgId = (Guid.NewGuid().ToString())
+        CompositionRoot.saveUser id email orgId
         let primaryApiKey = (Guid.NewGuid().ToString())
         let secondaryApiKey = (Guid.NewGuid().ToString())
         CompositionRoot.saveOrganization orgId primaryApiKey secondaryApiKey
@@ -58,7 +59,7 @@ module CustomHandlers =
     task {
         let id = (ctx.User.["id"].ToString())
         let email = (ctx.User.["email"].ToString())
-        let user = fetchOrCreateUser id email  
+        let user = fetchOrCreateUser id email (ctx.HttpContext.GetService<ILogger>())
         ctx.Identity.AddClaim(Claim(ClaimTypes.GroupSid, user.OrganizationId))
     } :> Tasks.Task
 
