@@ -12,6 +12,7 @@
     "ContentTools": "^1.6.10",
     "babel-preset-es2015": "^6.24.1",
     "chartist": "0.11.0",
+    "codemirror": "^5.45.0",
     "heml": "^1.1.3",
     "jodit": "^3.2.31",
     "jodit-tributejs": "^1.0.1",
