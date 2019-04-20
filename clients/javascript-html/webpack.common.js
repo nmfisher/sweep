@@ -7,13 +7,13 @@ module.exports = {
     filename: 'bundle.js',
     library: 'Sweep',
   },
-  mode:"development",
+  mode:"none",
   module: {
     rules: [
-        {
-            test: /\.js$/,
-            use: 'babel-loader',
-        }
+      {
+          test: /\.js$/,
+          use: 'babel-loader',
+      },
     ]
   },
 };

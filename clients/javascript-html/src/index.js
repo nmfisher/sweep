@@ -1,4 +1,4 @@
-import { EventApi, EventRequestBody } from '../../../dashboard/lib/api';
+import { EventApi, EventRequestBody } from '../../lib/typescript-axios';
 
 export const SetApiKey = (apiKey) => {
   window.SWEEP_API_KEY = apiKey;
