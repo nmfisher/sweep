@@ -62,6 +62,7 @@ export default {
     Vue.nextTick(() => {
       document.getElementById("editor").addEventListener("input", () => {
         vm.tribute.attach(document.querySelectorAll(".ce-element"));
+        vm.setContent();
       });
       
     });
@@ -99,12 +100,18 @@ export default {
       var vm = this;      
       if(newVal == true) {
         this.editor.stop(true);
-        iframe.body.innerHTML = document.getElementById("editor").innerHTML;
-        this.raw = beautify(iframe.documentElement.outerHTML, {"indent-inner-html":true });
+        this.setContent();
       } else {
         document.getElementById("editor").innerHTML = iframe.body.innerHTML;
         vm.editor.start();
       }
+    }
+  },
+  methods:{
+    setContent() {
+        var iframe = this.$refs.iframe.contentDocument || this.$refs.iframe.contentWindow.document;
+        iframe.body.innerHTML = document.getElementById("editor").innerHTML;
+        this.raw = beautify(iframe.documentElement.outerHTML, {"indent-inner-html":true });
     }
   },
   components:{

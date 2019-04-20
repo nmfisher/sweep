@@ -10,7 +10,10 @@ module ListenerRequestBody =
 
   type ListenerRequestBody = {
     EventName : string;
-    Trigger : string;
+    TriggerEvent : string;
+    TriggerNumber : decimal;
+    TriggerPeriod : string;
+    TriggerMatch : string;
     EventParams : string[];
   }
   //#endregion

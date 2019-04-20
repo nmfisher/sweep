@@ -52,7 +52,10 @@ CREATE TABLE IF NOT EXISTS `Listener` (
   `eventName` TEXT NOT NULL,
   `eventParams` JSON DEFAULT NULL,
   `organizationId` TEXT NOT NULL,
-  `trigger` TEXT DEFAULT NULL
+  `triggerEvent` TEXT DEFAULT NULL,
+  `triggerNumber` INT DEFAULT NULL,
+  `triggerPeriod` TEXT DEFAULT NULL,
+  `triggerMatch` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -74,7 +77,10 @@ CREATE TABLE IF NOT EXISTS `ListenerAction` (
 
 CREATE TABLE IF NOT EXISTS `ListenerRequestBody` (
   `eventName` TEXT NOT NULL,
-  `trigger` TEXT DEFAULT NULL,
+  `triggerEvent` TEXT DEFAULT NULL,
+  `triggerNumber` DECIMAL(20, 9) DEFAULT NULL,
+  `triggerPeriod` TEXT DEFAULT NULL,
+  `triggerMatch` TEXT DEFAULT NULL,
   `eventParams` JSON DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

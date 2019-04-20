@@ -13,7 +13,10 @@ module Listener =
     EventName : string;
     EventParams : string[];
     OrganizationId : string;
-    Trigger : string;
+    TriggerEvent : string;
+    TriggerNumber : int;
+    TriggerPeriod : string;
+    TriggerMatch : string;
   }
   //#endregion
   

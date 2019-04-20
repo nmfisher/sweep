@@ -78,7 +78,12 @@
               <v-flex xs1>
                 <v-layout row justify-center align-center>
                   <v-btn flat outline color="primary" @click="$emit('close')">Close</v-btn>
-                  <v-btn flat outline color="indigo" @click="save" :disabled="!validated" class="ml-3">Save</v-btn>
+                  <v-btn flat outline color="indigo" @click="save" :disabled="!validated" class="ml-3">
+                    <span v-if="!saving">Save</span>
+                    <v-icon class="rotate" v-if="saving">
+                      mdi-reload
+                    </v-icon>
+                  </v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>

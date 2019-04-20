@@ -61,7 +61,10 @@ module ListenerApiHandlerTests =
        
        // create a listener
       {
-          ListenerRequestBody.Trigger="";
+          ListenerRequestBody.TriggerEvent="";
+          ListenerRequestBody.TriggerMatch="";
+          ListenerRequestBody.TriggerPeriod="";
+          ListenerRequestBody.TriggerNumber=decimal(0);
           EventName="some_event";
           EventParams=[||];
       }
@@ -72,7 +75,10 @@ module ListenerApiHandlerTests =
 
       // create a listener with some params
       {
-          ListenerRequestBody.Trigger="";
+          ListenerRequestBody.TriggerEvent="";
+          ListenerRequestBody.TriggerMatch="";
+          ListenerRequestBody.TriggerPeriod="";
+          ListenerRequestBody.TriggerNumber=decimal(0);
           EventName="some_event";
           EventParams=[|"key1"|]
       }
@@ -95,7 +101,10 @@ module ListenerApiHandlerTests =
 
       let path = "/1.0.0/listeners"
       {
-          Trigger="";
+          ListenerRequestBody.TriggerEvent="";
+          ListenerRequestBody.TriggerMatch="INVALID";
+          ListenerRequestBody.TriggerPeriod="";
+          ListenerRequestBody.TriggerNumber=decimal(0);
           EventName="";
           EventParams=[||];
       } 
@@ -106,7 +115,10 @@ module ListenerApiHandlerTests =
 
       let path = "/1.0.0/listeners"
       {
-          Trigger="INVALID CONDITION";
+          ListenerRequestBody.TriggerEvent="";
+          ListenerRequestBody.TriggerMatch="";
+          ListenerRequestBody.TriggerPeriod="INVALID";
+          ListenerRequestBody.TriggerNumber=decimal(0);
           EventName="some_event";
           EventParams=[||];
       } 
@@ -190,7 +202,10 @@ module ListenerApiHandlerTests =
       {
         ListenerRequestBody.EventName="some_updated_event"
         EventParams=[|"updated1";"updated2"|]
-        Trigger=""
+        ListenerRequestBody.TriggerEvent="";
+        ListenerRequestBody.TriggerMatch="";
+        ListenerRequestBody.TriggerPeriod="";
+        ListenerRequestBody.TriggerNumber=decimal(0);
       }
         |> encode
         |> HttpPut client ("/1.0.0/listeners/" + listener.Id)
@@ -206,7 +221,7 @@ module ListenerApiHandlerTests =
             x.EventName |> shouldEqual "some_updated_event" |> ignore
             x.EventParams |> Seq.head |> shouldEqual "updated1"  |> ignore
             x.EventParams |> Seq.last |> shouldEqual "updated2" |> ignore
-            isNull x.Trigger |> shouldEqual true |> ignore)
+            String.IsNullOrWhiteSpace(x.TriggerEvent) |> shouldEqual true |> ignore)
         |> ignore
       }
 
@@ -223,7 +238,10 @@ module ListenerApiHandlerTests =
       {
         ListenerRequestBody.EventName="some_updated_event"
         EventParams=[|"updated1";"updated2"|]
-        Trigger=""
+        ListenerRequestBody.TriggerEvent="";
+        ListenerRequestBody.TriggerMatch="";
+        ListenerRequestBody.TriggerPeriod="";
+        ListenerRequestBody.TriggerNumber=decimal(0);
       } 
       |> encode
       |> HttpPut client path
@@ -255,7 +273,10 @@ module ListenerApiHandlerTests =
          
        // create anothoer listener
       {
-          ListenerRequestBody.Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
+          ListenerRequestBody.TriggerEvent="some_other_event";
+          ListenerRequestBody.TriggerMatch="NULL";
+          ListenerRequestBody.TriggerPeriod="DAYS";
+          ListenerRequestBody.TriggerNumber=decimal(7);
           EventName="some_event";
           EventParams=[|"key1"|]
       }
@@ -269,7 +290,10 @@ module ListenerApiHandlerTests =
 
      // and another listener without any params
       {
-          ListenerRequestBody.Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
+          ListenerRequestBody.TriggerEvent="some_other_event";
+          ListenerRequestBody.TriggerMatch="NULL";
+          ListenerRequestBody.TriggerPeriod="DAYS";
+          ListenerRequestBody.TriggerNumber=decimal(7);
           EventName="some_new_event";
           EventParams=[||]
       }
@@ -313,7 +337,7 @@ module ListenerApiHandlerTests =
           Actions = [||]
         }
 
-      Sweep.Data.Listener.add "foo" [||] null "some_user_id" orgId
+      Sweep.Data.Listener.add "foo" [||] None "some_user_id" orgId
 
       Sweep.Data.ListenerAction.createFromEvent event |> ignore
 

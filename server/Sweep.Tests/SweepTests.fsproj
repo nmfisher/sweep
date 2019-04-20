@@ -32,7 +32,6 @@
     <Compile Include="ListenerApiTestsHelper.fs" />
     <Compile Include="ListenerApiTests.fs" />
     <Compile Include="ListenerTemplateApiTests.fs" />
-    <Compile Include="ListenerTests.fs" />
     <Compile Include="OrganizationApiTestsHelper.fs" />
     <Compile Include="OrganizationApiTests.fs" />
     <Compile Include="MessageApiTestsHelper.fs" />

@@ -56,11 +56,12 @@ module EventQueue =
 
   let getSender listenerAction triggerMatcher expiryMatcher = 
     let listener = Listener.get listenerAction.ListenerId listenerAction.OrganizationId
-    match Listener.parse listener.Trigger with 
+    let trigger = Sweep.Data.Listener.parse listener.TriggerEvent listener.TriggerNumber listener.TriggerPeriod listener.TriggerMatch
+    match trigger with 
     | None ->
       sendUnconditional
-    | Some triggerString ->
-      sendConditional triggerMatcher expiryMatcher triggerString
+    | Some t ->
+      sendConditional triggerMatcher expiryMatcher t
 
   let onSuccess (listenerAction:ListenerAction) =
     ListenerAction.markAsComplete listenerAction.Id None

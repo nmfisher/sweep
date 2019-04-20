@@ -179,7 +179,25 @@ export interface Listener {
      * @type {string}
      * @memberof Listener
      */
-    trigger?: string;
+    triggerEvent?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Listener
+     */
+    triggerNumber?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Listener
+     */
+    triggerPeriod?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Listener
+     */
+    triggerMatch?: string;
 }
 
 /**
@@ -243,7 +261,25 @@ export interface ListenerRequestBody {
      * @type {string}
      * @memberof ListenerRequestBody
      */
-    trigger?: string;
+    triggerEvent?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ListenerRequestBody
+     */
+    triggerNumber?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerRequestBody
+     */
+    triggerPeriod?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListenerRequestBody
+     */
+    triggerMatch?: string;
     /**
      * 
      * @type {Array<string>}

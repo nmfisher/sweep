@@ -241,7 +241,10 @@ module EventQueueTests =
       // create a listener
       {
           ListenerRequestBody.EventName="some_event";
-          Trigger="";
+          ListenerRequestBody.TriggerEvent="";
+          ListenerRequestBody.TriggerMatch="";
+          ListenerRequestBody.TriggerPeriod="";
+          ListenerRequestBody.TriggerNumber=decimal(0);
           EventParams=[||] :> string[];
       } 
         |> encode
@@ -311,7 +314,10 @@ module EventQueueTests =
       // create a listener
       {
           ListenerRequestBody.EventName="some_event";
-          Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
+          ListenerRequestBody.TriggerEvent="some_other_event";
+          ListenerRequestBody.TriggerMatch="NULL";
+          ListenerRequestBody.TriggerPeriod="DAYS";
+          ListenerRequestBody.TriggerNumber=decimal(7);
           EventParams=[||];
       } 
         |> encode
@@ -427,7 +433,10 @@ module EventQueueTests =
       // create a listener
       {
           ListenerRequestBody.EventName="some_event";
-          Trigger="AND some_other_event WITHIN 7 DAYS MATCH ON NULL";
+          ListenerRequestBody.TriggerEvent="some_other_event";
+          ListenerRequestBody.TriggerMatch="NULL";
+          ListenerRequestBody.TriggerPeriod="DAYS";
+          ListenerRequestBody.TriggerNumber=decimal(7);
           EventParams=[||];
       } 
         |> encode

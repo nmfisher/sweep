@@ -16,7 +16,7 @@
 import { Configuration } from "./configuration";
 import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
 
-export const BASE_PATH = "https://app.sweephq.com/1.0.0".replace(/\/+$/, "");
+export const BASE_PATH = "https://sweep-development.ngrok.io/1.0.0".replace(/\/+$/, "");
 
 /**
  *

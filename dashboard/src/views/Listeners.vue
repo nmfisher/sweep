@@ -68,7 +68,7 @@
               </v-layout>
           </div>
           <v-layout row v-if="loading" justify-center>
-            <v-icon  class="rotate mt-5 mb-5">
+            <v-icon class="rotate mt-5 mb-5">
               mdi-reload
             </v-icon>
           </v-layout>
@@ -86,54 +86,60 @@
               <td style="position:relative">
                 <v-layout row align-center class="event" wrap @click="selected=listener;" style="cursor:pointer">
                   <v-flex xs9>
-                      <v-layout row wrap>
-                        <v-flex xs12>
-                          <h3 class="mt-0 mb-0">{{ listener.eventName }} </h3>
-                        </v-flex>
-                        <v-flex lg4 xs12>
-                          <v-slide-x-transition>
-                            <v-combobox
-                                v-show="selected == listener"
-                                :error="listener.paramErrors && listener.paramErrors.length > 0"
-                                :error-messages="listener.errorMessages"
-                                v-model="listener.eventParams"
-                                :items="listener.eventParams"
-                                @change="update(listener)"
-                                hide-selected
-                                hint="May contain a-zA-Z0-9_"
-                                label="Type an event parameter and press enter"
-                                multiple
-                                persistent-hint
-                                small-chips
-                              >
-                              <template v-slot:selection="{ item : paramName, parent, selected }">
-                                <v-chip
-                                  :color="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'red' : ''"
-                                  :class="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'white--text' : ''"
+                        <h3 class="mt-0 mb-0">{{ listener.eventName }} </h3>
+                        <v-slide-x-transition>
+                          <v-layout column align-start wrap v-show="selected == listener" v-if="selected"> 
+                            <v-flex xs12 style="display:flex;align-items:center;width:50% ">
+                                <span class="mr-2">AND</span> 
+                                <v-text-field class="mr-2" v-model="selected.triggerEvent" hint="Event" @change="update(listener)"></v-text-field> 
+                            </v-flex>
+                            <v-flex xs12 style="display:flex;align-items:center">
+                              <span class="mr-2">WITHIN</span>
+                              <v-select class="mr-2" :items='[1,2,3,4,5,6,7]' v-model="selected.triggerNumber" hint="Number" @change="update(listener)"></v-select>
+                              <v-select class="mr-2" :items="[`DAYS`,`HOURS`]" hint="Period" v-model="selected.triggerPeriod" @change="update(listener)"></v-select> 
+                            </v-flex>
+                            <v-flex xs12 style="display:flex;align-items:center">
+                              <span class="mr-2">MATCH ON</span> 
+                              <v-text-field class="mr-2" v-model="selected.triggerMatch" @change="update(listener)"></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 style="display:flex;align-items:center">
+                              <v-combobox
+                                  :error="listener.paramErrors && listener.paramErrors.length > 0"
+                                  :error-messages="listener.errorMessages"
+                                  v-model="listener.eventParams"
+                                  :items="listener.eventParams"
+                                  @change="update(listener)"
+                                  hide-selected
+                                  hint="May contain a-zA-Z0-9_"
+                                  label="Type an event parameter and press enter"
+                                  multiple
+                                  persistent-hint
+                                  small-chips
                                 >
-                                    {{ paramName }}
-                                <v-icon
-                                      small
-                                      @click="listener.eventParams.splice(listener.eventParams.indexOf(paramName), 1)"
-                                    >mdi-close</v-icon>
-                                </v-chip>
-                              </template>
-                            </v-combobox>
+                                <template v-slot:selection="{ item : paramName, parent, selected }">
+                                  <v-chip
+                                    :color="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'red' : ''"
+                                    :class="listener.paramErrors && listener.paramErrors.includes(paramName) ? 'white--text' : ''"
+                                  >
+                                      {{ paramName }}
+                                  <v-icon
+                                        small
+                                        @click="listener.eventParams.splice(listener.eventParams.indexOf(paramName), 1); update(listener)"
+                                      >mdi-close</v-icon>
+                                  </v-chip>
+                                </template>
+                              </v-combobox>
+                            </v-flex>
+                            <v-flex xs12>
+                                <v-icon @click="deleteListener(listener)" outline color="red" class="white--text" style="position:absolute;right:-10px;top:-10px">
+                                  mdi-close-box
+                                </v-icon>
+                                <v-btn @click="editing = true; selected=listener" outline color="indigo" class="white--text">
+                                    Edit template
+                                </v-btn> 
+                            </v-flex>
+                          </v-layout>
                           </v-slide-x-transition>
-                        </v-flex>
-                    </v-layout>
-                  </v-flex>
-                  <v-flex xs3>
-                    <v-slide-x-transition>
-                      <v-layout row v-show="selected == listener">
-                        <v-icon @click="deleteListener(listener)" outline color="red" class="white--text" style="position:absolute;right:-10px;top:-10px">
-                            mdi-close-box
-                        </v-icon>
-                        <v-btn @click="editing = true; selected=listener" outline color="indigo" class="white--text">
-                            Edit template
-                        </v-btn> 
-                      </v-layout>
-                    </v-slide-x-transition>
                   </v-flex>
                 </v-layout>
               </td>
