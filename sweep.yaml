@@ -692,7 +692,13 @@ components:
             type: string
         organizationId:
           type: string
-        trigger:
+        triggerEvent:
+          type: string
+        triggerNumber:
+          type: integer
+        triggerPeriod:
+          type: string
+        triggerMatch:
           type: string
     ListenerRequestBody:
       type: object
@@ -701,7 +707,13 @@ components:
       properties:
         eventName:
           type: string
-        trigger:
+        triggerEvent:
+          type: string
+        triggerNumber:
+          type: number
+        triggerPeriod:
+          type: string
+        triggerMatch:
           type: string
         eventParams:
           type: array
