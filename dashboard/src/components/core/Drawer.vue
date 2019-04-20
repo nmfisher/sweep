@@ -55,10 +55,10 @@ import {
   mapMutations,
   mapState
 } from 'vuex'
-import { UserApiAxiosParamCreator, UserApiFp } from '../../../lib/api';
-import { UserApiFactory } from '../../../lib/api';
-import { UserApi } from '../../../lib/api';
-import { OrganizationApi } from '../../../lib/api';
+import { UserApiAxiosParamCreator, UserApiFp } from '../../../../clients/lib/typescript-axios';
+import { UserApiFactory } from '../../../../clients/lib/typescript-axios';
+import { UserApi } from '../../../../clients/lib/typescript-axios';
+import { OrganizationApi } from '../../../../clients/lib/typescript-axios';
 
 export default {
   data: () => ({

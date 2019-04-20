@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { UserApi, EventApi } from '../../lib/api';
+import { UserApi, EventApi } from '../../../clients/lib/typescript-axios';
 
 export default {
   data:() => ({

@@ -56,7 +56,7 @@
   </v-tabs>
 </template>
 <script>
-  import { TemplateApiFactory, TemplateApi  } from '../../lib/api';
+  import { TemplateApiFactory, TemplateApi  } from '../../../clients/lib/typescript-axios';
   export default {
     data:() => ({
       active:0,

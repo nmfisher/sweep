@@ -137,7 +137,7 @@ import {
 } from 'vuex'
 import Vue from 'vue'
 import MessagePreview from '../components/MessagePreview.vue';
-import { EventApi, ListenerApi } from '../../lib/api'
+import { EventApi, ListenerApi } from '../../../clients/lib/typescript-axios'
 
 export default {
     data: () => ({

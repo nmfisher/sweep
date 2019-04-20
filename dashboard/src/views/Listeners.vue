@@ -153,7 +153,7 @@ import {
 import Vue from 'vue'
 import TemplateEditor from '../components/TemplateEditor.vue';
 
-import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
+import { TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../../clients/lib/typescript-axios';
 
 export default {
    data: () => ({

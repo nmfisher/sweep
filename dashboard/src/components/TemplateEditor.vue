@@ -93,7 +93,7 @@ import Vue from 'vue'
 import Tribute from '../../lib/tribute/src'
 import Combobox2 from '../components/helper/Combobox2'
 import 'tributejs/dist/tribute.css'
-import { TemplateApi, TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../lib/api';
+import { TemplateApi, TemplateApiFactory, ListenerApiFactory, ListenerApiFp, ListenerApi, ListenerRequestBody, Listener } from '../../../clients/lib/typescript-axios';
 import ContentToolsEditor from './ContentToolsEditor.vue';
 
 
