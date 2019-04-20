@@ -140,7 +140,8 @@ module CustomHandlers =
     #if DEBUG
       .WithOrigins([|"http://localhost:8080";"http://sweep-development.ngrok.io";"null"|])
     #else     
-      .WithOrigins([|"http://app.sweephq.com";"https://app.sweephq.com";|])
+      // .WithOrigins([|"http://app.sweephq.com";"https://app.sweephq.com";|])
+      .AllowAnyOrigin()
     #endif
      .AllowCredentials().AllowAnyMethod().AllowAnyHeader() |> ignore
 
