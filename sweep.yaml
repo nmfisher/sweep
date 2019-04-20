@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - description: Sweep API
+  - description: Sweep Development API
     url: 'https://sweep-development.ngrok.io/1.0.0'
 info:
   description: API definitions for the Sweep server/dashboard.
