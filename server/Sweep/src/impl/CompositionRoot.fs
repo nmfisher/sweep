@@ -37,6 +37,7 @@ module CompositionRoot =
 
   let saveUser = Sweep.Data.User.save
   let getUser = Sweep.Data.User.get
+  let getUserByUsername = Sweep.Data.User.getByUsername
 
   // Organizations
   let getOrganization = Sweep.Data.Organization.get 

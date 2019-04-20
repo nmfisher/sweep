@@ -54,7 +54,7 @@ module Program =
                 // ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation`` ()  :> Task
                   // ListenerApiHandlerTests.``ListMessagesForAction - List all messages returns 200 where successful operation`` () :> Task
                 // OrganizationApiHandlerTests.``GetOrganizationInfo - Get organization info for the currently authenticated context returns 200 where successful operation`` () :> Task
-                CustomHandlerTests.``AddEvent - Raise an event returns 200 where An event has been successfully created.``() :> Task
+                CustomHandlerTests.``fetchOrCreateUser successfully creates and returns user where one does not exist``() :> Task
                 ]
                 |> List.toArray
     Task.WaitAll(tasks)

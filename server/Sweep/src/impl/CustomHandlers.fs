@@ -37,22 +37,26 @@ module CustomHandlers =
         o.SlidingExpiration   <- true
         o.ExpireTimeSpan      <- TimeSpan.FromDays 7.0
 
-  let fetchOrCreateUser id email (logger:ILogger)  = 
+  let fetchOrCreateUser id (email:string) (logger:ILogger)  = 
     match CompositionRoot.getUser id with 
     | Some u -> 
         u
     | None ->
-        logger.LogDebug(sprintf "Creating user with ID: %s" id)
-        let orgId = (Guid.NewGuid().ToString())
-        CompositionRoot.saveUser id email orgId
-        let primaryApiKey = (Guid.NewGuid().ToString())
-        let secondaryApiKey = (Guid.NewGuid().ToString())
-        CompositionRoot.saveOrganization orgId primaryApiKey secondaryApiKey
-        match CompositionRoot.getUser id with
-        | Some u ->
+        match CompositionRoot.getUserByUsername email with 
+        | Some u -> 
           u
         | None ->
-          raise (Exception("Unknown error occurred saving user."))
+          logger.LogDebug(sprintf "Creating user with ID: %s" id)
+          let orgId = (Guid.NewGuid().ToString())
+          CompositionRoot.saveUser id email orgId
+          let primaryApiKey = (Guid.NewGuid().ToString())
+          let secondaryApiKey = (Guid.NewGuid().ToString())
+          CompositionRoot.saveOrganization orgId primaryApiKey secondaryApiKey
+          match CompositionRoot.getUser id with
+          | Some u ->
+            u
+          | None ->
+            raise (Exception("Unknown error occurred saving user."))
 
 
   let onCreatingTicket name (ctx:OAuthCreatingTicketContext) = 

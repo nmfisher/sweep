@@ -36,3 +36,12 @@ module User =
     |> Seq.map (fun x -> x.MapTo<User>(deserialize))
     |> Seq.tryHead
   
+  let getByUsername (username:string) : User option = 
+    let ctx = GetDataContext()
+    query {
+      for user in ctx.SweepDb.User do
+      where (user.Username = Some(username))
+      select user
+    } 
+    |> Seq.map (fun x -> x.MapTo<User>(deserialize))
+    |> Seq.tryHead
