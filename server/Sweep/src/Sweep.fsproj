@@ -98,12 +98,23 @@
     <DisableAutoSetFscCompilerPath>true</DisableAutoSetFscCompilerPath>
     <DotnetFscCompilerPath></DotnetFscCompilerPath>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\..\..\dashboard\dist\**" CopyToOutputDirectory="PreserveNewest" LinkBase="wwwroot" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include=".\view\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
-  </ItemGroup>
+  <Target Name="BuildDashboard" BeforeTargets="Compile" Condition="$(Configuration) == 'Release'">
+    <Exec Command="npm run build" WorkingDirectory="..\..\..\dashboard\"  ConsoleToMSBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
+    </Exec>
+  </Target>
+  <Target Name="CopyDashboardToBuild" BeforeTargets="Build">
+    <ItemGroup>
+      <None Include="..\..\..\dashboard\dist\**"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(None)" DestinationFiles="@(None->'$(TargetDir)\wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"  />
+  </Target>
+  <Target Name="CopyViewToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <None Include=".\view\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+    <Copy SourceFiles="@(None)" DestinationFiles="@(None->'$(PublishDir)\wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"  />
+  </Target>
    <UsingTask TaskName="TokenReplace" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Path ParameterType="System.String" Required="true" />
@@ -119,12 +130,12 @@ File.WriteAllText(Path, content);
 ]]></Code>
     </Task>
   </UsingTask>
-  <ItemGroup>
+  <!-- <ItemGroup>
     <JSLib Include="$(PublishDir)/wwwroot/js/*.js"/>
   </ItemGroup>
   
   <Target Name='Foo' AfterTargets="Publish"  Condition="$(Configuration) == 'Release'">
     <Message Text=">>>>>>>>>>>>>>>> Replacing Sweep development server URLs with production server URLs in %(JSLib.Identity)" Importance="High"/>
     <TokenReplace Path="%(JSLib.Identity)" Token="sweep-development.ngrok.io" Replacement="app.sweephq.com"/>
-  </Target>
+  </Target> -->
 </Project>
