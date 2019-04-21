@@ -59,8 +59,22 @@
               <v-layout row style="flex-grow:0;padding:12px" align-center>
                 <v-switch v-model="editRaw" :label="editRaw ? `Raw HTML`: `Visual`"></v-switch>
                 <span v-if="validated" @click="showPreview" style="cursor:pointer">
-                    Preview
+                    Send test email
                 </span>
+                <input 
+                  type="file" 
+                  ref="htmlUpload"
+                  @change="insertHTML($event.target.files);"
+                  accept="text/html" 
+                  style="display:none">
+                <v-btn flat icon color="grey" @click="$refs.htmlUpload.click()">
+                  <v-tooltip>
+                    <v-icon slot="activator" size="16">
+                      mdi-upload
+                    </v-icon>
+                      Upload HTML
+                  </v-tooltip>
+                </v-btn>
                 <v-btn flat icon color="grey">
                   <v-tooltip>
                     <v-icon slot="activator" size="16">
@@ -72,7 +86,7 @@
                 </v-btn>
               </v-layout>
               <v-flex xs11>
-                  <content-tools-editor @change="content = $event" :tribute="tribute" :editRaw="editRaw" :active="active"/>
+                  <content-tools-editor ref="editor" :tribute="tribute" :editRaw="editRaw" :source="content" :active="active"/>
                   <v-text-field v-model="content" :rules="[rules.required, rules.templateOrString]" class="hide-input"/>
               </v-flex>
               <v-flex xs1>
@@ -141,6 +155,21 @@ export default {
         vm.$store.state.app.snackbar = err;
       });
     },
+    insertHTML(files) {
+      var vm = this;
+      if(files.length > 1)
+        throw "Only single files supported";
+      
+      if(files.length == 0)
+        return;
+
+      var reader = new FileReader();
+      reader.readAsText(files[0], "UTF-8");
+      reader.onload = function (evt) {
+        vm.content = evt.target.result;
+      };
+
+    },
     validate() {
       var vm = this;
       if(typeof(this.$refs.form) !== "undefined") {
@@ -154,6 +183,7 @@ export default {
     },
     save() {
       var vm = this;
+      this.content = this.$refs.editor.finalize();
       var requestBody = {
           content:this.content, 
           subject:this.subject, 
@@ -162,6 +192,7 @@ export default {
           sendTo:this.sendTo,
       }
       vm.saving = true;
+      
       if(this.templateId == null) {
         return new TemplateApi().addTemplate(requestBody, {withCredentials:true}).then((resp) => {
             vm.templateId = resp.data.id;

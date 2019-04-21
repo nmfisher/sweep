@@ -6,10 +6,8 @@
           </div>
       </v-slide-x-transition>
       <v-slide-x-transition>
-        <!-- <codemirror ref="codemirror" v-model="raw" v-show="editRaw"></codemirror> -->
         <textarea v-model="raw" ref="textarea" v-show="editRaw" style="height:100%;width:100%"/>
       </v-slide-x-transition>
-      <iframe :srcdoc="raw" ref="iframe" style="display:none"></iframe>
     </v-flex>
   </v-layout>
 </template>
@@ -39,11 +37,14 @@ Vue.use(VueCodemirror, {
 import '../../node_modules/codemirror/lib/codemirror.css'
 import '../../node_modules/codemirror/theme/shadowfox.css'
 
+var parser = new DOMParser();
+
 export default {
   props:{
     tribute:Object,
     editRaw:Boolean,
     active:Boolean,
+    source:String,
   },
   data:() => ({
     editor:null,
@@ -62,12 +63,8 @@ export default {
     Vue.nextTick(() => {
       document.getElementById("editor").addEventListener("input", () => {
         vm.tribute.attach(document.querySelectorAll(".ce-element"));
-        vm.setContent();
       });
-      
     });
-
-    //this.editor.start();
     
     vm.$refs.textarea.addEventListener('tribute-replaced', function (evt) {
       vm.$refs.textarea.dispatchEvent(new Event('change'));
@@ -76,6 +73,9 @@ export default {
 
   },
   watch:{
+    source(newVal) {
+      this.raw = newVal;
+    },
     tribute(newVal) {
       if(newVal) {
             newVal.attach(this.$refs.textarea);
@@ -88,6 +88,15 @@ export default {
         this.editor.stop(true);
     },
     raw(newVal) {
+      var vm = this;
+      if(!this.active)
+        return;
+      if(!this.editRaw)
+        this.editor.stop(true);
+      vm.refreshEditableContent();  
+      if(!this.editRaw)
+        this.editor.start();
+      
       this.$emit("change", newVal);
     },
     // ContentTools acts upon existing HTML elements under our own application document tree
@@ -96,22 +105,40 @@ export default {
     // When editing via ContentTools, we retrieve the iframe->body->innerHTML 
     // When editing is complete, we update the same
     editRaw(newVal) {
-      var iframe = this.$refs.iframe.contentDocument || this.$refs.iframe.contentWindow.document;
-      var vm = this;      
+      var vm = this;
       if(newVal == true) {
         this.editor.stop(true);
-        this.setContent();
+        Vue.nextTick(() => {
+          vm.refreshHTMLContent();
+        })
+        
       } else {
-        document.getElementById("editor").innerHTML = iframe.body.innerHTML;
-        vm.editor.start();
+        this.refreshEditableContent();
+        Vue.nextTick(() => {
+          vm.editor.start();
+        });
       }
     }
   },
   methods:{
-    setContent() {
-        var iframe = this.$refs.iframe.contentDocument || this.$refs.iframe.contentWindow.document;
-        iframe.body.innerHTML = document.getElementById("editor").innerHTML;
-        this.raw = beautify(iframe.documentElement.outerHTML, {"indent-inner-html":true });
+    finalize() {
+      if(this.editor.getState() == "EDITING")
+        this.editor.stop(true);
+      this.refreshHTMLContent();
+      this.editor.start();
+      return this.raw;
+    },
+    refreshEditableContent() {
+      var doc = parser.parseFromString(this.raw, "text/html");
+      document.getElementById("editor").innerHTML = doc.body.innerHTML;
+    },
+    refreshHTMLContent() {
+      var doc = parser.parseFromString(this.raw, "text/html");
+      doc.body.innerHTML = document.getElementById("editor").innerHTML;
+      var vm = this;
+      // Vue.nextTick(() => {
+        vm.raw = doc.documentElement.outerHTML;
+      // });
     }
   },
   components:{
