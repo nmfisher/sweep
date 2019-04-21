@@ -284,7 +284,7 @@ module EventQueueTests =
     }
 
   [<Fact>]
-  let ``Dequeue and send mail for an event with a matched trigger``() =
+  let ``Dequeue and send mail for an event with a live trigger with no match key``() =
     task {
       use server = new TestServer(createHost())
       use client = server.CreateClient()
@@ -371,10 +371,129 @@ module EventQueueTests =
       // reset the flag
       mailed <- false
 
-      // create the third event, just to make sure
+      // create the third event, just to make sure the trigger matches multiple times
       { 
         EventRequestBody.EventName = "some_other_event"; 
         Params=null; 
+      }
+        |> encode
+        |> HttpPost client "/1.0.0/events"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore 
+      
+      dequeue mailer
+
+      mailed |> shouldEqual true |> ignore
+
+      // list the events with actions
+      HttpGet client "/1.0.0/events?withActions=true"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<Event[]>
+      |> Seq.map (fun x -> x.Actions |> shouldBeLength 1)
+      |> ignore 
+      
+      // list the events without actions
+      HttpGet client "/1.0.0/events?withActions=false"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> readText
+      |> JsonConvert.DeserializeObject<Event[]>
+      |> Seq.map (fun x -> x.Actions |> shouldBeLength 0)
+      |> ignore 
+    }
+
+  [<Fact>]
+  let ``Dequeue and send mail for an event with a live trigger with a match key``() =
+    task {
+      use server = new TestServer(createHost())
+      use client = server.CreateClient()
+      TestHelper.initialize() |> ignore
+      
+      // create a template
+      {
+        TemplateRequestBody.Content="Hello";
+        SendTo=[|"foo@bar"|];
+        Subject="Some subject";
+        FromAddress="baz@qux";
+        FromName="Baz";
+      }
+      |> encode
+      |> HttpPost client "/1.0.0/templates"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore
+
+      let template = 
+        "/1.0.0/templates" 
+        |> HttpGet client
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Template[]>
+        |> Seq.head
+
+      // create a listener
+      {
+          ListenerRequestBody.EventName="some_event";
+          ListenerRequestBody.TriggerEvent="some_other_event";
+          ListenerRequestBody.TriggerMatch="username";
+          ListenerRequestBody.TriggerPeriod="HOURS";
+          ListenerRequestBody.TriggerNumber=decimal(1);
+          EventParams=[|"username"|];
+      } 
+        |> encode
+        |> HttpPost client "/1.0.0/listeners"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore
+      
+      let listener = 
+        HttpGet client "/1.0.0/listeners" 
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> readText
+        |> JsonConvert.DeserializeObject<Listener[]>
+        |> Seq.head
+
+      // attach the tempalte to the listener      
+      let path = "/1.0.0/listeners/" + listener.Id + "/templates/" + template.Id
+      HttpPost client path null |> isStatus (enum<HttpStatusCode>(200)) |> ignore
+
+      // create the first event
+      { EventName = "some_event"; Params=dict [|"username","foo" :> obj;|]; } : EventRequestBody
+      |> encode
+      |> HttpPost client "/1.0.0/events"
+      |> isStatus (enum<HttpStatusCode>(200))
+      |> ignore 
+
+      let mutable mailed = false
+
+      let mailer (event:Event) (actionId:string) (templates:seq<Template>)  = 
+        templates |> Seq.toArray |> shouldBeLength 1 |> Seq.head |> (fun x -> x.Content |> shouldEqual "Hello") |> ignore
+        event.EventName |> shouldEqual "some_event" |> ignore
+        mailed <- true
+        ()
+
+      dequeue mailer
+      mailed |> shouldEqual false |> ignore
+      
+      // create the second event
+      { 
+        EventRequestBody.EventName = "some_other_event"; 
+        Params=dict [|"username","foo" :> obj;|];
+      }
+        |> encode
+        |> HttpPost client "/1.0.0/events"
+        |> isStatus (enum<HttpStatusCode>(200))
+        |> ignore 
+      
+      dequeue mailer
+
+      mailed |> shouldEqual true |> ignore
+
+      // reset the flag
+      mailed <- false
+
+      // create the third event, just to make sure the trigger matches multiple times
+      { 
+        EventRequestBody.EventName = "some_other_event"; 
+        Params=dict [|"username","foo" :> obj;|];
       }
         |> encode
         |> HttpPost client "/1.0.0/events"

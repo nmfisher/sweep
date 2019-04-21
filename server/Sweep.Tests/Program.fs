@@ -15,7 +15,7 @@ module Program =
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 200 where successful operation``() :> Task;
                 // ListenerApiHandlerTests.``AddListener - Create a new Listener returns 422 where Invalid input``() :> Task;
                 //ListenerApiHandlerTests.``ListListeners - List all Listeners returns 200 where successful operation``() :> Task;
-                ListenerApiHandlerTests.``UpdateListener - Updates a Listener returns 200 where Successfully updated``() :> Task;
+                // ListenerApiHandlerTests.``UpdateListener - Updates a Listener returns 200 where Successfully updated``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 200 where successful operation``() :> Task;
                 // MessageApiHandlerTests.``GetMessageById - Find message by ID returns 404 where message not found``() :> Task;
                 // MessageApiHandlerTests.``ListMessages - List all messages returns 200 where successful operation``() :> Task

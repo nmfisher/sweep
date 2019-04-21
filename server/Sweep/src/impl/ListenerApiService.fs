@@ -27,7 +27,7 @@ module ListenerApiServiceImplementation =
             let userId = getUserId ctx.User.Claims
             let orgId = getOrgId ctx.User.Claims
             let trigger = Sweep.Data.Listener.parse args.bodyParams.TriggerEvent (int(args.bodyParams.TriggerNumber)) args.bodyParams.TriggerPeriod args.bodyParams.TriggerMatch
-            let listener = addListener args.bodyParams.EventName args.bodyParams.EventParams trigger userId orgId
+            let listener = addListener args.bodyParams.EventName args.bodyParams.EventParams args.bodyParams.TriggerEvent (int(args.bodyParams.TriggerNumber)) args.bodyParams.TriggerPeriod args.bodyParams.TriggerMatch userId orgId
             AddListenerDefaultStatusCode { content = listener }
           with
           | e ->           
@@ -109,7 +109,7 @@ module ListenerApiServiceImplementation =
             let userId = getUserId ctx.User.Claims
             let orgId = getOrgId ctx.User.Claims
             let trigger = Sweep.Data.Listener.parse args.bodyParams.TriggerEvent (int(args.bodyParams.TriggerNumber)) args.bodyParams.TriggerPeriod args.bodyParams.TriggerMatch
-            let listener = CompositionRoot.updateListener args.pathParams.listenerId args.bodyParams.EventName args.bodyParams.EventParams trigger userId orgId 
+            let listener = CompositionRoot.updateListener args.pathParams.listenerId args.bodyParams.EventName args.bodyParams.EventParams args.bodyParams.TriggerEvent (int(args.bodyParams.TriggerNumber)) args.bodyParams.TriggerPeriod args.bodyParams.TriggerMatch userId orgId 
             UpdateListenerDefaultStatusCode { content = listener }
           with
           | NotFoundException(msg) ->

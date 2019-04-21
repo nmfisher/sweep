@@ -337,7 +337,7 @@ module ListenerApiHandlerTests =
           Actions = [||]
         }
 
-      Sweep.Data.Listener.add "foo" [||] None "some_user_id" orgId
+      Sweep.Data.Listener.add "foo" [||] "" 0 "" "" "some_user_id" orgId
 
       Sweep.Data.ListenerAction.createFromEvent event |> ignore
 

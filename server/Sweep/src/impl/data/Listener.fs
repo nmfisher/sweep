@@ -66,7 +66,7 @@ module Listener =
       })
 
 
-  let add eventName eventParams (trigger:ListenerCondition option) userId orgId = 
+  let add eventName eventParams triggerEvent triggerNumber triggerPeriod triggerMatch  userId orgId = 
     let ctx = GetDataContext()
     let listener = ctx.SweepDb.Listener.Create()
     listener.Id <- Guid.NewGuid().ToString()
@@ -74,44 +74,23 @@ module Listener =
       listener.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
     listener.EventName <- eventName
     listener.OrganizationId <- orgId
-    match trigger with 
-    | Some t ->
-      listener.TriggerEvent <- Some(t.EventName)
-      listener.TriggerNumber <- Some(int(t.Duration.TotalDays));
-      listener.TriggerPeriod <- Some("DAYS");
-      listener.TriggerMatch <- t.Key;
-    | None ->    
-      listener.TriggerEvent <- None
-      listener.TriggerNumber <- None
-      listener.TriggerPeriod <- None
-      listener.TriggerMatch <- None
+    listener.TriggerEvent <- Some(triggerEvent)
+    listener.TriggerNumber <- Some(triggerNumber)
+    listener.TriggerPeriod <- Some(triggerPeriod)
+    listener.TriggerMatch <- Some(triggerMatch)
     ctx.SubmitUpdates()
-    match trigger with 
-    | Some t -> 
-        {
-          Listener.Id=listener.Id;
-          EventName=eventName
-          EventParams=eventParams;
-          TriggerEvent=t.EventName;
-          TriggerNumber=int(t.Duration.TotalDays);
-          TriggerPeriod="DAYS";
-          TriggerMatch=match t.Key with | Some k -> k | None -> "";
-          OrganizationId=orgId
-        }
-    | None ->
-        {
-          Listener.Id=listener.Id;
-          EventName=eventName
-          EventParams=eventParams;
-          TriggerEvent=null;
-          TriggerNumber=0;
-          TriggerPeriod=null;
-          TriggerMatch=null;
-          OrganizationId=orgId
-        }
-    
+    {
+      Listener.Id=listener.Id;
+      EventName=eventName
+      EventParams=eventParams;
+      TriggerEvent=triggerEvent;
+      TriggerNumber=triggerNumber;
+      TriggerPeriod=triggerPeriod;
+      TriggerMatch=triggerMatch;
+      OrganizationId=orgId
+    }
 
-  let update listenerId eventName eventParams (trigger:ListenerCondition option) userId orgId =
+  let update listenerId eventName eventParams triggerEvent triggerNumber triggerPeriod triggerMatch userId orgId =
     let ctx = GetDataContext()
     let row = query {
       for listener in ctx.SweepDb.Listener do
@@ -127,42 +106,22 @@ module Listener =
           row.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject eventParams)
       else
         row.EventParams <- Some(Newtonsoft.Json.JsonConvert.SerializeObject([||]))
-    row.EventName <- eventName      
-    match trigger with 
-      | Some t ->
-        row.TriggerEvent <- Some(t.EventName)
-        row.TriggerNumber <- Some(int(t.Duration.TotalDays));
-        row.TriggerPeriod <- Some("DAYS");
-        row.TriggerMatch<- t.Key;
-      | None ->    
-        row.TriggerEvent <- None
-        row.TriggerNumber <- None
-        row.TriggerPeriod <- None
-        row.TriggerMatch <- None
-    ctx.SubmitUpdates()
-    match trigger with 
-    | Some t -> 
-        {
-          Listener.Id=listenerId;
-          EventName=eventName
-          EventParams=eventParams;
-          TriggerEvent=t.EventName;
-          TriggerNumber=int(t.Duration.TotalDays);
-          TriggerPeriod="DAYS";
-          TriggerMatch=match t.Key with | Some k -> k | None -> "";
-          OrganizationId=orgId
-        }
-    | None ->
-        {
-          Listener.Id=listenerId;
-          EventName=eventName
-          EventParams=eventParams;
-          TriggerEvent=null;
-          TriggerNumber=0;
-          TriggerPeriod=null;
-          TriggerMatch=null;
-          OrganizationId=orgId
-        }
+      row.EventName <- eventName      
+      row.TriggerEvent <- Some(triggerEvent)
+      row.TriggerNumber <- Some(triggerNumber)
+      row.TriggerPeriod <- Some(triggerPeriod)
+      row.TriggerMatch <- Some(triggerMatch)
+      ctx.SubmitUpdates()
+      {
+        Listener.Id=listenerId;
+        EventName=eventName
+        EventParams=eventParams;
+        TriggerEvent=triggerEvent;
+        TriggerNumber=triggerNumber;
+        TriggerPeriod=triggerPeriod;
+        TriggerMatch=triggerMatch;
+        OrganizationId=orgId
+      }
 
   let get id orgId =
     let ctx = GetDataContext();
