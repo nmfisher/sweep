@@ -115,6 +115,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(None)" DestinationFiles="@(None->'$(TargetDir)\wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"  />
   </Target>
+  <Target Name="CopyViewToPublish" AfterTargets="Build" DependsOnTargets="CopyDashboardToBuild">
+    <ItemGroup>
+      <None Include=".\view\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+    <Copy SourceFiles="@(None)" DestinationFiles="@(None->'$(PublishDir)\wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"  />
+  </Target>
    <UsingTask TaskName="TokenReplace" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Path ParameterType="System.String" Required="true" />
