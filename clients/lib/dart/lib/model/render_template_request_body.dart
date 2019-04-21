@@ -1,6 +1,6 @@
-part of openapi.api;
+part of sweep_api.api;
 
-class RenderTemplateRequestBody {
+class RenderTemplateRequestBody { 
   
   Map<String, Object> params = {};
   RenderTemplateRequestBody();
@@ -15,7 +15,7 @@ class RenderTemplateRequestBody {
     if (json['params'] == null) {
       params = null;
     } else {
-      params = Object.mapFromJson(json['params']);
+      params = convert.json.decode(json['params']);
     }
   }
 

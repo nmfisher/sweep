@@ -1,8 +1,8 @@
-# openapi.api.EventApi
+# sweep_api.api.EventApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 All URIs are relative to *https://app.sweephq.com/1.0.0*
@@ -21,7 +21,7 @@ Raise an event
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure API key authorization: api_key
 //defaultApiClient.getAuthentication<ApiKeyAuth>('api_key').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
@@ -67,7 +67,7 @@ Find raised event by ID
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 
 var api_instance = new EventApi();
 var eventId = eventId_example; // String | ID of event that needs to be fetched
@@ -110,7 +110,7 @@ Returns a list of all events
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 

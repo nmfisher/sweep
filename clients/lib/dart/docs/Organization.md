@@ -1,8 +1,8 @@
-# openapi.model.Organization
+# sweep_api.model.Organization
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 ## Properties

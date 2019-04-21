@@ -1,8 +1,8 @@
-# openapi.api.TemplateApi
+# sweep_api.api.TemplateApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 All URIs are relative to *https://app.sweephq.com/1.0.0*
@@ -24,7 +24,7 @@ Create a new Template
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -67,7 +67,7 @@ Deletes a Template
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -111,7 +111,7 @@ Returns a single template
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 
 var api_instance = new TemplateApi();
 var templateId = templateId_example; // String | ID of template to return
@@ -154,7 +154,7 @@ Returns a list of templates
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -195,7 +195,7 @@ Returns a string representing the HTML content of an email to be sent
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -240,7 +240,7 @@ Update an existing Template
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 

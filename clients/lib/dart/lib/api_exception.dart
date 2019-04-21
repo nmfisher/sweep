@@ -1,4 +1,4 @@
-part of openapi.api;
+part of sweep_api.api;
 
 class ApiException implements Exception {
   int code = 0;

@@ -1,6 +1,6 @@
-part of openapi.api;
+part of sweep_api.api;
 
-class Listener {
+class Listener { 
   
   String id = null;
   
@@ -10,12 +10,18 @@ class Listener {
   
   String organizationId = null;
   
-  String trigger = null;
+  String triggerEvent = null;
+  
+  int triggerNumber = null;
+  
+  String triggerPeriod = null;
+  
+  String triggerMatch = null;
   Listener();
 
   @override
   String toString() {
-    return 'Listener[id=$id, eventName=$eventName, eventParams=$eventParams, organizationId=$organizationId, trigger=$trigger, ]';
+    return 'Listener[id=$id, eventName=$eventName, eventParams=$eventParams, organizationId=$organizationId, triggerEvent=$triggerEvent, triggerNumber=$triggerNumber, triggerPeriod=$triggerPeriod, triggerMatch=$triggerMatch, ]';
   }
 
   Listener.fromJson(Map<String, dynamic> json) {
@@ -40,10 +46,25 @@ class Listener {
     } else {
           organizationId = json['organizationId'];
     }
-    if (json['trigger'] == null) {
-      trigger = null;
+    if (json['triggerEvent'] == null) {
+      triggerEvent = null;
     } else {
-          trigger = json['trigger'];
+          triggerEvent = json['triggerEvent'];
+    }
+    if (json['triggerNumber'] == null) {
+      triggerNumber = null;
+    } else {
+          triggerNumber = json['triggerNumber'];
+    }
+    if (json['triggerPeriod'] == null) {
+      triggerPeriod = null;
+    } else {
+          triggerPeriod = json['triggerPeriod'];
+    }
+    if (json['triggerMatch'] == null) {
+      triggerMatch = null;
+    } else {
+          triggerMatch = json['triggerMatch'];
     }
   }
 
@@ -53,7 +74,10 @@ class Listener {
       'eventName': eventName,
       'eventParams': eventParams,
       'organizationId': organizationId,
-      'trigger': trigger
+      'triggerEvent': triggerEvent,
+      'triggerNumber': triggerNumber,
+      'triggerPeriod': triggerPeriod,
+      'triggerMatch': triggerMatch
     };
   }
 

@@ -1,8 +1,8 @@
-# openapi.model.EventRequestBody
+# sweep_api.model.EventRequestBody
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 ## Properties

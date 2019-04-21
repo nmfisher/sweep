@@ -1,8 +1,8 @@
-# openapi.model.RenderTemplateRequestBody
+# sweep_api.model.RenderTemplateRequestBody
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 ## Properties

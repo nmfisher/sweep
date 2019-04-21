@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>SweepClient</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>Nick Fisher</Authors>
+    <Company>Avinium Pty Ltd</Company>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../lib/dotnet/src/Sweep/Sweep.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Library.fs" />
+  </ItemGroup>
+
+</Project>

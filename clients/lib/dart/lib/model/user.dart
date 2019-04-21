@@ -1,6 +1,6 @@
-part of openapi.api;
+part of sweep_api.api;
 
-class User {
+class User { 
   
   String id = null;
   

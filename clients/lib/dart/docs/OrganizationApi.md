@@ -1,8 +1,8 @@
-# openapi.api.OrganizationApi
+# sweep_api.api.OrganizationApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 All URIs are relative to *https://app.sweephq.com/1.0.0*
@@ -19,7 +19,7 @@ Get organization info for the currently authenticated context
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 

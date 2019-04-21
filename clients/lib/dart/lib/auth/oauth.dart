@@ -1,4 +1,4 @@
-part of openapi.api;
+part of sweep_api.api;
 
 class OAuth implements Authentication {
   String _accessToken;

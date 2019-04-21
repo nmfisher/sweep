@@ -1,8 +1,8 @@
-# openapi.api.MessageApi
+# sweep_api.api.MessageApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 All URIs are relative to *https://app.sweephq.com/1.0.0*
@@ -22,7 +22,7 @@ Returns a single message
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -67,7 +67,7 @@ Returns a list of messages
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 

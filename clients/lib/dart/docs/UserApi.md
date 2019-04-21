@@ -1,8 +1,8 @@
-# openapi.api.UserApi
+# sweep_api.api.UserApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 ```
 
 All URIs are relative to *https://app.sweephq.com/1.0.0*
@@ -25,7 +25,7 @@ This can only be done by the logged in user.
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 
 var api_instance = new UserApi();
 
@@ -61,7 +61,7 @@ Get user info for the currently authenticated user
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 // TODO Configure OAuth2 access token for authorization: Google
 //defaultApiClient.getAuthentication<OAuth>('Google').accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -100,7 +100,7 @@ Logs user into the system
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 
 var api_instance = new UserApi();
 var username = username_example; // String | The user name for login
@@ -143,7 +143,7 @@ Logs out current logged in user session
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 
 var api_instance = new UserApi();
 
@@ -181,7 +181,7 @@ This can only be done by the logged in user.
 
 ### Example 
 ```dart
-import 'package:openapi/api.dart';
+import 'package:sweep_api/api.dart';
 
 var api_instance = new UserApi();
 var userRequestBody = new UserRequestBody(); // UserRequestBody | 

@@ -1,6 +1,6 @@
-part of openapi.api;
+part of sweep_api.api;
 
-class EventRequestBody {
+class EventRequestBody { 
   
   String eventName = null;
   
@@ -22,7 +22,7 @@ class EventRequestBody {
     if (json['params'] == null) {
       params = null;
     } else {
-      params = Object.mapFromJson(json['params']);
+      params = convert.json.decode(json['params']);
     }
   }
 

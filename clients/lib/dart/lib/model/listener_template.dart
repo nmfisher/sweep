@@ -1,6 +1,6 @@
-part of openapi.api;
+part of sweep_api.api;
 
-class ListenerTemplate {
+class ListenerTemplate { 
   
   String listenerId = null;
   

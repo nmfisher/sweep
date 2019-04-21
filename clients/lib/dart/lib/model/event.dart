@@ -1,6 +1,6 @@
-part of openapi.api;
+part of sweep_api.api;
 
-class Event {
+class Event { 
   
   String id = null;
   
@@ -39,7 +39,7 @@ class Event {
     if (json['params'] == null) {
       params = null;
     } else {
-      params = Object.mapFromJson(json['params']);
+      params = convert.json.decode(json['params']);
     }
     if (json['receivedOn'] == null) {
       receivedOn = null;
