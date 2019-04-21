@@ -127,7 +127,6 @@ export default {
       }
     },
     emailsChart(component) {
-      console.log(component.weekEmails);
       return {
           data: {
             labels: component.lastWeek,
@@ -154,20 +153,21 @@ export default {
         return [];
       var errors = this.events.filter((event) => event.actions.filter((action) => action.error != null));
       var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
-      var grouped = _.groupBy(errors, (e) => {
-        new Date(e).getDate();  
+      var grouped = _.countBy(this.events, (e) => {
+        new Date(e).getDate();
       });
-      return Object.values({...zeros, ...grouped});
+      return Object.values(Object.assign(zeros, grouped));
     },
     weekEvents() {
       if(this.events == null)
         return [];
       var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
 
-      var grouped = _.groupBy(this.events, (e) => {
+      var grouped = _.countBy(this.events, (e) => {
         new Date(e).getDate();
       });
-      return Object.values({...zeros, ...grouped});
+      console.log(Object.values(Object.assign(zeros, grouped)));
+      return Object.values(Object.assign(zeros, grouped));
     },
     weekEmails() {
       if(this.messages == null)
@@ -175,12 +175,11 @@ export default {
       
       var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
 
-      var grouped = _.groupBy(this.messages, (m) => {
-        new Date(m).getDate();
+      var grouped = _.countBy(this.events, (e) => {
+        new Date(e).getDate();
       });
-      console.log(Object.values({...zeros, ...grouped}));
 
-      return Object.values({...zeros, ...grouped});
+      return Object.values(Object.assign(zeros, grouped));
     }
   },
   mounted() {
