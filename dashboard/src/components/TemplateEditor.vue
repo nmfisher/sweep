@@ -271,7 +271,7 @@ export default {
   },
   watch:{
     listener:{
-      deep:true,
+      deep:false,
       handler(newVal) {
         //this.$refs.editor.reset();
         this.validate();

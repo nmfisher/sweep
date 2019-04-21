@@ -84,6 +84,7 @@
               slot-scope="{ item:listener }"
             >
               <td style="position:relative">
+                <v-form :ref="listener.id">
                 <v-layout row align-center class="event" wrap @click="selected=listener;" style="cursor:pointer">
                   <v-flex xs9>
                         <h3 class="mt-0 mb-0">{{ listener.eventName }} </h3>
@@ -91,16 +92,16 @@
                           <v-layout column align-start wrap v-show="selected == listener" v-if="selected"> 
                             <v-flex xs12 style="display:flex;align-items:center;width:50% ">
                                 <span class="mr-2">AND</span> 
-                                <v-text-field class="mr-2" v-model="selected.triggerEvent" hint="Event" @change="update(listener)"></v-text-field> 
+                                <v-text-field class="mr-2" :rules="[rules.required]" v-model="selected.triggerEvent" hint="Event" @change="update(listener)"></v-text-field> 
                             </v-flex>
                             <v-flex xs12 style="display:flex;align-items:center">
                               <span class="mr-2">WITHIN</span>
-                              <v-select class="mr-2" :items='[1,2,3,4,5,6,7]' v-model="selected.triggerNumber" hint="Number" @change="update(listener)"></v-select>
-                              <v-select class="mr-2" :items="[`DAYS`,`HOURS`]" hint="Period" v-model="selected.triggerPeriod" @change="update(listener)"></v-select> 
+                              <v-select class="mr-2" :rules="[rules.required]" :items='[1,2,3,4,5,6,7]' v-model="selected.triggerNumber" hint="Number" @change="update(listener)"></v-select>
+                              <v-select class="mr-2" :rules="[rules.required]" :items="[`DAYS`,`HOURS`]" hint="Period" v-model="selected.triggerPeriod" @change="update(listener)"></v-select> 
                             </v-flex>
                             <v-flex xs12 style="display:flex;align-items:center">
                               <span class="mr-2">MATCH ON</span> 
-                              <v-text-field class="mr-2" v-model="selected.triggerMatch" @change="update(listener)"></v-text-field>
+                              <v-text-field class="mr-2" :rules="[rules.required]" v-model="selected.triggerMatch" @change="update(listener)" ></v-text-field>
                             </v-flex>
                             <v-flex xs12 style="display:flex;align-items:center">
                               <v-combobox
@@ -131,9 +132,19 @@
                               </v-combobox>
                             </v-flex>
                             <v-flex xs12>
-                                <v-icon @click="deleteListener(listener)" outline color="red" class="white--text" style="position:absolute;right:-10px;top:-10px">
-                                  mdi-close-box
-                                </v-icon>
+                                <v-menu style="position:absolute;right:-10px;top:-10px">
+                                  <v-icon slot="activator" outline color="red" class="white--text">
+                                    mdi-close-box
+                                  </v-icon>
+                                  <v-card style="padding:15px">
+                                    <v-layout column align-center>
+                                      Are you sure you want to delete this listener?
+                                      <v-btn color="red" class="white--text" @click="deleteListener(listener)">
+                                        Delete
+                                      </v-btn>
+                                    </v-layout>
+                                  </v-card>
+                                </v-menu>
                                 <v-btn @click="editing = true; selected=listener" outline color="indigo" class="white--text">
                                     Edit template
                                 </v-btn> 
@@ -142,6 +153,7 @@
                           </v-slide-x-transition>
                   </v-flex>
                 </v-layout>
+                </v-form>
               </td>
             </template>
           </v-data-table>
@@ -165,6 +177,7 @@ export default {
    data: () => ({
       editing:false,
       selected:null,
+      selectedTriggerError:null,
       loading:false,
       saving: false,
       showingNewEventField:false,
@@ -211,6 +224,11 @@ export default {
     update(item) {
       var vm = this;
       item.paramErrors = [];
+      if(!item.eventParams) {
+        item.eventParams = [];
+      }
+      if(!this.$refs[item.id].validate())
+        return;
 
       for(var i = 0; i < item.eventParams.length; i++) {
         if(/[^a-zA-Z0-9_]/.test(item.eventParams[i])) {
@@ -233,6 +251,21 @@ export default {
   components: { 
     TemplateEditor
   },
+  computed:{
+    rules() {
+      var vm = this;
+      return {
+        required(val) {
+          var els = [vm.selected.triggerEvent, vm.selected.triggerPeriod, vm.selected.triggerNumber, vm.selected.triggerMatch];
+          if (els.every((x => x != null && x.length > 0))) {
+            return true;
+          } else {
+            return els.filter((x) => x === null || x.length == 0 || x == 0).length > 0 ? "If a trigger is provided, all values must be filled in." : true;          
+          }
+        }
+      }
+    }
+  }
 }
 </script>
 <style>
