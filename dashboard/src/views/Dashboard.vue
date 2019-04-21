@@ -153,7 +153,7 @@ export default {
         return [];
       var errors = this.events.filter((event) => event.actions.filter((action) => action.error != null));
       var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
-      var grouped = _.countBy(this.events, (e) => {
+      var grouped = _.countBy(errors, (e) => {
         new Date(e).getDate();
       });
       return Object.values(Object.assign(zeros, grouped));
@@ -175,7 +175,7 @@ export default {
       
       var zeros = this.lastWeek.reduce((o, key) => ({ ...o, [key]: 0}), {});
 
-      var grouped = _.countBy(this.events, (e) => {
+      var grouped = _.countBy(this.messages, (e) => {
         new Date(e).getDate();
       });
 
