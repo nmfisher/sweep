@@ -36,11 +36,13 @@
             </v-icon>
           </v-layout>
             <v-data-table
-            v-if="!loading"
+              v-if="!loading"
               v-show="!showMessages" 
               :headers="headers"
               :items="items"
+              :custom-sort="sort"
               expand
+              must-sort
               hide-actions
             >
               <template
@@ -68,12 +70,13 @@
                   </td>
                   <td>{{ item.eventName }}</td>
                   <td>{{ item.params }}</td>
-                  <td class="">{{item.receivedOn}}</td>
-                  <td class="">{{item.processedOn}}</td>
+                  <td class="">{{new Date(item.receivedOn).toDateString() }}</td>
+                  <td class="">{{new Date(item.processedOn).toDateString() }}</td>
                   <td>
-                      <v-icon style="cursor:pointer" @click="showMessages = true; loadMessages(item)" >
+                      <v-icon style="cursor:pointer" @click="showMessages = true; loadMessages(item)" v-if="item.actions.length > 0">
                           mdi-email
                       </v-icon>
+                      <span v-if="item.actions.length == 0">--</span>
                   </td>
               </template>
             </v-data-table>
@@ -190,9 +193,7 @@ export default {
       var promises = event.actions.map((action) => {
         return api.listMessagesForAction(action.id, {withCredentials:true}).then((resp) =>{
           resp.data.forEach((message) => {
-              console.log(vm);
               vm.messages.push(message);
-              console.log(message);
           });
         }).catch((err) => {
           console.error(err);
@@ -202,6 +203,12 @@ export default {
       Promise.all(promises).finally(() => {
         vm.loading = false;
       });
+    },
+    sort(items, index, isDescending) {
+      items.sort();
+      if(isDescending)
+        items.reverse();
+      return items;
     }
   },
   mounted() {
