@@ -9,7 +9,7 @@ class Sweep {
     _apiKey = apiKey;
   }
 
-  static void Raise({String eventName, Map<String,Object> params}) {
+  static Future<dynamic> Raise({String eventName, Map<String,Object> params}) {
     if(_apiKey == null) {
       throw Exception("API Key not set");
     }
@@ -17,6 +17,6 @@ class Sweep {
     var eventRequestBody = new EventRequestBody();
     eventRequestBody.eventName = eventName;
     eventRequestBody.params = params; // EventRequestBody | 
-    api_instance.addEvent(eventRequestBody, apiKey:_apiKey);
+    return api_instance.addEvent(eventRequestBody, apiKey:_apiKey);
   }
 }

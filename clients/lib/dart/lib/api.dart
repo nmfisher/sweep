@@ -3,6 +3,7 @@ library sweep_api.api;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:convert' as convert;
+import 'package:dson/dson.dart';
 import 'package:http/http.dart';
 
 part 'api_client.dart';

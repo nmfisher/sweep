@@ -8,13 +8,13 @@ description: The client library for the Sweep platform
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
 version: 1.0.0+1
-
+author: Nick Fisher <nick DOT fisher AT avinium DOT com>
+homepage: https://sweephq.com
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  sweep_api:
-    path: ../lib/dart
+  sweep_api: ^1.0.0
     
 dev_dependencies:
  
